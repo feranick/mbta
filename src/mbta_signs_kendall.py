@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 from pymbta3 import Stops, Predictions, Routes, Vehicles
 from datetime import datetime
 import time
+from geopy.geocoders import Nominatim
 
 key = "91944a70800a4bcabe1b9c2023d12fc8"
 
@@ -12,11 +14,14 @@ station = 'place-knncl'
 line = 'Red'
 
 refresh_time = 10
+show_location = True
 
 rt = Routes(key=key)
 st = Stops(key=key)
 pr = Predictions(key=key)
 vh = Vehicles(key=key)
+
+geolocator = Nominatim(user_agent="Angelo")
 
 ########################
 # Definitions
@@ -65,6 +70,7 @@ while True:
     status = []
     vstation = []
     vstatus = []
+    location = []
     
     for p in pred:
         if p['relationships']['route']['data']['id'] == line and dummy < 6:
@@ -82,6 +88,7 @@ while True:
             v = vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
             vstatus.append(v['current_status'])
             vstation.append(get_stat(v['latitude'], v['longitude']))
+            location.append(geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
             dummy += 1
            
     print("-------------------------------------------------------------------------")
@@ -96,6 +103,17 @@ while True:
             arr_sign(pred_arr_times[j], get_dir(direction[j])+"\t\t", vstatus[j], vstation[j])
     print("-------------------------------------------------------------------------")
     print("\n")
+    if show_location:
+        print("-------------------------------------------------------------------------")
+        for j in range(0,len(direction)):
+            if direction[j] == 0:
+                print(location[j])
+        print("-------------------------------------------------------------------------")
+        for j in range(0,len(direction)):
+            if direction[j] == 1:
+                print(location[j])
+        print("-------------------------------------------------------------------------")
+        print("\n")
     
     time.sleep(refresh_time)
             

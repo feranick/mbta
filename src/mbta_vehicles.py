@@ -28,7 +28,10 @@ for v in vehicles:
         print("Latitude:",la,", Longitude:",lo)
         print("Speed:",v['attributes']['speed'])
         
-        #geolocator = Nominatim(user_agent="Angelo")
-        #location = geolocator.reverse(v['attributes']['latitude'], v['attributes']['longitude'])
-        #print(location.address)
+        coord = str(v['attributes']['latitude'])+','+str(v['attributes']['longitude'])
+        geolocator = Nominatim(user_agent="Angelo")
+        print(coord)
+        #location = geolocator.reverse("42.39618,-71.02866")
+        location = geolocator.reverse(coord)
+        print(location)
         print("\n")
