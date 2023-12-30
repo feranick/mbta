@@ -56,7 +56,7 @@ while True:
             direction.append(get_dir(p['attributes']['direction_id']))
             status.append(p['attributes']['status'])
             #print(p['attributes']['stop_sequence'])
-            print(p['relationships']['vehicle'])
+            #print(p['relationships']['vehicle'])
             dummy += 1
     
     print(name,status[0])
