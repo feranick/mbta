@@ -4,7 +4,6 @@
 from pymbta3 import Stops, Predictions, Routes, Vehicles
 from datetime import datetime
 import time
-from geopy.geocoders import Nominatim
 
 key = "91944a70800a4bcabe1b9c2023d12fc8"
 
@@ -14,14 +13,16 @@ station = 'place-cntsq'
 line = 'Red'
 
 refresh_time = 10
-show_location = True
+show_location = False
 
 rt = Routes(key=key)
 st = Stops(key=key)
 pr = Predictions(key=key)
 vh = Vehicles(key=key)
 
-geolocator = Nominatim(user_agent="Angelo")
+if show_location:
+    from geopy.geocoders import Nominatim
+    geolocator = Nominatim(user_agent="Angelo")
 
 ########################
 # Definitions
@@ -73,7 +74,7 @@ while True:
     location = []
     
     for p in pred:
-        if p['relationships']['route']['data']['id'] == line and dummy < 6:
+        if p['relationships']['route']['data']['id'] == line and dummy < 8:
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
             
@@ -88,7 +89,8 @@ while True:
             v = vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
             vstatus.append(v['current_status'])
             vstation.append(get_stat(v['latitude'], v['longitude']))
-            location.append(geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
+            if show_location:
+                location.append(geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
             dummy += 1
            
     print("-------------------------------------------------------------------------")
