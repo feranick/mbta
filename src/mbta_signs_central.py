@@ -35,7 +35,7 @@ def arr_sign(a, b, st, station):
         print(b,"\t NOW BOARD\t\t", st, station)
 
 def get_stat(la, lo):
-    s = st.get(route='line', longitude=lo, latitude=la, radius=0.005)['data']
+    s = st.get(route=line, longitude=lo, latitude=la, radius=0.005)['data']
     if len(s) == 0:
         return ''
     else:
