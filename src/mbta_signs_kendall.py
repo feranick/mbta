@@ -4,8 +4,8 @@ import time
 
 key = "91944a70800a4bcabe1b9c2023d12fc8"
 
-station = 'place-cntsq'
-#station = 'place-knncl'
+#station = 'place-cntsq'
+station = 'place-knncl'
 #station = 'place-chmnl'
 line = 'Red'
 
