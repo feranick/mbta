@@ -8,7 +8,9 @@ key = "91944a70800a4bcabe1b9c2023d12fc8"
 #line = "Red"
 #line = "Blue"
 #line = "1"
-line = "CR-Providence"
+#line = "CR-Providence"
+line = "Green-E"  #Medford
+#line = "Green-D"  #Somerville
 
 st = Stops(key=key)
 stops = st.get(route=line)['data']

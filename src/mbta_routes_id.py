@@ -10,7 +10,7 @@ rt = Routes(key=key)
 #for r in routes:
 #    print(r)
     
-routes = rt.get(type=2)['data']
+routes = rt.get(type=0)['data']
 for r in routes:
     print(r['id'])
     
