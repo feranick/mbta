@@ -7,9 +7,6 @@ import time
 
 key = "91944a70800a4bcabe1b9c2023d12fc8"
 
-#station = 'place-cntsq'
-station = 'place-knncl'
-#station = 'place-chmnl'
 line = '1'
 station = '72'
 
@@ -42,8 +39,11 @@ def arr_sign(a, b, st, station):
         print(b,"\t APPR\t\t", st, station)
     if a >= 1:
         print(b,"\t",round(a),"min\t\t", st, station)
-    if a<= 0:
+    if a>-2 and a<= 0:
+        print(a)
         print(b,"\t BOARD\t\t", st, station)
+    if a<=-2:
+        print(b,"\t ERR\t\t", st, station)
 
 def get_stat(la, lo):
     s = st.get(route=line, longitude=lo, latitude=la, radius=0.005)['data']
@@ -78,9 +78,12 @@ while True:
         if p['relationships']['route']['data']['id'] == line and dummy < 8:
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
-            
-            arr_time = p['attributes']['arrival_time'][11:][:8]
-            dep_time = p['attributes']['departure_time'][11:][:8]
+            try:
+                arr_time = p['attributes']['arrival_time'][11:][:8]
+                dep_time = p['attributes']['departure_time'][11:][:8]
+            except:
+                arr_time = "00:00:00"
+                dep_time = "00:00:00"
             arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
             dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
             pred_arr_times.append(arr_time_mins)
