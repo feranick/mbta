@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 from pymbta3 import Stops, Vehicles
 
 key = "91944a70800a4bcabe1b9c2023d12fc8"
