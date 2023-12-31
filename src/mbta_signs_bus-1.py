@@ -75,9 +75,9 @@ while True:
     location = []
     
     for p in pred:
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
         if p['relationships']['route']['data']['id'] == line and dummy < 8:
-            now = datetime.now()
-            current_time = now.strftime("%H:%M:%S")
             try:
                 arr_time = p['attributes']['arrival_time'][11:][:8]
                 dep_time = p['attributes']['departure_time'][11:][:8]

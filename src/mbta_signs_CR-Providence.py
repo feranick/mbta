@@ -7,8 +7,8 @@ import time
 
 key = "91944a70800a4bcabe1b9c2023d12fc8"
 
-station = 'place-sstat'
-#station = 'place-rugg'
+#station = 'place-sstat'
+station = 'place-rugg'
 line = 'CR-Providence'
 
 refresh_time = 10
@@ -74,11 +74,10 @@ while True:
     vstation = []
     vstatus = []
     location = []
-    
     for p in pred:
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
         if p['relationships']['route']['data']['id'] == line and dummy < 8:
-            now = datetime.now()
-            current_time = now.strftime("%H:%M:%S")
             try:
                 arr_time = p['attributes']['arrival_time'][11:][:8]
                 dep_time = p['attributes']['departure_time'][11:][:8]
