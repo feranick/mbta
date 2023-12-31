@@ -32,18 +32,17 @@ def get_sec(time_str):
 def get_dir(a):
     return rt.get(id=line)['data'][0]['attributes']['direction_destinations'][a]
 
-def arr_sign(a, b, st, station):
+def arr_sign(a, b, st, station, type):
     if a > 0 and a < 0.5:
-        print(b,"\t ARR\t\t", st, station)
+        print(b,"\t ARR\t",type,"\t", st, station)
     if a > 0.5 and a < 1:
-        print(b,"\t APPR\t\t", st, station)
+        print(b,"\t APPR\t",type,"\t", st, station)
     if a >= 1:
-        print(b,"\t",round(a),"min\t\t", st, station)
+        print(b,"\t",round(a),"min\t",type,"\t", st, station)
     if a>-2 and a<= 0:
-        print(a)
-        print(b,"\t BOARD\t\t", st, station)
+        print(b,"\t BOARD\t",type,"\t", st, station)
     if a<=-2:
-        print(b,"\t ERR\t\t", st, station)
+        print(b,"\t ERR\t",type,"\t", st, station)
 
 def get_stat(la, lo):
     s = st.get(route=line, longitude=lo, latitude=la, radius=0.005)['data']
@@ -51,7 +50,34 @@ def get_stat(la, lo):
         return ''
     else:
         return s[0]['attributes']['name']
-
+        
+def train_type(line, veh):
+    try:
+        code = int(veh['carriages'][0]['label'])
+    except:
+        code = int(veh['label'])
+    if line == "Red":
+        if code < 1800:
+            return "O1"
+        if code >= 1800 and code < 1900:
+            return "O2"
+        if code >= 1900:
+            return "N"
+    if line == "Orange":
+        if code < 1400:
+            return "O"
+        if code >= 1400:
+            return "N"
+    if line[:5] == "Green":
+        if code < 3900:
+            return "O"
+        if code >= 3900:
+            return "N"
+    if line[:2] == "CR":
+        return "CR"
+    else:
+        return str(code)
+        
 ############################
 # get coord/name station
 ############################
@@ -72,6 +98,7 @@ while True:
     status = []
     vstation = []
     vstatus = []
+    vtype = []
     location = []
     
     for p in pred:
@@ -91,6 +118,7 @@ while True:
             direction.append(p['attributes']['direction_id'])
             status.append(p['attributes']['status'])
             v = vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
+            vtype.append(train_type(line,v))
             vstatus.append(v['current_status'])
             vstation.append(get_stat(v['latitude'], v['longitude']))
             if show_location:
@@ -102,11 +130,11 @@ while True:
     print("-------------------------------------------------------------------------")
     for j in range(0,len(direction)):
         if direction[j] == 0:
-            arr_sign(pred_arr_times[j], get_dir(direction[j]), vstatus[j], vstation[j])
+            arr_sign(pred_arr_times[j], get_dir(direction[j]), vstatus[j], vstation[j], vtype[j])
     print("-------------------------------------------------------------------------")
     for j in range(0,len(direction)):
         if direction[j] == 1:
-            arr_sign(pred_arr_times[j], get_dir(direction[j])+"\t\t", vstatus[j], vstation[j])
+            arr_sign(pred_arr_times[j], get_dir(direction[j]), vstatus[j], vstation[j], vtype[j])
     print("-------------------------------------------------------------------------")
     print("\n")
     if show_location:

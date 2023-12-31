@@ -7,9 +7,10 @@ import time
 
 key = "91944a70800a4bcabe1b9c2023d12fc8"
 
-#station = 'place-sstat'
-station = 'place-rugg'
-line = 'CR-Providence'
+#station = 'place-astao'
+station = 'place-sull'
+#station = 'place-rugg'
+line = 'Orange'
 
 refresh_time = 10
 show_location = False
