@@ -8,7 +8,7 @@ line = "Blue"
 
 st = Stops(key=key)
 stops = st.get(route=line)['data']
-stops = st.get(id=station)['data']
+#stops = st.get(id=station)['data']
 
 for s in stops:
     print(s)
