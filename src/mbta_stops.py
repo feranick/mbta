@@ -17,7 +17,7 @@ stops = st.get(route=line)['data']
 #stops = st.get(id=station)['data']
 
 for s in stops:
-    print(s)
+    #print(s)
     print(s['id'],s['attributes']['name'])
 
 
