@@ -24,6 +24,9 @@ gpio = [25,12,16,20,21]
 global stop_blinkLed
 global stop_blinkAllLed
 
+stop_blinkLed = False
+stop_blinkAllLed = False
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -61,7 +64,9 @@ def blinkLed():
         time.sleep(0.5)
         GPIO.output(gpio[0],GPIO.LOW)
         time.sleep(0.5)
+        print(stop_blinkLed)
         if stop_blinkLed:
+            print("stopped")
             break
 
 def blinkAllLed():
@@ -70,45 +75,44 @@ def blinkAllLed():
         time.sleep(0.5)
         ledAllOFF()
         time.sleep(0.5)
+        print(stop_blinkAllLed)
         if stop_blinkAllLed:
+            print("stopped all")
             break
 
 def arr_sign(a, t1, t2):
-    print(a)
+    print("a:",a)
+    ledAllOFF()
     if a>5:
         a = 5
-    ledAllOFF()
     if a>0:
-        ledON(int(a), led_time)
-        if a<0.5:
+        print("a>0")
+        if a<1:
+            print("a<1")
             stop_blinkLed = False
-            t1 = Thread(target = blinkLed)
-            t1.start()
-        else:
-            try:
-                stop_blinkLed = True
-                t1.join()
+            if t1.is_alive() == False:
+                t1.start()
+            if t2.is_alive():
                 stop_blinkAllLed = True
                 t2.join()
-            except:
-                pass
+        else:
+            print("a>1")
+            if t1.is_alive():
+                stop_blinkLed = True
+                t1.join()
+            if t2.is_alive():
+                stop_blinkAllLed = True
+                t2.join()
+            ledON(int(a), led_time)
     if a<=0:
-        stop_blinkAllLed = False
-        t2.start()
+        print("a<=0")
+        if t1.is_alive():
+            stop_blinkLed = True
+            #t1.join()
+        if t2.is_alive() == False:
+            stop_blinkAllLed = False
+            t2.start()
 
-    '''
-    if a > 0 and a < 0.5:
-        print(b,"\t ARR\t",type,"\t", st, station)
-    if a > 0.5 and a < 1:
-        print(b,"\t APPR\t",type,"\t", st, station)
-    if a >= 1:
-        print(b,"\t",round(a),"min\t",type,"\t", st, station)
-    if a>-2 and a<= 0:
-        print(b,"\t BOARD\t",type,"\t", st, station)
-    if a<=-2:
-        print(b,"\t ERR\t",type,"\t", st, station)
-    '''
-        
 ############################
 # get coord/name station
 ############################
@@ -148,7 +152,6 @@ while True:
             dummy += 1
     ind = 0
     for dir in direction:
-        print(dir, direct)
         if dir == direct:
             arr_sign(pred_arr_times[ind], t1, t2)
             break
