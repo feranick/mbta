@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from pymbta3 import Stops, Predictions, Routes, Vehicles
-from threading import Thread
 from datetime import datetime
 import time
 import RPi.GPIO as GPIO
@@ -52,24 +51,26 @@ def ledAllON():
     for i in range(len(gpio)):
         GPIO.output(gpio[i],GPIO.HIGH)
         
-def blinkLed():
-    while True:
+def blinkLed(a):
+    t = 0
+    while t < a:
         GPIO.output(gpio[0],GPIO.HIGH)
         time.sleep(0.5)
         GPIO.output(gpio[0],GPIO.LOW)
         time.sleep(0.5)
-        global stop_blinkLed
-        if stop_blinkLed:
+        t += 1
+        if t > a:
             break
 
-def blinkAllLed():
-    while True:
+def blinkAllLed(a):
+    t = 0
+    while t < a:
         ledAllON()
         time.sleep(0.5)
         ledAllOFF()
         time.sleep(0.5)
-        global stop_blinkAllLed
-        if stop_blinkAllLed:
+        t += 1
+        if t > a:
             break
 
 def arr_sign(a):
@@ -80,23 +81,9 @@ def arr_sign(a):
     if a>0:
         ledON(int(a), led_time)
         if a<0.5:
-            stop_blinkLed = False
-            try:
-                t1 = Thread(target = blinkLed)
-                t1.start()
-                stop_blinkLed = True
-                t1.join()
-            except:
-                pass
+            blinkLed(led_time)
     if a<=0:
-        stop_blinkAllLed = False
-        try:
-            t2 = Thread(target = blinkAllLed)
-            t2.start()
-            stop_blinkAllLed = True
-            t2.join()
-        except:
-            pass
+        blinkAllLed(led_time)
         
 
     '''
