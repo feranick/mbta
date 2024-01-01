@@ -21,6 +21,9 @@ led_time = 5
 show_location = False
 gpio = [25,12,16,20,21]
 
+global stop_blinkLed
+global stop_blinkAllLed
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -58,7 +61,6 @@ def blinkLed():
         time.sleep(0.5)
         GPIO.output(gpio[0],GPIO.LOW)
         time.sleep(0.5)
-        global stop_blinkLed
         if stop_blinkLed:
             break
 
@@ -68,11 +70,10 @@ def blinkAllLed():
         time.sleep(0.5)
         ledAllOFF()
         time.sleep(0.5)
-        global stop_blinkAllLed
         if stop_blinkAllLed:
             break
 
-def arr_sign(a):
+def arr_sign(a, t1, t2):
     print(a)
     if a>5:
         a = 5
@@ -81,23 +82,19 @@ def arr_sign(a):
         ledON(int(a), led_time)
         if a<0.5:
             stop_blinkLed = False
+            t1 = Thread(target = blinkLed)
+            t1.start()
+        else:
             try:
-                t1 = Thread(target = blinkLed)
-                t1.start()
                 stop_blinkLed = True
                 t1.join()
+                stop_blinkAllLed = True
+                t2.join()
             except:
                 pass
     if a<=0:
         stop_blinkAllLed = False
-        try:
-            t2 = Thread(target = blinkAllLed)
-            t2.start()
-            stop_blinkAllLed = True
-            t2.join()
-        except:
-            pass
-        
+        t2.start()
 
     '''
     if a > 0 and a < 0.5:
@@ -124,6 +121,10 @@ print("\n")
 ############################
 # Loop
 ############################
+
+t1 = Thread(target = blinkLed)
+t2 = Thread(target = blinkAllLed)
+
 while True:
     pred = pr.get(longitude=lo, latitude=la, radius=0.001)['data']
     dummy = 0
@@ -149,7 +150,7 @@ while True:
     for dir in direction:
         print(dir, direct)
         if dir == direct:
-            arr_sign(pred_arr_times[ind])
+            arr_sign(pred_arr_times[ind], t1, t2)
             break
         ind += 1
 
