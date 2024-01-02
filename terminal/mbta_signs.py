@@ -47,6 +47,10 @@ def main():
 
     while True:
         pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
+        if len(pred) == 0:
+            print(" No data currently available. Try again later.")
+            print(" Possible cause: no service available at this time\n")
+            break
         dummy = 0
         pred_arr_times = []
         direction = []
