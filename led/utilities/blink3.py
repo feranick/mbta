@@ -39,11 +39,9 @@ def go():
     t1.start()
     time.sleep(5)
     print("begin stop")
-    #stop_blinkLed = True
     exit_event.set()
     print("3:",exit_event)
     time.sleep(2)
-    #print("stop_blinkLed",stop_blinkLed)
 
     print("end")
     ledAllOFF()

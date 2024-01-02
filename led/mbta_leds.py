@@ -14,7 +14,7 @@ import RPi.GPIO as GPIO
 class Conf:
     key = "91944a70800a4bcabe1b9c2023d12fc8"
 
-    refresh_time = 1
+    refresh_time = 5
     gpio = [25,12,16,20,21]
 
     GPIO.setmode(GPIO.BCM)
@@ -116,7 +116,6 @@ def blinkLed():
         GPIO.output(Conf().gpio[0],GPIO.LOW)
         time.sleep(0.5)
         if Conf().stop_blinkLed.is_set():
-            print("stopped")
             break
 
 def blinkAllLed():
@@ -146,6 +145,7 @@ def arr_sign(a, t1, t2):
                 t2.join()
             ledAllOFF()
             ledON(int(a))
+            print("LED")
         else:
             #print("a<1")
             if t1.is_alive() == False:
