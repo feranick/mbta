@@ -109,46 +109,45 @@ def ledON(num):
         GPIO.output(Conf().gpio[j],GPIO.HIGH)
         
 def blinkLed():
+    ledAllOFF()
     while True:
         GPIO.output(Conf().gpio[0],GPIO.HIGH)
         time.sleep(0.5)
         GPIO.output(Conf().gpio[0],GPIO.LOW)
         time.sleep(0.5)
-        print("stop_blinkLed:",stop_blinkLed)
         if Conf().stop_blinkLed.is_set():
             print("stopped")
             break
 
 def blinkAllLed():
-    print("backend",Conf().stop_blinkAllLed)
     while True:
         ledAllON()
         time.sleep(0.5)
         ledAllOFF()
         time.sleep(0.5)
-        print("stop_blinkAllLed:",Conf().stop_blinkAllLed)
         if Conf().stop_blinkAllLed.is_set():
-            print("stopped all")
             break
 
 def arr_sign(a, t1, t2):
+    Conf().stop_blinkLed.clear()
+    Conf().stop_blinkAllLed.clear()
     print("a:",a)
-    ledAllOFF()
     if a>5:
         a = 5
     if a>0:
-        print("a>0")
+        #print("a>0")
         if a>1:
-            print("a>1")
+            #print("a>1")
             if t1.is_alive():
                 Conf().stop_blinkLed.set()
                 t1.join()
             if t2.is_alive():
                 Conf().stop_blinkAllLed.set()
                 t2.join()
+            ledAllOFF()
             ledON(int(a))
         else:
-            print("a<1")
+            #print("a<1")
             if t1.is_alive() == False:
                 Conf().stop_blinkLed.clear()
                 t1.start()
@@ -156,7 +155,7 @@ def arr_sign(a, t1, t2):
                 Conf().stop_blinkAllLed.set()
                 t2.join()
     if a<=0:
-        print("a<=0")
+        #print("a<=0")
         if t1.is_alive():
             Conf().stop_blinkLed.set()
             t1.join()

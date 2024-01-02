@@ -54,6 +54,7 @@ def ledON(num):
         GPIO.output(gpio[j],GPIO.HIGH)
         
 def blinkLed():
+    ledAllOFF()
     while True:
         GPIO.output(gpio[0],GPIO.HIGH)
         time.sleep(0.5)
@@ -80,7 +81,7 @@ def arr_sign(a, t1, t2):
     stop_blinkLed.clear()
     stop_blinkAllLed.clear()
     print("\na:",a)
-    ledAllOFF()
+    #ledAllOFF()
     if a>5:
         a = 5
     if a>0:
