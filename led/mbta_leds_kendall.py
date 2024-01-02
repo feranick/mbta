@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from pymbta3 import Stops, Predictions, Routes, Vehicles
-from threading import Thread
+from threading import Thread, Event
 from datetime import datetime
 import time
 import RPi.GPIO as GPIO
@@ -14,18 +14,14 @@ key = "91944a70800a4bcabe1b9c2023d12fc8"
 station = 'place-knncl'
 #station = 'place-chmnl'
 line = 'Red'
-direct = 0
+direct = 1
 
-refresh_time = 0.1
-led_time = 5
+refresh_time = 1
 show_location = False
 gpio = [25,12,16,20,21]
 
-global stop_blinkLed
-global stop_blinkAllLed
-
-stop_blinkLed = False
-stop_blinkAllLed = False
+stop_blinkLed = Event()
+stop_blinkAllLed = Event()
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -44,11 +40,6 @@ vh = Vehicles(key=key)
 def get_sec(time_str):
     h, m, s = time_str.split(':')
     return int(h) * 3600 + int(m) * 60 + float(s)
-    
-def ledON(num, led_time):
-    for j in range(round(num)):
-        GPIO.output(gpio[j],GPIO.HIGH)
-    time.sleep(led_time)
         
 def ledAllOFF():
     for i in range(len(gpio)):
@@ -58,59 +49,72 @@ def ledAllON():
     for i in range(len(gpio)):
         GPIO.output(gpio[i],GPIO.HIGH)
         
+def ledON(num):
+    for j in range(round(num)):
+        GPIO.output(gpio[j],GPIO.HIGH)
+        
 def blinkLed():
     while True:
         GPIO.output(gpio[0],GPIO.HIGH)
         time.sleep(0.5)
         GPIO.output(gpio[0],GPIO.LOW)
         time.sleep(0.5)
-        print(stop_blinkLed)
-        if stop_blinkLed:
+        print("stop_blinkLed:",stop_blinkLed)
+        if stop_blinkLed.is_set():
             print("stopped")
             break
 
 def blinkAllLed():
+    print("backend",stop_blinkAllLed)
     while True:
         ledAllON()
         time.sleep(0.5)
         ledAllOFF()
         time.sleep(0.5)
-        print(stop_blinkAllLed)
-        if stop_blinkAllLed:
+        print("stop_blinkAllLed:",stop_blinkAllLed)
+        if stop_blinkAllLed.is_set():
             print("stopped all")
             break
 
-def arr_sign(a, t1, t2):
+def arr_sign(a):
+    t1 = Thread(target = blinkLed, args=(stop_blinkLed,))
+    t2 = Thread(target = blinkAllLed, args=(stop_blinkAllLed,))
     print("a:",a)
     ledAllOFF()
     if a>5:
         a = 5
     if a>0:
         print("a>0")
-        if a<1:
-            print("a<1")
-            stop_blinkLed = False
-            if t1.is_alive() == False:
-                t1.start()
-            if t2.is_alive():
-                stop_blinkAllLed = True
-                t2.join()
-        else:
+        if a>1:
             print("a>1")
             if t1.is_alive():
-                stop_blinkLed = True
+                print("a>1, stop blinkLed")
+                stop_blinkLed.is_set()
                 t1.join()
             if t2.is_alive():
-                stop_blinkAllLed = True
+                print("a>1, stop blinkAllLed")
+                stop_blinkAllLed.is_set()
                 t2.join()
-            ledON(int(a), led_time)
+            ledON(int(a))
+        else:
+            print("a<1")
+            if t1.is_alive() == False:
+                print("a<1, start blinkLed")
+                stop_blinkLed.clear()
+                t1.start()
+            if t2.is_alive():
+                print("a<1, stop blinkAllLed")
+                stop_blinkAllLed.is_set()
+                t2.join()
     if a<=0:
         print("a<=0")
         if t1.is_alive():
-            stop_blinkLed = True
-            #t1.join()
+            print("a<0, stop blinkLed")
+            stop_blinkLed.is_set()
+            t1.join()
         if t2.is_alive() == False:
-            stop_blinkAllLed = False
+            print("a<0, start blinkAllLed")
+            stop_blinkAllLed.clear()
             t2.start()
 
 ############################
@@ -125,9 +129,6 @@ print("\n")
 ############################
 # Loop
 ############################
-
-t1 = Thread(target = blinkLed)
-t2 = Thread(target = blinkAllLed)
 
 while True:
     pred = pr.get(longitude=lo, latitude=la, radius=0.001)['data']
@@ -151,9 +152,10 @@ while True:
             direction.append(p['attributes']['direction_id'])
             dummy += 1
     ind = 0
+
     for dir in direction:
         if dir == direct:
-            arr_sign(pred_arr_times[ind], t1, t2)
+            arr_sign(pred_arr_times[ind])
             break
         ind += 1
 
