@@ -7,9 +7,6 @@ GPIO.setwarnings(False)
 
 gpio = [25,12,16,20,21]
 
-global stop_blinkLed
-stop_blinkLed = False
-
 exit_event = Event()
 
 for i in range(len(gpio)):
@@ -34,7 +31,9 @@ def blink():
             break
 
 def go():
+    print("1:",exit_event)
     exit_event.clear()
+    print("2:",exit_event)
     print("start")
     t1 = Thread(target = blink, daemon=True)
     t1.start()
@@ -42,6 +41,7 @@ def go():
     print("begin stop")
     #stop_blinkLed = True
     exit_event.set()
+    print("3:",exit_event)
     time.sleep(2)
     #print("stop_blinkLed",stop_blinkLed)
 

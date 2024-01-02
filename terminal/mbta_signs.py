@@ -27,7 +27,7 @@ class Conf:
 ''' Main '''
 #************************************
 def main():
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         print(' Usage:\n  python3 mbta_signs.py <line> <station-code>')
         usage()
         return

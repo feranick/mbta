@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from pymbta3 import Stops, Predictions, Routes, Vehicles
+from pymbta3 import Stops, Predictions
+from pymbta3 import Stops, Predictions
 from threading import Thread, Event
 from datetime import datetime
 import time
 import RPi.GPIO as GPIO
-import time
 
 key = "91944a70800a4bcabe1b9c2023d12fc8"
 
@@ -14,9 +14,9 @@ key = "91944a70800a4bcabe1b9c2023d12fc8"
 station = 'place-knncl'
 #station = 'place-chmnl'
 line = 'Red'
-direct = 1
+direct = 0
 
-refresh_time = 1
+refresh_time = 2
 show_location = False
 gpio = [25,12,16,20,21]
 
@@ -59,8 +59,8 @@ def blinkLed():
         time.sleep(0.5)
         GPIO.output(gpio[0],GPIO.LOW)
         time.sleep(0.5)
-        print("stop_blinkLed:",stop_blinkLed)
         if stop_blinkLed.is_set():
+            print("stop_blinkLed:",stop_blinkLed)
             print("stopped")
             break
 
@@ -71,15 +71,15 @@ def blinkAllLed():
         time.sleep(0.5)
         ledAllOFF()
         time.sleep(0.5)
-        print("stop_blinkAllLed:",stop_blinkAllLed)
         if stop_blinkAllLed.is_set():
+            print("stop_blinkAllLed:",stop_blinkAllLed)
             print("stopped all")
             break
 
-def arr_sign(a):
-    t1 = Thread(target = blinkLed, args=(stop_blinkLed,))
-    t2 = Thread(target = blinkAllLed, args=(stop_blinkAllLed,))
-    print("a:",a)
+def arr_sign(a, t1, t2):
+    stop_blinkLed.clear()
+    stop_blinkAllLed.clear()
+    print("\na:",a)
     ledAllOFF()
     if a>5:
         a = 5
@@ -88,32 +88,26 @@ def arr_sign(a):
         if a>1:
             print("a>1")
             if t1.is_alive():
-                print("a>1, stop blinkLed")
-                stop_blinkLed.is_set()
+                stop_blinkLed.set()
                 t1.join()
             if t2.is_alive():
-                print("a>1, stop blinkAllLed")
-                stop_blinkAllLed.is_set()
+                stop_blinkAllLed.set()
                 t2.join()
             ledON(int(a))
         else:
             print("a<1")
             if t1.is_alive() == False:
-                print("a<1, start blinkLed")
                 stop_blinkLed.clear()
                 t1.start()
             if t2.is_alive():
-                print("a<1, stop blinkAllLed")
-                stop_blinkAllLed.is_set()
+                stop_blinkAllLed.set()
                 t2.join()
     if a<=0:
         print("a<=0")
         if t1.is_alive():
-            print("a<0, stop blinkLed")
-            stop_blinkLed.is_set()
+            stop_blinkLed.set()
             t1.join()
         if t2.is_alive() == False:
-            print("a<0, start blinkAllLed")
             stop_blinkAllLed.clear()
             t2.start()
 
@@ -129,7 +123,8 @@ print("\n")
 ############################
 # Loop
 ############################
-
+t1 = Thread(target = blinkLed, daemon=True)
+t2 = Thread(target = blinkAllLed, daemon=True)
 while True:
     pred = pr.get(longitude=lo, latitude=la, radius=0.001)['data']
     dummy = 0
@@ -155,7 +150,7 @@ while True:
 
     for dir in direction:
         if dir == direct:
-            arr_sign(pred_arr_times[ind])
+            arr_sign(pred_arr_times[ind], t1, t2)
             break
         ind += 1
 
