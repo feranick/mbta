@@ -177,6 +177,7 @@ def usage():
     print(' Orange-Sullivan : Orange place-sull')
     print(' CR-Providence-Ruggles : CR-Providence place-rugg')
     print(' CR-Providence-South Station : CR-Providence place-sstat')
+    print(' Silver Line 1 - Airport : 741 17095')
     print(' Bus-1 Stop 72 : 1 72\n')
     
 #************************************
