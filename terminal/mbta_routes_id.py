@@ -12,6 +12,12 @@
 from pymbta3 import Routes
 import sys
 
+#***************************************************
+# This is needed for installation through pip
+#***************************************************
+def mbta_routes_id():
+    main()
+    
 #************************************
 ''' Params '''
 #************************************

@@ -13,6 +13,12 @@ from pymbta3 import Stops, Predictions, Routes, Vehicles
 from datetime import datetime
 import time, sys
 
+#***************************************************
+# This is needed for installation through pip
+#***************************************************
+def mbta_signs():
+    main()
+
 #************************************
 ''' Params '''
 #************************************

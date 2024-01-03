@@ -12,6 +12,12 @@
 from pymbta3 import Stops, Vehicles
 import sys
 
+#***************************************************
+# This is needed for installation through pip
+#***************************************************
+def mbta_stops():
+    main()
+    
 #************************************
 ''' Params '''
 #************************************

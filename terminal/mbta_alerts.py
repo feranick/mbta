@@ -13,6 +13,12 @@ from pymbta3 import Alerts
 from datetime import datetime
 import sys
 
+#***************************************************
+# This is needed for installation through pip
+#***************************************************
+def mbta_alerts():
+    main()
+    
 #************************************
 ''' Main '''
 #************************************

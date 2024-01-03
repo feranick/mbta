@@ -13,6 +13,12 @@ from pymbta3 import Stops, Vehicles
 from geopy.geocoders import Nominatim
 import sys
 
+#***************************************************
+# This is needed for installation through pip
+#***************************************************
+def mbta_vehicles():
+    main()
+    
 #************************************
 ''' Params '''
 #************************************
