@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+'''
+**********************************************
+* MBTA SIGNS
+* v2024.01.03.1
+* By: Nicola Ferralis <feranick@hotmail.com>
+**********************************************
+'''
+#print(__doc__)
 
 from pymbta3 import Stops, Predictions, Routes, Vehicles
 from datetime import datetime

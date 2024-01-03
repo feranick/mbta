@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from pymbta3 import Alerts, Routes, Stops, Vehicles, Predictions, Schedules, Trips, Facilities
+'''
+**********************************************
+* MBTA VEHICLES
+* v2024.01.03.1
+* By: Nicola Ferralis <feranick@hotmail.com>
+**********************************************
+'''
+#print(__doc__)
+
+from pymbta3 import Stops, Vehicles
 from geopy.geocoders import Nominatim
 
 key = "91944a70800a4bcabe1b9c2023d12fc8"
 
 st = Stops(key=key)
 vh = Vehicles(key=key)
-
 
 def get_stat(la, lo):
     s = st.get(route='Red', longitude=lo, latitude=la, radius=0.005)['data']

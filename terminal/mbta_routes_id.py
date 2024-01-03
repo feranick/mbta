@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from pymbta3 import Alerts, Routes, Stops, Vehicles, Predictions, Schedules, Trips, Facilities
+'''
+**********************************************
+* MBTA ROUTES ID
+* v2024.01.03.1
+* By: Nicola Ferralis <feranick@hotmail.com>
+**********************************************
+'''
+#print(__doc__)
+
+from pymbta3 import Routes
 
 key = "91944a70800a4bcabe1b9c2023d12fc8"
 

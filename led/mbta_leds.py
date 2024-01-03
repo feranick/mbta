@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+'''
+**********************************************
+* MBTA LEDS
+* v2024.01.03.1
+* By: Nicola Ferralis <feranick@hotmail.com>
+**********************************************
+'''
+#print(__doc__)
 
 from pymbta3 import Stops, Predictions
 from threading import Thread, Event
 from datetime import datetime
 import time, sys
 import RPi.GPIO as GPIO
-
 
 #************************************
 ''' Params '''
@@ -114,7 +121,6 @@ def blinkLed(dP):
         GPIO.output(Conf().gpio[0],GPIO.LOW)
         time.sleep(0.5)
         if dP.stop_blinkLed.is_set():
-            print("t1 - break")
             break
 
 def blinkAllLed(dP):
@@ -124,7 +130,6 @@ def blinkAllLed(dP):
         ledAllOFF()
         time.sleep(0.5)
         if dP.stop_blinkAllLed.is_set():
-            print("t2 - break")
             break
 
 def arr_sign(a, dP, t1, t2):
