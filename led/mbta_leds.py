@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA LEDS
-* v2024.01.03.1
+* v2024.01.03.2
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -29,6 +29,7 @@ class Conf:
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
 
         self.refresh_time = 5
+        self.list_items = 4
         self.gpio = [25,12,16,20,21]
 
         GPIO.setmode(GPIO.BCM)
@@ -81,17 +82,16 @@ def main():
         for p in pred:
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
-            if p['relationships']['route']['data']['id'] == line and dummy < 8:
+            if p['relationships']['route']['data']['id'] == line and dummy < dP.list_items:
                 try:
                     arr_time = p['attributes']['arrival_time'][11:][:8]
                     dep_time = p['attributes']['departure_time'][11:][:8]
+                    arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
+                    dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
+                    pred_arr_times.append(arr_time_mins)
+                    direction.append(p['attributes']['direction_id'])
                 except:
-                    arr_time = "00:00:00"
-                    dep_time = "00:00:00"
-                arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
-                dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
-                pred_arr_times.append(arr_time_mins)
-                direction.append(p['attributes']['direction_id'])
+                    pass
                 dummy += 1
         ind = 0
         for dir in direction:
