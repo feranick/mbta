@@ -32,7 +32,10 @@ classifiers = [
 mbta_signs = "mbta_signs:mbta_signs"
 mbta_alerts = "mbta_alerts:mbta_alerts"
 mbta_lines = "mbta_lines:mbta_lines"
-        
+mbta_routes_id = "mbta_routes_id:mbta_routes_id"
+mbta_stops = "mbta_stops:mbta_stops"
+mbta_vehicles = "mbta_vehicles:mbta_vehicles"
+
 [project.urls]
-Homepage = "https://github.com/feranick/SpectralMachine"
-Issues = "https://github.com/feranick/SpectralMachine/issues"
+Homepage = "https://github.com/feranick/mbta"
+Issues = "https://github.com/feranick/mbta/issues"
