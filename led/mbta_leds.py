@@ -15,26 +15,33 @@ from datetime import datetime
 import time, sys
 import RPi.GPIO as GPIO
 
+#***************************************************
+# This is needed for installation through pip
+#***************************************************
+def mbta_leds():
+    main()
+
 #************************************
 ''' Params '''
 #************************************
 class Conf:
-    key = "91944a70800a4bcabe1b9c2023d12fc8"
+    def __init__(self):
+        self.key = "91944a70800a4bcabe1b9c2023d12fc8"
 
-    refresh_time = 5
-    gpio = [25,12,16,20,21]
+        self.refresh_time = 5
+        self.gpio = [25,12,16,20,21]
 
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
 
-    for i in range(len(gpio)):
-        GPIO.setup(gpio[i],GPIO.OUT)
+        for i in range(len(self.gpio)):
+            GPIO.setup(self.gpio[i],GPIO.OUT)
         
-    stop_blinkLed = Event()
-    stop_blinkAllLed = Event()
+        self.stop_blinkLed = Event()
+        self.stop_blinkAllLed = Event()
 
-    st = Stops(key=key)
-    pr = Predictions(key=key)
+        self.st = Stops(key=self.key)
+        self.pr = Predictions(key=self.key)
 
 #************************************
 # Main
