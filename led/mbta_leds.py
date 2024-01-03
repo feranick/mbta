@@ -55,15 +55,15 @@ def main():
     ############################
     # Loop
     ############################
-    t1 = Thread(target = blinkLed)
-    t2 = Thread(target = blinkAllLed)
-    
+    t1 = Thread(target = blinkLed, args=(dP,), daemon=True)
+    t2 = Thread(target = blinkAllLed, args=(dP,), daemon=True)
+
     while True:
         pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
         dummy = 0
         pred_arr_times = []
         direction = []
-    
+
         for p in pred:
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
@@ -82,13 +82,11 @@ def main():
         ind = 0
         for dir in direction:
             if dir == direct:
-                arr_sign(pred_arr_times[ind], t1, t2)
+                t1, t2 = arr_sign(pred_arr_times[ind], dP, t1, t2)
                 break
             ind += 1
-
         time.sleep(dP.refresh_time)
             
-
 ########################
 # Definitions
 ########################
@@ -108,73 +106,60 @@ def ledON(num):
     for j in range(round(num)):
         GPIO.output(Conf().gpio[j],GPIO.HIGH)
         
-def blinkLed():
+def blinkLed(dP):
     ledAllOFF()
     while True:
         GPIO.output(Conf().gpio[0],GPIO.HIGH)
         time.sleep(0.5)
         GPIO.output(Conf().gpio[0],GPIO.LOW)
         time.sleep(0.5)
-        if Conf().stop_blinkLed.is_set():
+        if dP.stop_blinkLed.is_set():
+            print("t1 - break")
             break
 
-def blinkAllLed():
+def blinkAllLed(dP):
     while True:
         ledAllON()
         time.sleep(0.5)
         ledAllOFF()
         time.sleep(0.5)
-        if Conf().stop_blinkAllLed.is_set():
+        if dP.stop_blinkAllLed.is_set():
+            print("t2 - break")
             break
 
-def arr_sign(a, t1, t2):
-    #Conf().stop_blinkLed.clear()
-    #Conf().stop_blinkAllLed.clear()
-    print("a:",a)
+def arr_sign(a, dP, t1, t2):
+    dP.stop_blinkLed.clear()
+    dP.stop_blinkAllLed.clear()
     if a>5:
         a = 5
     if a>0:
-        #print("a>0")
         if a>1:
-            #print("a>1")
             if t1.is_alive():
-                Conf().stop_blinkLed.set()
-                print("a>0, t1-start",Conf().stop_blinkLed,t1.is_alive())
+                dP.stop_blinkLed.set()
                 t1.join()
-                print("a>0, t1-end",Conf().stop_blinkLed,t1.is_alive())
             if t2.is_alive():
-                Conf().stop_blinkAllLed.set()
-                print("a>0, t2-start",Conf().stop_blinkAllLed,t2.is_alive())
+                dP.stop_blinkAllLed.set()
                 t2.join()
-                print("a>0, t2-end",Conf().stop_blinkAllLed,t2.is_alive())
             ledAllOFF()
             ledON(int(a))
         else:
-            #print("a<1")
             if t1.is_alive() == False:
-                Conf().stop_blinkLed.clear()
-                #t1 = Thread(target = blinkLed)
-                print("a<1, t1-start",Conf().stop_blinkLed,t1.is_alive())
+                dP.stop_blinkLed.clear()
+                t1 = Thread(target = blinkLed, args=(dP,), daemon=True)
                 t1.start()
-                print("a<1, t1-end",Conf().stop_blinkLed,t1.is_alive())
             if t2.is_alive():
-                Conf().stop_blinkAllLed.set()
-                print("a<1, t2-start",Conf().stop_blinkAllLed,t2.is_alive())
+                dP.stop_blinkAllLed.set()
                 t2.join()
-                print("a<1, t2-end",Conf().stop_blinkAllLed,t2.is_alive())
     if a<=0:
-        #print("a<=0")
         if t1.is_alive():
-            Conf().stop_blinkLed.set()
-            print("a<=0, t1-start",Conf().stop_blinkLed,t1.is_alive())
+            dP.stop_blinkLed.set()
             t1.join()
-            print("a<=0, t1-end",Conf().stop_blinkLed,t1.is_alive())
         if t2.is_alive() == False:
-            Conf().stop_blinkAllLed.clear()
-            print("a<=0, t2-start",Conf().stop_blinkAllLed,t2.is_alive())
-            #t2 = Thread(target = blinkAllLed)
+            dP.stop_blinkAllLed.clear()
+            t2 = Thread(target = blinkAllLed, args=(dP,), daemon=True)
             t2.start()
-            print("a<=0, t2-end",Conf().stop_blinkAllLed,t2.is_alive())
+    return t1, t2
+            
 #************************************
 # Lists the stations and lines
 #************************************
