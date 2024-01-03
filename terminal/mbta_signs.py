@@ -23,20 +23,20 @@ def mbta_signs():
 ''' Params '''
 #************************************
 class Conf:
+    def __init__(self):
+        self.refresh_time = 10
+        self.list_items = 20
+        self.show_location = False
 
-    refresh_time = 10
-    list_items = 20
-    show_location = False
+        self.key = "91944a70800a4bcabe1b9c2023d12fc8"
+        self.rt = Routes(key=self.key)
+        self.st = Stops(key=self.key)
+        self.pr = Predictions(key=self.key)
+        self.vh = Vehicles(key=self.key)
 
-    key = "91944a70800a4bcabe1b9c2023d12fc8"
-    rt = Routes(key=key)
-    st = Stops(key=key)
-    pr = Predictions(key=key)
-    vh = Vehicles(key=key)
-
-    if show_location:
-        from geopy.geocoders import Nominatim
-        geolocator = Nominatim(user_agent="Angelo")
+        if self.show_location:
+            from geopy.geocoders import Nominatim
+            self.geolocator = Nominatim(user_agent="Angelo")
 
 #************************************
 ''' Main '''

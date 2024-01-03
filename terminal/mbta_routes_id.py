@@ -22,7 +22,8 @@ def mbta_routes_id():
 ''' Params '''
 #************************************
 class Conf:
-    key = "91944a70800a4bcabe1b9c2023d12fc8"
+    def __init__(self):
+        self.key = "91944a70800a4bcabe1b9c2023d12fc8"
 
 #************************************
 ''' Main '''
