@@ -12,6 +12,14 @@
 from pymbta3 import Stops, Predictions, Routes, Vehicles
 from datetime import datetime
 import time, sys
+import busio
+import digitalio
+from board import SCK, MOSI, MISO, CE0, D24, D25
+from adafruit_rgb_display import color565
+from adafruit_rgb_display.st7789 import ST7789
+from adafruit_display_text import label
+from adafruit_st7789 import ST7789
+
 
 #***************************************************
 # This is needed for installation through pip
@@ -37,6 +45,28 @@ class Conf:
         if self.show_location:
             from geopy.geocoders import Nominatim
             self.geolocator = Nominatim(user_agent="Angelo")
+            
+        # Configuration for CS and DC pins:
+        CS_PIN = CE0
+        DC_PIN = D25
+        RESET_PIN = D24
+        BAUDRATE = 24000000
+
+        # Setup SPI bus using hardware SPI:
+        spi = busio.SPI(clock=SCK, MOSI=MOSI, MISO=MISO)
+
+        # Create the ST7789 display:
+        self.display = ST7789(
+        self.spi,
+        rotation=90,
+        width=135,
+        height=240,
+        x_offset=53,
+        y_offset=40,
+        baudrate=BAUDRATE,
+        cs=digitalio.DigitalInOut(CS_PIN),
+        dc=digitalio.DigitalInOut(DC_PIN),
+        rst=digitalio.DigitalInOut(RESET_PIN))
 
 #************************************
 ''' Main '''
