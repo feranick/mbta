@@ -39,10 +39,10 @@ def main():
         return
         
     dP = Conf()
-    line = sys.argv[1]
-    station = sys.argv[2]
+    station = sys.argv[1]
+    line = sys.argv[2]
     direct = int(sys.argv[3])
-            
+                
     ############################
     # get coord/name station
     ############################
