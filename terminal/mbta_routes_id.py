@@ -10,6 +10,7 @@
 #print(__doc__)
 
 from pymbta3 import Routes
+import sys
 
 #************************************
 ''' Params '''
@@ -21,7 +22,7 @@ class Conf:
 ''' Main '''
 #************************************
 def main():
-    dP.Conf()
+    dP = Conf()
     print("\n Type:")
     print("  0	Light Rail	Green Line")
     print("  1	Heavy Rail	Red Line")
@@ -40,9 +41,9 @@ def main():
     #    print(r)
     
     routes = rt.get(type=type)['data']
-    print("\nID, short_name")
+    print("\n ID, short_name")
     for r in routes:
-        print(r['id'], r['attributes']['short_name'])
+        print(" ",r['id'], r['attributes']['short_name'])
     print("\n")
     #directions = rt.get(id='Red')['data'][0]['attributes']['direction_destinations']
 

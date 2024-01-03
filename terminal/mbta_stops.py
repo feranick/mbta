@@ -8,7 +8,9 @@
 **********************************************
 '''
 #print(__doc__)
+
 from pymbta3 import Stops, Vehicles
+import sys
 
 #************************************
 ''' Params '''
@@ -20,7 +22,7 @@ class Conf:
 ''' Main '''
 #************************************
 def main():
-    dP.Conf()
+    dP = Conf()
     print("\n Line:")
     print("  Orange")
     print("  Red")
@@ -37,10 +39,10 @@ def main():
     stops = st.get(route=line)['data']
     #stops = st.get(id=station)['data']
 
-    print("\nID, name")
+    print("\n ID, name")
     for s in stops:
         #print(s)
-        print(s['id'],s['attributes']['name'])
+        print(" ",s['id'],s['attributes']['name'])
     print("\n")
     
 #************************************

@@ -11,6 +11,7 @@
 
 from pymbta3 import Alerts
 from datetime import datetime
+import sys
 
 #************************************
 ''' Main '''
@@ -23,7 +24,7 @@ def main():
     for alert in alerts:
         print(alert['attributes']['short_header'])
         #print(alert['attributes']['header'])
-        print(alert['attributes']['informed_entity'])
+        print(alert['attributes']['informed_entity'],"\n")
         
 #************************************
 ''' Main initialization routine '''

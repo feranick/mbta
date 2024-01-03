@@ -10,6 +10,7 @@
 #print(__doc__)
 
 from pymbta3 import Stops, Routes
+import sys
 
 #************************************
 ''' Params '''
@@ -21,18 +22,19 @@ class Conf:
 ''' Main '''
 #************************************
 def main():
-    dP.Conf()
+    dP = Conf()
     print("\n Find which line runs through a specific station:")
     station = input()
 
     st = Stops(key=dP.key)
     rt = Routes(key=dP.key)
 
+    print("\n Searching for routes passing through:",station,"\n Please wait...\n")
     lines = []
     routes = rt.get()['data']
+    
     for r in routes:
         #print(r['id'], r['attributes']['short_name'])
-        print(r['id'])
         stops = st.get(route=r['id'])['data']
         for s in stops:
             if s['id'] == station:

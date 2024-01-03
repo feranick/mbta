@@ -11,6 +11,7 @@
 
 from pymbta3 import Stops, Vehicles
 from geopy.geocoders import Nominatim
+import sys
 
 #************************************
 ''' Params '''
@@ -22,10 +23,7 @@ class Conf:
 ''' Main '''
 #************************************
 def main():
-    dP.Conf()
-    st = Stops(key=dP.key)
-    vh = Vehicles(key=dP.key)
-        
+    vh = Vehicles(key=Conf().key)
     vehicles = vh.get()['data']
     for v in vehicles:
         #print(v['relationships']['route']['data']['id'])
@@ -48,11 +46,12 @@ def main():
             print("\n")
 
 def get_stat(la, lo):
+    st = Stops(key=Conf().key)
     s = st.get(route='Red', longitude=lo, latitude=la, radius=0.005)['data']
     if len(s) == 0:
         return ''
-        else:
-            return s[0]['attributes']['name']
+    else:
+        return s[0]['attributes']['name']
 
 #************************************
 ''' Main initialization routine '''
