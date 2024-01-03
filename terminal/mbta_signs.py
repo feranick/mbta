@@ -177,7 +177,36 @@ def train_type(line, veh):
     else:
         return str(code)
         
+
+def get_line(r, station):
+    st = Stops(key=Conf().key)
+    stops = st.get(route=r['id'])['data']
+    for s in stops:
+        if s['id'] == station:
+            #lines.append(r['id'])
+            return r['id']
+
 def find_routes_through_station(station):
+    import multiprocessing as mp
+    rt = Routes(key=Conf().key)
+
+    #lines = []
+    results = []
+    routes = rt.get()['data']
+    print("\n Searching for routes passing through:",station,"\n Please wait...\n")
+                
+    pool = mp.Pool(processes=10)
+    results = [pool.apply(get_line, args=(r,station)) for r in routes]
+
+    #for r in routes:
+    #    results.append(get_line(r, station))
+    
+    lines = list(filter(lambda item: item is not None, results))
+    
+    print(lines,"\n")
+    return lines
+    
+def find_routes_through_station_single_process(station):
     st = Stops(key=Conf().key)
     rt = Routes(key=Conf().key)
 

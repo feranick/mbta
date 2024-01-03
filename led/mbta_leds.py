@@ -139,31 +139,42 @@ def arr_sign(a, t1, t2):
             #print("a>1")
             if t1.is_alive():
                 Conf().stop_blinkLed.set()
+                print("a>0, t1-start",Conf().stop_blinkLed,t1.is_alive())
                 t1.join()
+                print("a>0, t1-end",Conf().stop_blinkLed,t1.is_alive())
             if t2.is_alive():
                 Conf().stop_blinkAllLed.set()
+                print("a>0, t2-start",Conf().stop_blinkAllLed,t2.is_alive())
                 t2.join()
+                print("a>0, t2-end",Conf().stop_blinkAllLed,t2.is_alive())
             ledAllOFF()
             ledON(int(a))
         else:
             #print("a<1")
-            if not t1.is_alive():
+            if t1.is_alive() == False:
                 Conf().stop_blinkLed.clear()
-                t1 = Thread(target = blinkLed)
+                #t1 = Thread(target = blinkLed)
+                print("a<1, t1-start",Conf().stop_blinkLed,t1.is_alive())
                 t1.start()
+                print("a<1, t1-end",Conf().stop_blinkLed,t1.is_alive())
             if t2.is_alive():
                 Conf().stop_blinkAllLed.set()
+                print("a<1, t2-start",Conf().stop_blinkAllLed,t2.is_alive())
                 t2.join()
+                print("a<1, t2-end",Conf().stop_blinkAllLed,t2.is_alive())
     if a<=0:
         #print("a<=0")
         if t1.is_alive():
             Conf().stop_blinkLed.set()
+            print("a<=0, t1-start",Conf().stop_blinkLed,t1.is_alive())
             t1.join()
-        if not t2.is_alive():
+            print("a<=0, t1-end",Conf().stop_blinkLed,t1.is_alive())
+        if t2.is_alive() == False:
             Conf().stop_blinkAllLed.clear()
-            t2 = Thread(target = blinkAllLed)
+            print("a<=0, t2-start",Conf().stop_blinkAllLed,t2.is_alive())
+            #t2 = Thread(target = blinkAllLed)
             t2.start()
-
+            print("a<=0, t2-end",Conf().stop_blinkAllLed,t2.is_alive())
 #************************************
 # Lists the stations and lines
 #************************************
