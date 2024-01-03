@@ -34,7 +34,7 @@ class Conf:
 #************************************
 def main():
     if len(sys.argv) < 4:
-        print(' Usage:\n python3 mbta_signs.py <line> <station-code> <direction>')
+        print(' Usage:\n python3 mbta_leds.py <station-code> <line> <direction>')
         usage()
         return
         
@@ -167,19 +167,20 @@ def arr_sign(a, t1, t2):
 #************************************
 def usage():
     print('\n List of stations and lines\n')
-    print(' Red-Central: Red place-cntsq')
-    print(' Red-Kendall: Red place-knncl')
-    print(' Red-CharlesMGH: Red place-chmnl')
-    print(' Green-D-Lechmere : Green-D place-lech')
-    print(' Green-D-Union Sq : Green-D place-unsqu')
-    print(' Green-E-Medford : Green-D place-medftf')
-    print(' Orange-Ruggles : Orange place-rugg')
-    print(' Orange-Sullivan : Orange place-sull')
-    print(' CR-Providence-Ruggles : CR-Providence place-rugg')
-    print(' CR-Providence-South Station : CR-Providence place-sstat')
-    print(' Silver Line 1 - Airport : 741 17095')
-    print(' Bus-1 Stop 72 : 1 72\n')
-    
+    print(' Red-Central: place-cntsq Red 1')
+    print(' Red-Kendall: place-knncl Red 1')
+    print(' Red-ParkSt: place-pktrm Red 0')
+    print(' Red-CharlesMGH: place-chmnl Red 1')
+    print(' Green-D-Lechmere : place-lech Green-D 1')
+    print(' Green-D-Union Sq : place-unsqu Green-D 0')
+    print(' Green-E-Medford : place-medftf Green-D 1')
+    print(' Orange-Ruggles : place-rugg Orange 1')
+    print(' Orange-Sullivan : place-sull Orange 0')
+    print(' CR-Providence-Ruggles : place-rugg CR-Providence 0')
+    print(' CR-Providence-South Station : place-sstat CR-Providence 1')
+    print(' Silver Line 1 - Airport : 17095 74 1')
+    print(' Bus-1 Stop 72 : 72 1 0\n')
+
 #************************************
 ''' Main initialization routine '''
 #************************************
