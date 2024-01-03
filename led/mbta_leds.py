@@ -128,8 +128,8 @@ def blinkAllLed():
             break
 
 def arr_sign(a, t1, t2):
-    Conf().stop_blinkLed.clear()
-    Conf().stop_blinkAllLed.clear()
+    #Conf().stop_blinkLed.clear()
+    #Conf().stop_blinkAllLed.clear()
     print("a:",a)
     if a>5:
         a = 5
@@ -145,7 +145,6 @@ def arr_sign(a, t1, t2):
                 t2.join()
             ledAllOFF()
             ledON(int(a))
-            print("LED")
         else:
             #print("a<1")
             if t1.is_alive() == False:

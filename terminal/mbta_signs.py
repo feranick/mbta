@@ -11,6 +11,7 @@ import time, sys
 class Conf:
 
     refresh_time = 10
+    list_items = 20
     show_location = False
 
     key = "91944a70800a4bcabe1b9c2023d12fc8"
@@ -28,13 +29,16 @@ class Conf:
 #************************************
 def main():
     if len(sys.argv) < 3:
-        print(' Usage:\n  python3 mbta_signs.py <line> <station-code>')
+        print(' Usage:\n  python3 mbta_signs.py <station-code> (<lines>)')
         usage()
         return
     
     dP = Conf()
-    line = sys.argv[1]
-    station = sys.argv[2]
+    station = sys.argv[1]
+    line = []
+    for i in range(2,len(sys.argv)):
+        line.append(sys.argv[i])
+    #station = "place-pktrm"
     
     ############################
     # get coord/name station
@@ -59,11 +63,14 @@ def main():
         vstatus = []
         vtype = []
         location = []
+        sline = []
     
         for p in pred:
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
-            if p['relationships']['route']['data']['id'] == line and dummy < 8:
+            id_line = p['relationships']['route']['data']['id']
+            if id_line in line and dummy < dP.list_items:
+                sline.append(id_line)
                 try:
                     arr_time = p['attributes']['arrival_time'][11:][:8]
                     dep_time = p['attributes']['departure_time'][11:][:8]
@@ -77,9 +84,9 @@ def main():
                 direction.append(p['attributes']['direction_id'])
                 status.append(p['attributes']['status'])
                 v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
-                vtype.append(train_type(line,v))
+                vtype.append(train_type(id_line,v))
                 vstatus.append(v['current_status'])
-                vstation.append(get_stat(line, v['latitude'], v['longitude']))
+                vstation.append(get_stat(id_line, v['latitude'], v['longitude']))
                 if dP.show_location:
                     location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
                 dummy += 1
@@ -89,11 +96,11 @@ def main():
         print("-------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 0:
-                arr_sign(pred_arr_times[j], get_dir(line, direction[j]), vstatus[j], vstation[j], vtype[j])
+                arr_sign(pred_arr_times[j], get_dir(sline[j], direction[j]), vstatus[j], vstation[j], vtype[j])
         print("-------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 1:
-                arr_sign(pred_arr_times[j], get_dir(line, direction[j]), vstatus[j], vstation[j], vtype[j])
+                arr_sign(pred_arr_times[j], get_dir(sline[j], direction[j]), vstatus[j], vstation[j], vtype[j])
         print("-------------------------------------------------------------------------")
         print("\n")
         if dP.show_location:
@@ -127,10 +134,10 @@ def arr_sign(a, b, st, station, type):
         print(b,"\t APPR\t",type,"\t", st, station)
     if a >= 1:
         print(b,"\t",round(a),"min\t",type,"\t", st, station)
-    if a>-2 and a<= 0:
+    if a>-10 and a<= 0:
         print(b,"\t BOARD\t",type,"\t", st, station)
-    if a<=-2:
-        print(b,"\t ERR\t",type,"\t", st, station)
+    if a<=-10:
+        print(b,"\t ---\t",type,"\t", st, station)
 
 def get_stat(line, la, lo):
     s = Conf().st.get(route=line, longitude=lo, latitude=la, radius=0.005)['data']
@@ -171,18 +178,18 @@ def train_type(line, veh):
 #************************************
 def usage():
     print('\n List of stations and lines\n')
-    print(' Red-Central: Red place-cntsq')
-    print(' Red-Kendall: Red place-knncl')
-    print(' Red-CharlesMGH: Red place-chmnl')
-    print(' Green-D-Lechmere : Green-D place-lech')
-    print(' Green-D-Union Sq : Green-D place-unsqu')
-    print(' Green-E-Medford : Green-D place-medftf')
-    print(' Orange-Ruggles : Orange place-rugg')
-    print(' Orange-Sullivan : Orange place-sull')
-    print(' CR-Providence-Ruggles : CR-Providence place-rugg')
-    print(' CR-Providence-South Station : CR-Providence place-sstat')
-    print(' Silver Line 1 - Airport : 741 17095')
-    print(' Bus-1 Stop 72 : 1 72\n')
+    print(' Red-Central: place-cntsq Red')
+    print(' Red-Kendall: place-knncl Red ')
+    print(' Red-CharlesMGH: place-chmnl Red ')
+    print(' Green-D-Lechmere : place-lech Green-D ')
+    print(' Green-D-Union Sq : place-unsqu Green-D')
+    print(' Green-E-Medford : place-medftf Green-D ')
+    print(' Orange-Ruggles : place-rugg Orange ')
+    print(' Orange-Sullivan : place-sull Orange ')
+    print(' CR-Providence-Ruggles : place-rugg CR-Providence')
+    print(' CR-Providence-South Station : place-sstat CR-Providence ')
+    print(' Silver Line 1 - Airport : 17095 74`')
+    print(' Bus-1 Stop 72 : 72 1\n')
     
 #************************************
 ''' Main initialization routine '''
