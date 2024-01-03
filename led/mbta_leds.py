@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA LEDS
-* v2024.01.03.2
+* v2024.01.03.3
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -176,7 +176,8 @@ def arr_sign(a, dP, t1, t2):
 # Lists the stations and lines
 #************************************
 def usage():
-    print('\n List of stations and lines\n')
+    print(__doc__)
+    print(' List of stations and lines\n')
     print(' Red-Central: place-cntsq Red 1')
     print(' Red-Kendall: place-knncl Red 1')
     print(' Red-ParkSt: place-pktrm Red 0')

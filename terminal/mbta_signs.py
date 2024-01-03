@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS
-* v2024.01.03.1
+* v2024.01.03.3
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -88,25 +88,24 @@ def main():
             current_time = now.strftime("%H:%M:%S")
             id_line = p['relationships']['route']['data']['id']
             if id_line in line and dummy < dP.list_items:
-                lines.append(id_line)
                 try:
+                    lines.append(id_line)
                     arr_time = p['attributes']['arrival_time'][11:][:8]
                     dep_time = p['attributes']['departure_time'][11:][:8]
+                    arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
+                    dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
+                    pred_arr_times.append(arr_time_mins)
+                    #direction.append(get_dir(p['attributes']['direction_id']))
+                    direction.append(p['attributes']['direction_id'])
+                    status.append(p['attributes']['status'])
+                    v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
+                    vtype.append(train_type(id_line,v))
+                    vstatus.append(v['current_status'])
+                    vstation.append(get_stat(id_line, v['latitude'], v['longitude']))
+                    if dP.show_location:
+                        location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
                 except:
-                    arr_time = "00:00:00"
-                    dep_time = "00:00:00"
-                arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
-                dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
-                pred_arr_times.append(arr_time_mins)
-                #direction.append(get_dir(p['attributes']['direction_id']))
-                direction.append(p['attributes']['direction_id'])
-                status.append(p['attributes']['status'])
-                v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
-                vtype.append(train_type(id_line,v))
-                vstatus.append(v['current_status'])
-                vstation.append(get_stat(id_line, v['latitude'], v['longitude']))
-                if dP.show_location:
-                    location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
+                    pass
                 dummy += 1
            
         print("-------------------------------------------------------------------------")
@@ -211,7 +210,8 @@ def find_routes_through_station(station):
 # Lists the stations and lines
 #************************************
 def usage():
-    print('\n List of stations and lines\n')
+    print(__doc__)
+    print(' List of stations and lines\n')
     print(' Red-Central: place-cntsq Red')
     print(' Red-Kendall: place-knncl Red ')
     print(' Red-ParkSt: place-pktrm Red ')
