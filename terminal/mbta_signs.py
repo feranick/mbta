@@ -177,7 +177,6 @@ def train_type(line, veh):
     else:
         return str(code)
     
-    
 def find_routes_through_station(station):
     st = Stops(key=Conf().key)
     rt = Routes(key=Conf().key)
