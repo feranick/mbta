@@ -147,8 +147,9 @@ def arr_sign(a, t1, t2):
             ledON(int(a))
         else:
             #print("a<1")
-            if t1.is_alive() == False:
+            if not t1.is_alive():
                 Conf().stop_blinkLed.clear()
+                t1 = Thread(target = blinkLed)
                 t1.start()
             if t2.is_alive():
                 Conf().stop_blinkAllLed.set()
@@ -158,8 +159,9 @@ def arr_sign(a, t1, t2):
         if t1.is_alive():
             Conf().stop_blinkLed.set()
             t1.join()
-        if t2.is_alive() == False:
+        if not t2.is_alive():
             Conf().stop_blinkAllLed.clear()
+            t2 = Thread(target = blinkAllLed)
             t2.start()
 
 #************************************
