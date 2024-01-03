@@ -28,17 +28,21 @@ class Conf:
 ''' Main '''
 #************************************
 def main():
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print(' Usage:\n  python3 mbta_signs.py <station-code> (<lines>)')
         usage()
         return
-    
-    dP = Conf()
     station = sys.argv[1]
-    line = []
-    for i in range(2,len(sys.argv)):
-        line.append(sys.argv[i])
-    #station = "place-pktrm"
+    if len(sys.argv) == 2:
+        line = find_routes_through_station(station)
+        if len(line) == 0:
+            print(" No stations found with the id:",station,"\n")
+            return
+    if len(sys.argv) > 2:
+        line = []
+        for i in range(2,len(sys.argv)):
+            line.append(sys.argv[i])
+    dP = Conf()
     
     ############################
     # get coord/name station
@@ -63,14 +67,14 @@ def main():
         vstatus = []
         vtype = []
         location = []
-        sline = []
+        lines = []
     
         for p in pred:
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
             id_line = p['relationships']['route']['data']['id']
             if id_line in line and dummy < dP.list_items:
-                sline.append(id_line)
+                lines.append(id_line)
                 try:
                     arr_time = p['attributes']['arrival_time'][11:][:8]
                     dep_time = p['attributes']['departure_time'][11:][:8]
@@ -96,11 +100,11 @@ def main():
         print("-------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 0:
-                arr_sign(pred_arr_times[j], get_dir(sline[j], direction[j]), vstatus[j], vstation[j], vtype[j])
+                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j])
         print("-------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 1:
-                arr_sign(pred_arr_times[j], get_dir(sline[j], direction[j]), vstatus[j], vstation[j], vtype[j])
+                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j])
         print("-------------------------------------------------------------------------")
         print("\n")
         if dP.show_location:
@@ -127,17 +131,17 @@ def get_sec(time_str):
 def get_dir(line, a):
     return Conf().rt.get(id=line)['data'][0]['attributes']['direction_destinations'][a]
 
-def arr_sign(a, b, st, station, type):
+def arr_sign(a, b, st, station, type, line):
     if a > 0 and a < 0.5:
-        print(b,"\t ARR\t",type,"\t", st, station)
+        print(b,"\t ARR\t",type,"\t",line,"\t", st, station)
     if a > 0.5 and a < 1:
-        print(b,"\t APPR\t",type,"\t", st, station)
+        print(b,"\t APPR\t",type,"\t",line,"\t", st, station)
     if a >= 1:
-        print(b,"\t",round(a),"min\t",type,"\t", st, station)
+        print(b,"\t",round(a),"min\t",type,"\t",line,"\t", st, station)
     if a>-10 and a<= 0:
-        print(b,"\t BOARD\t",type,"\t", st, station)
+        print(b,"\t BOARD\t",type,"\t",line,"\t", st, station)
     if a<=-10:
-        print(b,"\t ---\t",type,"\t", st, station)
+        print(b,"\t ---\t",type,"\t",line,"\t", st, station)
 
 def get_stat(line, la, lo):
     s = Conf().st.get(route=line, longitude=lo, latitude=la, radius=0.005)['data']
@@ -173,6 +177,22 @@ def train_type(line, veh):
     else:
         return str(code)
         
+def find_routes_through_station(station):
+    st = Stops(key=Conf().key)
+    rt = Routes(key=Conf().key)
+
+    lines = []
+    routes = rt.get()['data']
+    print("\n Searching for routes passing through:",station,"\n Please wait...\n")
+    for r in routes:
+        stops = st.get(route=r['id'])['data']
+        for s in stops:
+            if s['id'] == station:
+                lines.append(r['id'])
+    
+    print(lines,"\n")
+    return lines
+        
 #************************************
 # Lists the stations and lines
 #************************************
@@ -180,6 +200,7 @@ def usage():
     print('\n List of stations and lines\n')
     print(' Red-Central: place-cntsq Red')
     print(' Red-Kendall: place-knncl Red ')
+    print(' Red-ParkSt: place-pktrm Red ')
     print(' Red-CharlesMGH: place-chmnl Red ')
     print(' Green-D-Lechmere : place-lech Green-D ')
     print(' Green-D-Union Sq : place-unsqu Green-D')
