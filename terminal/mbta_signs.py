@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 '''
 **********************************************
-* MBTA SIGNS
-* v2024.01.03.3
+* MBTA SIGNS SIMPLE
+* v2024.01.04.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
 #print(__doc__)
 
-from pymbta3 import Stops, Predictions, Routes, Vehicles
+#from pymbta3 import Stops, Predictions, Routes, Vehicles
 from datetime import datetime
-import time, sys
+import time, sys, requests
 
 #***************************************************
 # This is needed for installation through pip
@@ -29,11 +29,15 @@ class Conf:
         self.show_location = False
 
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
-        self.rt = Routes(key=self.key)
-        self.st = Stops(key=self.key)
-        self.pr = Predictions(key=self.key)
-        self.vh = Vehicles(key=self.key)
-
+        #self.rt = Routes(key=self.key)
+        #self.st = Stops(key=self.key)
+        #self.pr = Predictions(key=self.key)
+        #self.vh = Vehicles(key=self.key)
+        
+        self.url = "https://api-v3.mbta.com/"
+        self.headers = {'Accept': 'application/json', 'x-api-key': self.key}
+        #self.auth = HTTPBasicAuth('apikey', self.key)
+        
         if self.show_location:
             from geopy.geocoders import Nominatim
             self.geolocator = Nominatim(user_agent="Angelo")
@@ -61,14 +65,21 @@ def main():
     ############################
     # get coord/name station
     ############################
-    s = dP.st.get(route=line, id=station)['data'][0]['attributes']
-    la = s['latitude']
-    lo = s['longitude']
+    
+    #s = dP.st.get(route=line, id=station)['data'][0]['attributes']
+    st_url = dP.url+"stops/?filter[route]="+line[0]+"&filter[id]="+station
+    s = requests.get(st_url).json()['data'][0]['attributes']
+    
+    la = str(s['latitude'])
+    lo = str(s['longitude'])
     name = s['name']
     print("\n")
 
     while True:
-        pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
+        #pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
+        pr_url = dP.url+"predictions/?filter[longitude]="+lo+"&filter[latitude]="+la+"&filter[radius]=0.001"
+        pred = requests.get(pr_url,headers=dP.headers).json()['data']
+        
         if len(pred) == 0:
             print(" No data currently available. Try again later.")
             print(" Possible cause: no service available at this time\n")
@@ -98,7 +109,11 @@ def main():
                     #direction.append(get_dir(p['attributes']['direction_id']))
                     direction.append(p['attributes']['direction_id'])
                     status.append(p['attributes']['status'])
-                    v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
+                    #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
+                
+                    vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
+                    v = requests.get(vh_url,headers=dP.headers).json()['data'][0]['attributes']
+                    
                     vtype.append(train_type(id_line,v))
                     vstatus.append(v['current_status'])
                     vstation.append(get_stat(id_line, v['latitude'], v['longitude']))
@@ -106,6 +121,7 @@ def main():
                         location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
                 except:
                     pass
+                
                 dummy += 1
            
         print("-------------------------------------------------------------------------")
@@ -142,7 +158,9 @@ def get_sec(time_str):
     return int(h) * 3600 + int(m) * 60 + float(s)
     
 def get_dir(line, a):
-    return Conf().rt.get(id=line)['data'][0]['attributes']['direction_destinations'][a]
+    #return Conf().rt.get(id=line)['data'][0]['attributes']['direction_destinations'][a]
+    rt_url = Conf().url+"routes/?filter[id]="+line
+    return requests.get(rt_url,headers=Conf().headers).json()['data'][0]['attributes']['direction_destinations'][a]
 
 def arr_sign(a, b, st, station, type, line):
     if a > 0 and a < 0.5:
@@ -157,7 +175,9 @@ def arr_sign(a, b, st, station, type, line):
         print(b,"\t ---\t",type,"\t",line,"\t", st, station)
 
 def get_stat(line, la, lo):
-    s = Conf().st.get(route=line, longitude=lo, latitude=la, radius=0.005)['data']
+    #s = Conf().st.get(route=line, longitude=lo, latitude=la, radius=0.005)['data']
+    st_url = Conf().url+"stops/?filter[route]="+line+"&filter[longitude]="+str(lo)+"&filter[latitude]="+str(la)+"&filter[radius]=0.001"
+    s = requests.get(st_url,headers=Conf().headers).json()['data']
     if len(s) == 0:
         return ''
     else:
@@ -191,14 +211,18 @@ def train_type(line, veh):
         return str(code)
     
 def find_routes_through_station(station):
-    st = Stops(key=Conf().key)
-    rt = Routes(key=Conf().key)
-
     lines = []
-    routes = rt.get()['data']
+    #st = Stops(key=Conf().key)
+    #rt = Routes(key=Conf().key)
+    #routes = rt.get()['data']
+    routes = requests.get(Conf().url+"routes/",headers=Conf().headers).json()['data']
+    
     print("\n Searching for routes passing through:",station,"\n Please wait...\n")
     for r in routes:
-        stops = st.get(route=r['id'])['data']
+    
+        #stops = st.get(route=r['id'])['data']
+        stops = requests.get(Conf().url+"stops/?filter[route]="+r['id'],headers=Conf().headers).json()['data']
+        
         for s in stops:
             if s['id'] == station:
                 lines.append(r['id'])
