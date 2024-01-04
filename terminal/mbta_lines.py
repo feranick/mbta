@@ -3,14 +3,14 @@
 '''
 **********************************************
 * MBTA LINES
-* v2024.01.03.1
+* v2024.01.04.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
 #print(__doc__)
 
-from pymbta3 import Stops, Routes
-import sys
+#from pymbta3 import Stops, Routes
+import sys, requests
 
 #***************************************************
 # This is needed for installation through pip
@@ -23,7 +23,9 @@ def mbta_lines():
 #************************************
 class Conf:
     def __init__(self):
+        self.url = "https://api-v3.mbta.com/"
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
+        self.headers = {'Accept': 'application/json', 'x-api-key': self.key}
 
 #************************************
 ''' Main '''
@@ -32,17 +34,21 @@ def main():
     dP = Conf()
     print("\n Find which line runs through a specific station:")
     station = input()
-
-    st = Stops(key=dP.key)
-    rt = Routes(key=dP.key)
-
     print("\n Searching for routes passing through:",station,"\n Please wait...\n")
     lines = []
-    routes = rt.get()['data']
+
+    #st = Stops(key=dP.key)
+    #rt = Routes(key=dP.key)
+    #routes = rt.get()['data']
+    
+    routes = requests.get(dP.url+"routes/",headers=dP.headers).json()['data']
     
     for r in routes:
         #print(r['id'], r['attributes']['short_name'])
-        stops = st.get(route=r['id'])['data']
+        #stops = st.get(route=r['id'])['data']
+        st_url = dP.url+"stops/?filter[route]="+r['id']
+        stops = requests.get(st_url,headers=dP.headers).json()['data']
+        
         for s in stops:
             if s['id'] == station:
                 lines.append(r['id'])

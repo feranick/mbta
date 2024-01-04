@@ -3,15 +3,15 @@
 '''
 **********************************************
 * MBTA ALERTS
-* v2024.01.03.1
+* v2024.01.04.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
 #print(__doc__)
 
-from pymbta3 import Alerts
+#from pymbta3 import Alerts
 from datetime import datetime
-import sys
+import sys, requests
 
 #***************************************************
 # This is needed for installation through pip
@@ -23,10 +23,17 @@ def mbta_alerts():
 ''' Main '''
 #************************************
 def main():
+    url = "https://api-v3.mbta.com/"
     key = "91944a70800a4bcabe1b9c2023d12fc8"
-    at = Alerts(key=key)
+    headers = {'Accept': 'application/json', 'x-api-key': key}
+    
+    #at = Alerts(key=key)
     #alerts = at.get(stop='place-alfcl')['data']
-    alerts = at.get(route=['Red'])['data']
+    #alerts = at.get(route=['Red'])['data']
+    
+    al_url = url+"alerts/?filter[route]="+"Red+"
+    alerts = requests.get(al_url,headers=headers).json()['data']
+    
     for alert in alerts:
         print(alert['attributes']['short_header'])
         #print(alert['attributes']['header'])

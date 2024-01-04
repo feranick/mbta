@@ -3,14 +3,14 @@
 '''
 **********************************************
 * MBTA ROUTES ID
-* v2024.01.03.1
+* v2024.01.04.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
 #print(__doc__)
 
-from pymbta3 import Routes
-import sys
+#from pymbta3 import Routes
+import sys, requests
 
 #***************************************************
 # This is needed for installation through pip
@@ -23,7 +23,9 @@ def mbta_routes_id():
 #************************************
 class Conf:
     def __init__(self):
+        self.url = "https://api-v3.mbta.com/"
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
+        self.headers = {'Accept': 'application/json', 'x-api-key': self.key}
 
 #************************************
 ''' Main '''
@@ -42,12 +44,13 @@ def main():
     type = input()
 
     # Find all Route data for the Red Line
-    rt = Routes(key=dP.key)
+    #rt = Routes(key=dP.key)
+    #routes = rt.get(type=type)['data']
     #routes = rt.get(id='Red')['data']
     #for r in routes:
     #    print(r)
+    routes = requests.get(dP.url+"routes/",headers=dP.headers).json()['data']
     
-    routes = rt.get(type=type)['data']
     print("\n ID, short_name")
     for r in routes:
         print(" ",r['id'], r['attributes']['short_name'])

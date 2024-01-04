@@ -3,14 +3,14 @@
 '''
 **********************************************
 * MBTA STOPS
-* v2024.01.03.1
+* v2024.01.04.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
 #print(__doc__)
 
-from pymbta3 import Stops, Vehicles
-import sys
+#from pymbta3 import Stops, Vehicles
+import sys, requests
 
 #***************************************************
 # This is needed for installation through pip
@@ -23,7 +23,9 @@ def mbta_stops():
 #************************************
 class Conf:
     def __init__(self):
+        self.url = "https://api-v3.mbta.com/"
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
+        self.headers = {'Accept': 'application/json', 'x-api-key': self.key}
 
 #************************************
 ''' Main '''
@@ -42,9 +44,12 @@ def main():
     print("\n Input line:")
 
     line = input()
-    st = Stops(key=dP.key)
-    stops = st.get(route=line)['data']
+    #st = Stops(key=dP.key)
+    #stops = st.get(route=line)['data']
     #stops = st.get(id=station)['data']
+    
+    st_url = dP.url+"stops/?filter[route]="+line
+    stops = requests.get(st_url,headers=dP.headers).json()['data']
 
     print("\n ID, name")
     for s in stops:
