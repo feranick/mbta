@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA VEHICLES ID
-* v2024.01.04.1
+* v2024.01.04.2
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -32,36 +32,44 @@ class Conf:
 ''' Main '''
 #************************************
 def main():
-    if len(sys.argv) < 1:
-        print(' Usage:\n  python3 mbta_vehicels.py <vechicle_id>')
-        usage()
+    if len(sys.argv) < 2:
+        print('\n Usage:\n  python3 mbta_vehicles.py <vehicle_id>')
+        print('  python3 gfts_vehicles.py list \n   To list MBTA fleet\n')
         return
-    
+        
+    if sys.argv[1] == "list":
+        vehicles = requests.get(Conf().url+"vehicles/",headers=Conf().headers).json()['data']
+        for v in vehicles:
+            print(v['attributes']['label'], v['id'])
+        return
     
     #vh = Vehicles(key=Conf().key)
     #vehicles = vh.get()['data']
-    v = requests.get(Conf().url+"vehicles/?filter[label]="+sys.argv[1], headers=Conf().headers).json()['data'][0]
+    vh = requests.get(Conf().url+"vehicles/?filter[label]="+sys.argv[1], headers=Conf().headers).json()['data']
     
-    print("\n Vehicle id:", sys.argv[1])
-    print(" Occupancy:",v['attributes']['occupancy_status'])
-    print(" Longitude:",v['attributes']['longitude'])
-    print(" Latitude: ",v['attributes']['latitude'])
-    print(" Bearing: ",v['attributes']['bearing'])
-    print(" Speed:",v['attributes']['speed'])
-    print(" Stop sequence:",v['attributes']['current_stop_sequence'])
-    print("",v['attributes']['current_status'], get_stat(v['attributes']['latitude'], v['attributes']['longitude']))
-    print(" Time:",v['attributes']['updated_at'])
+    for v in vh:
+        print("\n Vehicle label:", sys.argv[1])
+        print(" Vehicle ID:", v['id'])
+        print(" Route:",v['relationships']['route']['data']['id'])
+        print(" Occupancy:",v['attributes']['occupancy_status'])
+        print(" Longitude:",v['attributes']['longitude'])
+        print(" Latitude: ",v['attributes']['latitude'])
+        print(" Bearing: ",v['attributes']['bearing'])
+        print(" Speed:",v['attributes']['speed'])
+        print(" Stop sequence:",v['attributes']['current_stop_sequence'])
+        print(" Status: ",v['attributes']['current_status'], get_stat(v['attributes']['latitude'], v['attributes']['longitude']))
+        print(" Time:",v['attributes']['updated_at'])
         
-    coord = str(v['attributes']['latitude'])+','+str(v['attributes']['longitude'])
-    geolocator = Nominatim(user_agent="Angelo")
-    location = geolocator.reverse(coord)
-    print("\n",location)
-    print("\n")
+        coord = str(v['attributes']['latitude'])+','+str(v['attributes']['longitude'])
+        geolocator = Nominatim(user_agent="Angelo")
+        location = geolocator.reverse(coord)
+        print("\n",location)
+        print("\n")
         
 def get_stat(la, lo):
     #st = Stops(key=Conf().key)
     #s = st.get(route='Red', longitude=lo, latitude=la, radius=0.005)['data']
-    st_url = Conf().url+"stops/?filter[route]="+"Red"+"&filter[longitude]="+str(lo)+"&filter[latitude]="+str(la)+"&filter[radius]=0.001"
+    st_url = Conf().url+"stops/?filter[longitude]="+str(lo)+"&filter[latitude]="+str(la)+"&filter[radius]=0.001"
     s = requests.get(st_url,headers=Conf().headers).json()['data']
     if len(s) == 0:
         return ''

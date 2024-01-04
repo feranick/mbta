@@ -39,6 +39,7 @@ def main():
     for v in vehicles:
         #print(v['relationships']['route']['data']['id'])
         if v['relationships']['route']['data']['id'] == 'Red':
+            print(v)
             la = v['attributes']['latitude']
             lo = v['attributes']['longitude']
             print(v['id'])

@@ -36,12 +36,12 @@ class Conf:
 ''' Main '''
 #************************************
 def main():
-    if len(sys.argv) < 1:
-        print(' Usage:\n  python3 gfts_vehicles.py <vehicle_id>')
+    if len(sys.argv) < 2:
+        print('\n Usage:\n  python3 mbta_vehicles.py <vehicle_id>')
+        print('  python3 gfts_vehicles.py list \n   To list MBTA fleet\n')
         return
         
     dP = Conf()
-    vehicle = sys.argv[1]
     v_feed = gtfs_realtime_pb2.FeedMessage()
     v = requests.get(dP.url_v)
     v_feed.ParseFromString(v.content)
@@ -49,22 +49,26 @@ def main():
     #for entity in v_feed.entity:
     #    print(entity.vehicle.current_status, entity.vehicle.vehicle.label)
 
+    if sys.argv[1] == "list":
+        print()
+        for entity in v_feed.entity:
+            print(entity.vehicle.vehicle.label, entity.vehicle.vehicle.id,entity.vehicle.trip.route_id)
+        return
+        
+    vehicle = sys.argv[1]
     for entity in v_feed.entity:
         if entity.vehicle.vehicle.label == vehicle:
-            print("\n Vehicle id:", vehicle)
-            print(" Occupancy:", entity.vehicle.occupancy_percentage,"%")
+            print("\n Vehicle label:", vehicle)
+            print(" Vehicle ID:",entity.vehicle.vehicle.id)
+            print(" Route:",entity.vehicle.trip.route_id)
+            print(" Occupancy:",occupancy(entity.vehicle),"-",str(entity.vehicle.occupancy_percentage)+"%")
             print(" Longitude:",entity.vehicle.position.longitude)
             print(" Latitude: ",entity.vehicle.position.latitude)
             print(" Bearing: ",entity.vehicle.position.bearing)
             print(" Speed:",entity.vehicle.position.speed)
             print(" Stop sequence:",entity.vehicle.current_stop_sequence)
-            if entity.vehicle.current_status == 0:
-                status = " Incoming at:"
-            if entity.vehicle.current_status == 1:
-                status = " Stopped at:"
-            if entity.vehicle.current_status == 2:
-                status = " In transit to:"
-            print(status, entity.vehicle.stop_id)
+            print(" Status:",current_status(entity.vehicle.current_status), entity.vehicle.stop_id)
+            print(" Congestion level:",current_status(entity.vehicle.current_status), entity.vehicle.stop_id)
             print(" Time:",datetime.fromtimestamp(entity.vehicle.timestamp))
             
             coord = str(entity.vehicle.position.latitude)+','+str(entity.vehicle.position.longitude)
@@ -73,6 +77,36 @@ def main():
             print("\n",location)
             print("\n")
                 
+def current_status(a):
+    if a == 0:
+        return "Incoming at:"
+    if a == 1:
+        return "Stopped at:"
+    if a == 2:
+        return "In transit to:"
+
+def occupancy(a):
+    if a.occupancy_status == 0:
+        return "Empty"
+    if a.occupancy_status == 1:
+        return "Many seats available"
+    if a.occupancy_status == 2:
+        return "Few seats available"
+    if a.occupancy_status == 3:
+        return "Standing room only"
+    if a.occupancy_status == 4:
+        return "Crushed standing room only"
+    if a.occupancy_status == 5:
+        return "Full"
+    if a.occupancy_status == 6:
+        return "Not accepting passengers"
+    if a.occupancy_status == 7:
+        return "No data available"
+    if a.occupancy_status == 8:
+        return "Not boardable"
+    
+    
+    
 #************************************
 ''' Main initialization routine '''
 #************************************

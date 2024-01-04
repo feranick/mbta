@@ -9,7 +9,7 @@ include = [
 
 [project]
 name = "MBTA_Tools"
-version = "v2024.01.04.1"
+version = "v2024.01.04.2"
 dependencies = ["geopy"]
 authors = [{ name="Nicola Ferralis", email="ferralis@mit.edu" },]
 description = "Display MBTA arrivals at stations"
