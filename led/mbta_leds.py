@@ -2,23 +2,23 @@
 # -*- coding: utf-8 -*-
 '''
 **********************************************
-* MBTA LEDS
-* v2024.01.03.3
+* MBTA LEDS SIMPLE
+* v2024.01.04.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
 #print(__doc__)
 
-from pymbta3 import Stops, Predictions
+#from pymbta3 import Stops, Predictions
 from threading import Thread, Event
 from datetime import datetime
-import time, sys
+import time, sys, requests
 import RPi.GPIO as GPIO
 
 #***************************************************
 # This is needed for installation through pip
 #***************************************************
-def mbta_leds():
+def mbta_leds_simple():
     main()
 
 #************************************
@@ -27,6 +27,8 @@ def mbta_leds():
 class Conf:
     def __init__(self):
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
+        self.url = "https://api-v3.mbta.com/"
+        self.headers = {'Accept': 'application/json', 'x-api-key': self.key}
 
         self.refresh_time = 5
         self.list_items = 4
@@ -41,8 +43,8 @@ class Conf:
         self.stop_blinkLed = Event()
         self.stop_blinkAllLed = Event()
 
-        self.st = Stops(key=self.key)
-        self.pr = Predictions(key=self.key)
+        #self.st = Stops(key=self.key)
+        #self.pr = Predictions(key=self.key)
 
 #************************************
 # Main
@@ -61,7 +63,11 @@ def main():
     ############################
     # get coord/name station
     ############################
-    s = dP.st.get(route=line, id=station)['data'][0]['attributes']
+    
+    #s = dP.st.get(route=line, id=station)['data'][0]['attributes']
+    st_url = dP.url+"stops/?filter[route]="+line[0]+"&filter[id]="+station
+    s = requests.get(st_url,headers=dP.headers).json()['data'][0]['attributes']
+    
     la = s['latitude']
     lo = s['longitude']
     name = s['name']
@@ -74,7 +80,10 @@ def main():
     t2 = Thread(target = blinkAllLed, args=(dP,), daemon=True)
 
     while True:
-        pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
+        #pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
+        pr_url = dP.url+"predictions/?filter[longitude]="+lo+"&filter[latitude]="+la+"&filter[radius]=0.001"
+        pred = requests.get(pr_url,headers=dP.headers).json()['data']
+        
         dummy = 0
         pred_arr_times = []
         direction = []
