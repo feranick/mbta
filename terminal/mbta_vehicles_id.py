@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 '''
 **********************************************
-* MBTA VEHICLES
+* MBTA VEHICLES ID
 * v2024.01.04.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
@@ -32,29 +32,31 @@ class Conf:
 ''' Main '''
 #************************************
 def main():
+    if len(sys.argv) < 1:
+        print(' Usage:\n  python3 mbta_vehicels.py <vechicle_id>')
+        usage()
+        return
+    
+    
     #vh = Vehicles(key=Conf().key)
     #vehicles = vh.get()['data']
-    vehicles = requests.get(Conf().url+"vehicles/",headers=Conf().headers).json()['data']
+    v = requests.get(Conf().url+"vehicles/?filter[label]="+sys.argv[1], headers=Conf().headers).json()['data'][0]
     
-    for v in vehicles:
-        #print(v['relationships']['route']['data']['id'])
-        if v['relationships']['route']['data']['id'] == 'Red':
-            la = v['attributes']['latitude']
-            lo = v['attributes']['longitude']
-            print(v['id'])
-            print(v['attributes']['current_status'], get_stat(la, lo))
-            print("Stop sequence:",v['attributes']['current_stop_sequence'])
-            print("Bearing: ",v['attributes']['bearing'])
-            print("Latitude:",la,", Longitude:",lo)
-            print("Speed:",v['attributes']['speed'])
+    print("\n Vehicle id:", sys.argv[1])
+    print(" Occupancy:",v['attributes']['occupancy_status'])
+    print(" Longitude:",v['attributes']['longitude'])
+    print(" Latitude: ",v['attributes']['latitude'])
+    print(" Bearing: ",v['attributes']['bearing'])
+    print(" Speed:",v['attributes']['speed'])
+    print(" Stop sequence:",v['attributes']['current_stop_sequence'])
+    print("",v['attributes']['current_status'], get_stat(v['attributes']['latitude'], v['attributes']['longitude']))
+    print(" Time:",v['attributes']['updated_at'])
         
-            coord = str(v['attributes']['latitude'])+','+str(v['attributes']['longitude'])
-            geolocator = Nominatim(user_agent="Angelo")
-            print(coord)
-            #location = geolocator.reverse("42.39618,-71.02866")
-            location = geolocator.reverse(coord)
-            print(location)
-            print("\n")
+    coord = str(v['attributes']['latitude'])+','+str(v['attributes']['longitude'])
+    geolocator = Nominatim(user_agent="Angelo")
+    location = geolocator.reverse(coord)
+    print("\n",location)
+    print("\n")
         
 def get_stat(la, lo):
     #st = Stops(key=Conf().key)

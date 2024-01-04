@@ -34,7 +34,7 @@ mbta_alerts = "mbta_alerts:mbta_alerts"
 mbta_lines = "mbta_lines:mbta_lines"
 mbta_routes_id = "mbta_routes_id:mbta_routes_id"
 mbta_stops = "mbta_stops:mbta_stops"
-mbta_vehicles = "mbta_vehicles:mbta_vehicles"
+mbta_vehicles_id = "mbta_vehicles_id:mbta_vehicles_id"
 
 [project.urls]
 Homepage = "https://github.com/feranick/mbta"
