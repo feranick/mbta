@@ -9,8 +9,8 @@ include = [
 
 [project]
 name = "MBTA_Leds"
-version = "v2024.01.03.3"
-dependencies = ["pymbta3"]
+version = "v2024.01.04.1"
+dependencies = []
 authors = [{ name="Nicola Ferralis", email="ferralis@mit.edu" },]
 description = "Display MBTA arrivals at stations via LEDs in a Raspberry Pi"
 readme = "../README.md"
