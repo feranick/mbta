@@ -42,9 +42,7 @@ def main():
         return
     
     s = requests.get(Conf().url+"stops/?filter[id]="+sys.argv[1], headers=Conf().headers).json()['data'][0]
-    
-    print(s)
-    
+
     print("\n Stop ID:", sys.argv[1])
     print(" Stop name:",s['attributes']['name'])
     print(" Address:",s['attributes']['address'])
@@ -53,6 +51,8 @@ def main():
     print(" Longitude:",s['attributes']['longitude'])
     print(" Routes through station:"," ".join(find_routes_through_station(sys.argv[1])))
     print("\n")
+        
+    stops = requests.get(Conf().url+"stops/",headers=Conf().headers).json()['data']
         
 def find_routes_through_station(station):
     lines = []
