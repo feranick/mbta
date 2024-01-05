@@ -101,19 +101,19 @@ def main():
             id_line = p['relationships']['route']['data']['id']
             if id_line in line and dummy < dP.list_items:
                 try:
-                    lines.append(id_line)
                     arr_time = p['attributes']['arrival_time'][11:][:8]
                     dep_time = p['attributes']['departure_time'][11:][:8]
                     arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
                     dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
-                    pred_arr_times.append(arr_time_mins)
-                    direction.append(p['attributes']['direction_id'])
-                    status.append(p['attributes']['status'])
                 
                     #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
                     vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
                     v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
-                  
+                    
+                    lines.append(id_line)
+                    pred_arr_times.append(arr_time_mins)
+                    direction.append(p['attributes']['direction_id'])
+                    status.append(p['attributes']['status'])
                     vtype.append(train_type(id_line,v['attributes']))
                     vstatus.append(v['attributes']['current_status'])
                     vstation.append(get_stop(v['relationships']['stop']['data']['id']))
@@ -122,6 +122,14 @@ def main():
                 except:
                     pass
                 dummy += 1
+        
+        print(len(direction),len(pred_arr_times), len(vstatus), len(vstation), len(vtype), len(lines))
+        print(check)
+        print(direction)
+        print(status)
+        print(lines)
+        print(vtype)
+        print(vstatus)
            
         print("-------------------------------------------------------------------------")
         print("\033[1m"+name+"\033[0m\t\t",current_time)
@@ -229,7 +237,7 @@ def find_routes_through_station(station):
             if s['id'] == station:
                 lines.append(r['id'])
     
-    print(lines,"\n")
+    print(" ".join(lines),"\n")
     return lines
         
 #************************************
