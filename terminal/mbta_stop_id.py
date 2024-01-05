@@ -45,9 +45,7 @@ def main():
     print(" Longitude:",s['attributes']['longitude'])
     print(" Routes through station:"," ".join(find_routes_through_station(sys.argv[1])))
     print("\n")
-        
-    stops = requests.get(Conf().url+"stops/",headers=Conf().headers).json()['data']
-        
+                
 def find_routes_through_station(station):
     lines = []
     routes = requests.get(Conf().url+"routes/",headers=Conf().headers).json()['data']

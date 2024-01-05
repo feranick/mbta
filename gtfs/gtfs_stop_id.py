@@ -12,7 +12,7 @@
 #from pymbta3 import Alerts
 from google.protobuf.json_format import ParseDict, MessageToJson
 from google.transit import gtfs_realtime_pb2
-from geopy.geocoders import Nominatim
+import pandas as pd
 from datetime import datetime
 import sys, requests
 
@@ -31,6 +31,8 @@ class Conf:
         #self.url = "https://cdn.mbta.com/realtime/Alerts.pb"
         #self.url_tu = "https://cdn.mbta.com/realtime/TripUpdates.pb"
         self.url_v = "https://cdn.mbta.com/realtime/VehiclePositions.pb"
+        self.gtfs_dir = "MBTA_GTFS"
+        self.stops_file = "stops.txt"
 
 #************************************
 ''' Main '''
@@ -43,79 +45,54 @@ def main():
         return
         
     dP = Conf()
-    v_feed = gtfs_realtime_pb2.FeedMessage()
-    v = requests.get(dP.url_v)
-    v_feed.ParseFromString(v.content)
-
+    stops = pd.read_csv(dP.gtfs_dir+"/"+dP.stops_file)
+    st_ind = stops.loc[stops['stop_id'] == sys.argv[1]].index[0]
+        
+    print("\n Stop ID:", sys.argv[1])
+    print(" Stop name:",stops.loc[st_ind, 'stop_name'])
+    print(" On street:",stops.loc[st_ind, 'on_street'])
+    print(" At street:",stops.loc[st_ind, 'at_street'])
+    print(" Address:",stops.loc[st_ind, 'stop_address'])
+    print(" Municipality:",stops.loc[st_ind, 'municipality'])
+    print(" Latitude:",stops.loc[st_ind, 'stop_lat'])
+    print(" Longitude:",stops.loc[st_ind, 'stop_lon'])
+    print(" Wheelchair:",get_wheelchair(stops.loc[st_ind, 'wheelchair_boarding']))
+    print(" Vehicle type:",get_vehicle_type(stops.loc[st_ind, 'vehicle_type']))
+    print(" Stop URL:",stops.loc[st_ind, 'stop_url'])
+    #print(" Routes through station:"," ".join(find_routes_through_station(sys.argv[1])))
     print("\n")
     
-    if sys.argv[1] == "list":
-        print()
-        for entity in v_feed.entity:
-            print(entity.vehicle.vehicle.label, entity.vehicle.vehicle.id,entity.vehicle.trip.route_id)
-        return
-        
-    vehicle = sys.argv[1]
-    for entity in v_feed.entity:
-        if entity.vehicle.vehicle.label == vehicle:
-            print(" Vehicle label:", vehicle)
-            print(" Vehicle ID:",entity.vehicle.vehicle.id)
-            print(" Route:",entity.vehicle.trip.route_id)
-            print(" Occupancy:",occupancy(entity.vehicle),"-",str(entity.vehicle.occupancy_percentage)+"%")
-            print(" Longitude:",entity.vehicle.position.longitude)
-            print(" Latitude: ",entity.vehicle.position.latitude)
-            print(" Bearing: ",entity.vehicle.position.bearing)
-            print(" Speed:",entity.vehicle.position.speed)
-            print(" Stop sequence:",entity.vehicle.current_stop_sequence)
-            print(" Status:",current_status(entity.vehicle.current_status), entity.vehicle.stop_id)
-            print(" Congestion level:", congestion(entity.vehicle.congestion_level))
-            print(" Time:",datetime.fromtimestamp(entity.vehicle.timestamp))
-            
-            coord = str(entity.vehicle.position.latitude)+','+str(entity.vehicle.position.longitude)
-            geolocator = Nominatim(user_agent="Angelo")
-            location = geolocator.reverse(coord)
-            print("\n",location)
-            print("\n")
-                
-def current_status(a):
+def get_wheelchair(a):
     if a == 0:
-        return "Incoming at:"
+        return "No info"
     if a == 1:
-        return "Stopped at:"
-    if a == 2:
-        return "In transit to:"
-
-def occupancy(a):
-    if a.occupancy_status == 0:
-        return "Empty"
-    if a.occupancy_status == 1:
-        return "Many seats available"
-    if a.occupancy_status == 2:
-        return "Few seats available"
-    if a.occupancy_status == 3:
-        return "Standing room only"
-    if a.occupancy_status == 4:
-        return "Crushed standing room only"
-    if a.occupancy_status == 5:
-        return "Full"
-    if a.occupancy_status == 6:
-        return "Not accepting passengers"
-    if a.occupancy_status == 7:
-        return "No data available"
-    if a.occupancy_status == 8:
-        return "Not boardable"
+        return "Some access"
+    if a == 1:
+        return "No access"
         
-def congestion(a):
-    if a == 0:
-        return "Unknown"
+def get_loc_type(a):
+    if a == 0 or a == None:
+        return "Stop"
     if a == 1:
-        return "Running smoothly"
+        return "Station"
     if a == 2:
-        return "Stop and go"
+        return "Entrance/Exit"
     if a == 3:
-        return "Congestion"
+        return "Generic Node"
     if a == 4:
-        return "Severe congestion"
+        return "Boarding Area"
+
+def get_vehicle_type(a):
+    if a == 0:
+        return "Light Rail (Green Line)"
+    if a == 1:
+        return "Heavy Rail (Red/Orange Lines)"
+    if a == 2:
+        return "Commuter Rail"
+    if a == 3:
+        return "Bus"
+    if a == 4:
+        return "Ferry"
     
 #************************************
 ''' Main initialization routine '''
