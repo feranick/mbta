@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA VEHICLES ID
-* v2024.01.04.2
+* v2024.01.04.3
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -57,7 +57,7 @@ def main():
         print(" Bearing: ",v['attributes']['bearing'])
         print(" Speed:",v['attributes']['speed'])
         print(" Stop sequence:",v['attributes']['current_stop_sequence'])
-        print(" Status: ",v['attributes']['current_status'], get_stat(v['attributes']['latitude'], v['attributes']['longitude']))
+        print(" Status: ",v['attributes']['current_status'],get_stop(v['relationships']['stop']['data']['id']),"(Stop ID:",v['relationships']['stop']['data']['id']+")")
         print(" Time:",v['attributes']['updated_at'])
         
         coord = str(v['attributes']['latitude'])+','+str(v['attributes']['longitude'])
@@ -66,10 +66,11 @@ def main():
         print("\n",location)
         print("\n")
         
-def get_stat(la, lo):
+def get_stop(stop):
     #st = Stops(key=Conf().key)
     #s = st.get(route='Red', longitude=lo, latitude=la, radius=0.005)['data']
-    st_url = Conf().url+"stops/?filter[longitude]="+str(lo)+"&filter[latitude]="+str(la)+"&filter[radius]=0.001"
+    #st_url = Conf().url+"stops/?filter[longitude]="+str(lo)+"&filter[latitude]="+str(la)+"&filter[radius]=0.001"
+    st_url = Conf().url+"stops/?filter[id]="+stop
     s = requests.get(st_url,headers=Conf().headers).json()['data']
     if len(s) == 0:
         return ''

@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS SIMPLE
-* v2024.01.04.1
+* v2024.01.04.3
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -25,7 +25,7 @@ def mbta_signs():
 class Conf:
     def __init__(self):
         self.refresh_time = 10
-        self.list_items = 20
+        self.list_items = 10
         self.show_location = False
 
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
@@ -50,8 +50,10 @@ def main():
         print(' Usage:\n  python3 mbta_signs.py <station-code> (<lines>)')
         usage()
         return
+    dP = Conf()
     station = sys.argv[1]
     if len(sys.argv) == 2:
+        dP.list_items = 20
         line = find_routes_through_station(station)
         if len(line) == 0:
             print(" No stations found with the id:",station,"\n")
@@ -60,7 +62,6 @@ def main():
         line = []
         for i in range(2,len(sys.argv)):
             line.append(sys.argv[i])
-    dP = Conf()
     
     ############################
     # get coord/name station
@@ -106,22 +107,20 @@ def main():
                     arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
                     dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
                     pred_arr_times.append(arr_time_mins)
-                    #direction.append(get_dir(p['attributes']['direction_id']))
                     direction.append(p['attributes']['direction_id'])
                     status.append(p['attributes']['status'])
-                    #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
                 
+                    #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
                     vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
-                    v = requests.get(vh_url,headers=dP.headers).json()['data'][0]['attributes']
-                    
-                    vtype.append(train_type(id_line,v))
-                    vstatus.append(v['current_status'])
-                    vstation.append(get_stat(id_line, v['latitude'], v['longitude']))
+                    v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
+                  
+                    vtype.append(train_type(id_line,v['attributes']))
+                    vstatus.append(v['attributes']['current_status'])
+                    vstation.append(get_stop(v['relationships']['stop']['data']['id']))
                     if dP.show_location:
                         location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
                 except:
                     pass
-                
                 dummy += 1
            
         print("-------------------------------------------------------------------------")
@@ -173,10 +172,13 @@ def arr_sign(a, b, st, station, type, line):
         print(b,"\t BOARD\t",type,"\t",line,"\t", st, station)
     if a<=-10:
         print(b,"\t ---\t",type,"\t",line,"\t", st, station)
-
-def get_stat(line, la, lo):
-    #s = Conf().st.get(route=line, longitude=lo, latitude=la, radius=0.005)['data']
-    st_url = Conf().url+"stops/?filter[route]="+line+"&filter[longitude]="+str(lo)+"&filter[latitude]="+str(la)+"&filter[radius]=0.001"
+        
+def get_stop(stop):
+    #st = Stops(key=Conf().key)
+    #s = st.get(route='Red', longitude=lo, latitude=la, radius=0.005)['data']
+    #st_url = Conf().url+"stops/?filter[longitude]="+str(lo)+"&filter[latitude]="+str(la)+"&filter[radius]=0.001"
+    #st_url = Conf().url+"stops/?filter[route]="+line+"&filter[id]="+stop
+    st_url = Conf().url+"stops/?filter[id]="+stop
     s = requests.get(st_url,headers=Conf().headers).json()['data']
     if len(s) == 0:
         return ''

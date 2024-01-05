@@ -3,7 +3,7 @@
 '''
 **********************************************
 * GTFS-realtime
-* v2024.01.04.1
+* v2024.01.04.3
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -46,9 +46,8 @@ def main():
     v = requests.get(dP.url_v)
     v_feed.ParseFromString(v.content)
 
-    #for entity in v_feed.entity:
-    #    print(entity.vehicle.current_status, entity.vehicle.vehicle.label)
-
+    print("\n")
+    
     if sys.argv[1] == "list":
         print()
         for entity in v_feed.entity:
@@ -58,7 +57,7 @@ def main():
     vehicle = sys.argv[1]
     for entity in v_feed.entity:
         if entity.vehicle.vehicle.label == vehicle:
-            print("\n Vehicle label:", vehicle)
+            print(" Vehicle label:", vehicle)
             print(" Vehicle ID:",entity.vehicle.vehicle.id)
             print(" Route:",entity.vehicle.trip.route_id)
             print(" Occupancy:",occupancy(entity.vehicle),"-",str(entity.vehicle.occupancy_percentage)+"%")
@@ -68,7 +67,7 @@ def main():
             print(" Speed:",entity.vehicle.position.speed)
             print(" Stop sequence:",entity.vehicle.current_stop_sequence)
             print(" Status:",current_status(entity.vehicle.current_status), entity.vehicle.stop_id)
-            print(" Congestion level:",current_status(entity.vehicle.current_status), entity.vehicle.stop_id)
+            print(" Congestion level:", congestion(entity.vehicle.congestion_level))
             print(" Time:",datetime.fromtimestamp(entity.vehicle.timestamp))
             
             coord = str(entity.vehicle.position.latitude)+','+str(entity.vehicle.position.longitude)
@@ -104,8 +103,18 @@ def occupancy(a):
         return "No data available"
     if a.occupancy_status == 8:
         return "Not boardable"
-    
-    
+        
+def congestion(a):
+    if a == 0:
+        return "Unknown"
+    if a == 1:
+        return "Running smoothly"
+    if a == 2:
+        return "Stop and go"
+    if a == 3:
+        return "Congestion"
+    if a == 4:
+        return "Severe congestion"
     
 #************************************
 ''' Main initialization routine '''
