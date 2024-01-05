@@ -9,7 +9,7 @@ include = [
 
 [project]
 name = "MBTA_Tools"
-version = "v2024.01.04.3"
+version = "v2024.01.05.1"
 dependencies = ["geopy"]
 authors = [{ name="Nicola Ferralis", email="ferralis@mit.edu" },]
 description = "Display MBTA arrivals at stations"
@@ -34,6 +34,7 @@ mbta_alerts = "mbta_alerts:mbta_alerts"
 mbta_lines = "mbta_lines:mbta_lines"
 mbta_routes_id = "mbta_routes_id:mbta_routes_id"
 mbta_stops = "mbta_stops:mbta_stops"
+mbta_stop_id = "mbta_stop_id:mbta_stop_id"
 mbta_vehicles_id = "mbta_vehicles_id:mbta_vehicles_id"
 
 [project.urls]

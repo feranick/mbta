@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA VEHICLES ID
-* v2024.01.04.3
+* v2024.01.05.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -16,7 +16,7 @@ import sys, requests
 #***************************************************
 # This is needed for installation through pip
 #***************************************************
-def mbta_vehicles():
+def mbta_vehicles_id():
     main()
     
 #************************************
