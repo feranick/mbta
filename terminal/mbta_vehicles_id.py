@@ -33,7 +33,7 @@ class Conf:
 #************************************
 def main():
     if len(sys.argv) < 2:
-        print('\n Usage:\n  python3 mbta_vehicles.py <vehicle_id>')
+        print('\n Usage:\n  python3 mbta_vehicles_id.py <vehicle_id>')
         print('  python3 gfts_vehicles.py list \n   To list MBTA fleet\n')
         return
         
