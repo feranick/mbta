@@ -31,14 +31,8 @@ class Conf:
 #************************************
 def main():
     if len(sys.argv) < 2:
-        print('\n Usage:\n  python3 mbta_stop_id.py <vehicle_id>')
-        print('  python3 gfts_vehicles.py list \n   To list MBTA fleet\n')
-        return
-        
-    if sys.argv[1] == "list":
-        vehicles = requests.get(Conf().url+"vehicles/",headers=Conf().headers).json()['data']
-        for v in vehicles:
-            print(v['attributes']['label'], v['id'])
+        print(__doc__)
+        print(' Usage:\n  python3 mbta_stop_id.py <stop_id>\n')
         return
     
     s = requests.get(Conf().url+"stops/?filter[id]="+sys.argv[1], headers=Conf().headers).json()['data'][0]

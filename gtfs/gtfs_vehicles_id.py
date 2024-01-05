@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 '''
 **********************************************
-* GTFS-realtime
-* v2024.01.04.3
+* GTFS VEHICLE ID
+* v2024.01.05.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -19,7 +19,7 @@ import sys, requests
 #***************************************************
 # This is needed for installation through pip
 #***************************************************
-def gtfs():
+def gtfs_vehicle_id():
     main()
 
 #************************************
@@ -37,7 +37,8 @@ class Conf:
 #************************************
 def main():
     if len(sys.argv) < 2:
-        print('\n Usage:\n  python3 mbta_vehicles.py <vehicle_id>')
+        print(__doc__)
+        print(' Usage:\n  python3 gtfs_vehicles_id.py <vehicle_id>')
         print('  python3 gfts_vehicles.py list \n   To list MBTA fleet\n')
         return
         
