@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 '''
 **********************************************
-* MBTA SIGNS SIMPLE
-* v2024.01.04.3
+* MBTA SIGNS
+* v2024.01.05.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -122,37 +122,29 @@ def main():
                 except:
                     pass
                 dummy += 1
-        
-        print(len(direction),len(pred_arr_times), len(vstatus), len(vstation), len(vtype), len(lines))
-        print(check)
-        print(direction)
-        print(status)
-        print(lines)
-        print(vtype)
-        print(vstatus)
            
-        print("-------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------")
         print("\033[1m"+name+"\033[0m\t\t",current_time)
-        print("-------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 0:
                 arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j])
-        print("-------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 1:
                 arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j])
-        print("-------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------")
         print("\n")
         if dP.show_location:
-            print("-------------------------------------------------------------------------")
+            print("-----------------------------------------------------------------------------------------")
             for j in range(0,len(direction)):
                 if direction[j] == 0:
                     print(location[j])
-            print("-------------------------------------------------------------------------")
+            print("-----------------------------------------------------------------------------------------")
             for j in range(0,len(direction)):
                 if direction[j] == 1:
                     print(location[j])
-            print("-------------------------------------------------------------------------")
+            print("-----------------------------------------------------------------------------------------")
             print("\n")
     
         time.sleep(dP.refresh_time)
