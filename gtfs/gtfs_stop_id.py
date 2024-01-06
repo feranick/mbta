@@ -48,7 +48,11 @@ def main():
         
     dP = Conf()
     stops = pd.read_csv(dP.gtfs_dir+"/"+dP.stops_file, dtype = str)
-    s_ind = stops.loc[stops['stop_id'] == sys.argv[1]].index[0]
+    try:
+        s_ind = stops.loc[stops['stop_id'] == sys.argv[1]].index[0]
+    except:
+        print("\n Station not yet supported\n")
+        return
         
     print("\n Stop ID:", sys.argv[1])
     print(" Stop name:",stops.loc[s_ind, 'stop_name'])
@@ -61,19 +65,20 @@ def main():
     print(" Wheelchair:",get_wheelchair(stops.loc[s_ind, 'wheelchair_boarding']))
     print(" Vehicle type:",get_vehicle_type(stops.loc[s_ind, 'vehicle_type']))
     print(" Stop URL:",stops.loc[s_ind, 'stop_url'])
-    print(" Routes through station:"," ".join(find_routes_through_station(dP, sys.argv[1])))
+    print(" Routes through station:",find_routes_through_station(dP, sys.argv[1]))
     print("\n")
     
 def find_routes_through_station(dP, a):
     stimes = pd.read_csv(dP.gtfs_dir+"/"+dP.stop_times_file, dtype = str)
-    st = []
     if a.isdigit():
         st = stimes[stimes['stop_id'] == a]['trip_id'].unique().tolist()
-    else:
+    elif a[:6] == "place-":
         st = stimes[stimes['checkpoint_id'].str.contains(a[6:], na=False, regex=True)]['trip_id'].unique().tolist()
+    else:
+        return "Not supported"
 
     trips = pd.read_csv(dP.gtfs_dir+"/"+dP.trips_file, dtype = str)
-    return trips[trips['trip_id'].isin(st)]['route_id'].unique()
+    return " ".join(trips[trips['trip_id'].isin(st)]['route_id'].unique())
 
     
 def get_wheelchair(a):
