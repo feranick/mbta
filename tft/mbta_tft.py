@@ -2,29 +2,30 @@
 # -*- coding: utf-8 -*-
 '''
 **********************************************
-* MBTA TFT
-* v2024.01.03.1
+* MBTA SIGNS TFT
+* v2024.01.06.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
 #print(__doc__)
 
-from pymbta3 import Stops, Predictions, Routes, Vehicles
+#from pymbta3 import Stops, Predictions, Routes, Vehicles
 from datetime import datetime
-import time, sys
-import busio
-import digitalio
-from board import SCK, MOSI, MISO, CE0, D24, D25
-from adafruit_rgb_display import color565
-from adafruit_rgb_display.st7789 import ST7789
+import time, sys, requests
+import board
+import terminalio
+import displayio
+try:
+    from fourwire import FourWire
+except ImportError:
+    from displayio import FourWire
 from adafruit_display_text import label
 from adafruit_st7789 import ST7789
-
 
 #***************************************************
 # This is needed for installation through pip
 #***************************************************
-def mbta_tft():
+def mbta_signs():
     main()
 
 #************************************
@@ -33,40 +34,44 @@ def mbta_tft():
 class Conf:
     def __init__(self):
         self.refresh_time = 10
-        self.list_items = 20
+        self.list_items = 10
         self.show_location = False
 
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
-        self.rt = Routes(key=self.key)
-        self.st = Stops(key=self.key)
-        self.pr = Predictions(key=self.key)
-        self.vh = Vehicles(key=self.key)
-
-        if self.show_location:
-            from geopy.geocoders import Nominatim
-            self.geolocator = Nominatim(user_agent="Angelo")
+        #self.rt = Routes(key=self.key)
+        #self.st = Stops(key=self.key)
+        #self.pr = Predictions(key=self.key)
+        #self.vh = Vehicles(key=self.key)
+        
+        self.url = "https://api-v3.mbta.com/"
+        self.headers = {'Accept': 'application/json', 'x-api-key': self.key}
+        #self.auth = HTTPBasicAuth('apikey', self.key)
             
-        # Configuration for CS and DC pins:
-        CS_PIN = CE0
-        DC_PIN = D25
-        RESET_PIN = D24
-        BAUDRATE = 24000000
+        self.TEXT_SCALE = 2
+        
+        # Release any resources currently in use for the displays
+        displayio.release_displays()
 
-        # Setup SPI bus using hardware SPI:
-        spi = busio.SPI(clock=SCK, MOSI=MOSI, MISO=MISO)
+        spi = board.SPI()
+        tft_cs = board.CE0
+        tft_dc = board.D25
+        tft_rst = board.D24
 
-        # Create the ST7789 display:
-        self.display = ST7789(
-        self.spi,
-        rotation=90,
-        width=135,
-        height=240,
-        x_offset=53,
-        y_offset=40,
-        baudrate=BAUDRATE,
-        cs=digitalio.DigitalInOut(CS_PIN),
-        dc=digitalio.DigitalInOut(DC_PIN),
-        rst=digitalio.DigitalInOut(RESET_PIN))
+        display_bus = FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
+        self.display = ST7789(display_bus, width=320, height=170, colstart=35, rotation=90)
+
+        # Make the display context
+        self.splash = displayio.Group()
+        self.display.root_group = self.splash
+        
+    def self.background():
+        color_bitmap = displayio.Bitmap(self.display.width, self.display.height, 1)
+        color_palette = displayio.Palette(1)
+        #color_palette[0] = 0x00FF00  # Bright Green
+        color_palette[0] = 0x000000  # Bright Green
+        bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
+        self.splash.append(bg_sprite)
+        
 
 #************************************
 ''' Main '''
@@ -76,8 +81,10 @@ def main():
         print(' Usage:\n  python3 mbta_signs.py <station-code> (<lines>)')
         usage()
         return
+    dP = Conf()
     station = sys.argv[1]
     if len(sys.argv) == 2:
+        dP.list_items = 20
         line = find_routes_through_station(station)
         if len(line) == 0:
             print(" No stations found with the id:",station,"\n")
@@ -86,19 +93,25 @@ def main():
         line = []
         for i in range(2,len(sys.argv)):
             line.append(sys.argv[i])
-    dP = Conf()
     
     ############################
     # get coord/name station
     ############################
-    s = dP.st.get(route=line, id=station)['data'][0]['attributes']
-    la = s['latitude']
-    lo = s['longitude']
+    
+    #s = dP.st.get(route=line, id=station)['data'][0]['attributes']
+    st_url = dP.url+"stops/?filter[route]="+line[0]+"&filter[id]="+station
+    s = requests.get(st_url).json()['data'][0]['attributes']
+    
+    la = str(s['latitude'])
+    lo = str(s['longitude'])
     name = s['name']
     print("\n")
 
     while True:
-        pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
+        #pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
+        pr_url = dP.url+"predictions/?filter[longitude]="+lo+"&filter[latitude]="+la+"&filter[radius]=0.001"
+        pred = requests.get(pr_url,headers=dP.headers).json()['data']
+        
         if len(pred) == 0:
             print(" No data currently available. Try again later.")
             print(" Possible cause: no service available at this time\n")
@@ -118,49 +131,51 @@ def main():
             current_time = now.strftime("%H:%M:%S")
             id_line = p['relationships']['route']['data']['id']
             if id_line in line and dummy < dP.list_items:
-                lines.append(id_line)
                 try:
                     arr_time = p['attributes']['arrival_time'][11:][:8]
                     dep_time = p['attributes']['departure_time'][11:][:8]
+                    arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
+                    dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
+                
+                    #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
+                    vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
+                    v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
+                    
+                    lines.append(id_line)
+                    pred_arr_times.append(arr_time_mins)
+                    direction.append(p['attributes']['direction_id'])
+                    status.append(p['attributes']['status'])
+                    vtype.append(train_type(id_line,v['attributes']))
+                    vstatus.append(v['attributes']['current_status'])
+                    vstation.append(get_stop(v['relationships']['stop']['data']['id']))
+                    if dP.show_location:
+                        location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
                 except:
-                    arr_time = "00:00:00"
-                    dep_time = "00:00:00"
-                arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
-                dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
-                pred_arr_times.append(arr_time_mins)
-                #direction.append(get_dir(p['attributes']['direction_id']))
-                direction.append(p['attributes']['direction_id'])
-                status.append(p['attributes']['status'])
-                v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
-                vtype.append(train_type(id_line,v))
-                vstatus.append(v['current_status'])
-                vstation.append(get_stat(id_line, v['latitude'], v['longitude']))
-                if dP.show_location:
-                    location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
+                    pass
                 dummy += 1
            
-        print("-------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------")
         print("\033[1m"+name+"\033[0m\t\t",current_time)
-        print("-------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 0:
                 arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j])
-        print("-------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 1:
                 arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j])
-        print("-------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------")
         print("\n")
         if dP.show_location:
-            print("-------------------------------------------------------------------------")
+            print("-----------------------------------------------------------------------------------------")
             for j in range(0,len(direction)):
                 if direction[j] == 0:
                     print(location[j])
-            print("-------------------------------------------------------------------------")
+            print("-----------------------------------------------------------------------------------------")
             for j in range(0,len(direction)):
                 if direction[j] == 1:
                     print(location[j])
-            print("-------------------------------------------------------------------------")
+            print("-----------------------------------------------------------------------------------------")
             print("\n")
     
         time.sleep(dP.refresh_time)
@@ -173,7 +188,9 @@ def get_sec(time_str):
     return int(h) * 3600 + int(m) * 60 + float(s)
     
 def get_dir(line, a):
-    return Conf().rt.get(id=line)['data'][0]['attributes']['direction_destinations'][a]
+    #return Conf().rt.get(id=line)['data'][0]['attributes']['direction_destinations'][a]
+    rt_url = Conf().url+"routes/?filter[id]="+line
+    return requests.get(rt_url,headers=Conf().headers).json()['data'][0]['attributes']['direction_destinations'][a]
 
 def arr_sign(a, b, st, station, type, line):
     if a > 0 and a < 0.5:
@@ -186,9 +203,14 @@ def arr_sign(a, b, st, station, type, line):
         print(b,"\t BOARD\t",type,"\t",line,"\t", st, station)
     if a<=-10:
         print(b,"\t ---\t",type,"\t",line,"\t", st, station)
-
-def get_stat(line, la, lo):
-    s = Conf().st.get(route=line, longitude=lo, latitude=la, radius=0.005)['data']
+        
+def get_stop(stop):
+    #st = Stops(key=Conf().key)
+    #s = st.get(route='Red', longitude=lo, latitude=la, radius=0.005)['data']
+    #st_url = Conf().url+"stops/?filter[longitude]="+str(lo)+"&filter[latitude]="+str(la)+"&filter[radius]=0.001"
+    #st_url = Conf().url+"stops/?filter[route]="+line+"&filter[id]="+stop
+    st_url = Conf().url+"stops/?filter[id]="+stop
+    s = requests.get(st_url,headers=Conf().headers).json()['data']
     if len(s) == 0:
         return ''
     else:
@@ -222,26 +244,31 @@ def train_type(line, veh):
         return str(code)
     
 def find_routes_through_station(station):
-    st = Stops(key=Conf().key)
-    rt = Routes(key=Conf().key)
-
     lines = []
-    routes = rt.get()['data']
+    #st = Stops(key=Conf().key)
+    #rt = Routes(key=Conf().key)
+    #routes = rt.get()['data']
+    routes = requests.get(Conf().url+"routes/",headers=Conf().headers).json()['data']
+    
     print("\n Searching for routes passing through:",station,"\n Please wait...\n")
     for r in routes:
-        stops = st.get(route=r['id'])['data']
+    
+        #stops = st.get(route=r['id'])['data']
+        stops = requests.get(Conf().url+"stops/?filter[route]="+r['id'],headers=Conf().headers).json()['data']
+        
         for s in stops:
             if s['id'] == station:
                 lines.append(r['id'])
     
-    print(lines,"\n")
+    print(" ".join(lines),"\n")
     return lines
         
 #************************************
 # Lists the stations and lines
 #************************************
 def usage():
-    print('\n List of stations and lines\n')
+    print(__doc__)
+    print(' List of stations and lines\n')
     print(' Red-Central: place-cntsq Red')
     print(' Red-Kendall: place-knncl Red ')
     print(' Red-ParkSt: place-pktrm Red ')
