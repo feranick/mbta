@@ -25,9 +25,9 @@ TEXT_SCALE = 3
 displayio.release_displays()
 
 spi = board.SPI()
-tft_cs = board.D5
-tft_dc = board.D6
-tft_rst = board.D9
+tft_cs = board.CE0
+tft_dc = board.D25
+tft_rst = board.D24
 
 display_bus = FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
 
@@ -57,7 +57,7 @@ splash.append(inner_sprite)
 # Draw a label
 text_area = label.Label(
     terminalio.FONT,
-    text="Hello World!",
+    text="Ciao Matteo!",
     color=0xFFFF00,
     scale=TEXT_SCALE,
     anchor_point=(0.5, 0.5),
