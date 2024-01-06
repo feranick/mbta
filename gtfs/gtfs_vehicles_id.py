@@ -73,7 +73,7 @@ def main():
             print(" Bearing: ",entity.vehicle.position.bearing)
             print(" Speed:",entity.vehicle.position.speed)
             print(" Stop sequence:",entity.vehicle.current_stop_sequence)
-            print(" Status:",current_status(entity.vehicle.current_status), get_station(entity.vehicle.stop_id))
+            print(" Status:",current_status(entity.vehicle.current_status), get_station(entity.vehicle.stop_id),"(Stop ID:",entity.vehicle.stop_id+")")
             print(" Congestion level:", congestion(entity.vehicle.congestion_level))
             print(" Time:",datetime.fromtimestamp(entity.vehicle.timestamp))
             coord = str(entity.vehicle.position.latitude)+','+str(entity.vehicle.position.longitude)
