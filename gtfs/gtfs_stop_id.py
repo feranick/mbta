@@ -67,18 +67,14 @@ def main():
 def find_routes_through_station(dP, a):
     stimes = pd.read_csv(dP.gtfs_dir+"/"+dP.stop_times_file, dtype = str)
     st = []
-    #print(stimes['stop_id'])
-    st1 = stimes[stimes['stop_id'] == a]
-    st = st1['trip_id'].unique().tolist()
-    with open("file.txt", "w") as output:
-        output.write(str(st))
-    st2 = stimes[stimes['checkpoint_id'].str.contains(a[6:], na=False, regex=True)]['trip_id'].unique().tolist()
-    st = st + st2
-    
+    if a.isdigit():
+        st = stimes[stimes['stop_id'] == a]['trip_id'].unique().tolist()
+    else:
+        st = stimes[stimes['checkpoint_id'].str.contains(a[6:], na=False, regex=True)]['trip_id'].unique().tolist()
+
     trips = pd.read_csv(dP.gtfs_dir+"/"+dP.trips_file, dtype = str)
     return trips[trips['trip_id'].isin(st)]['route_id'].unique()
 
-    
     
 def get_wheelchair(a):
     if a == 0:
