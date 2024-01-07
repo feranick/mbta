@@ -63,6 +63,7 @@ class Conf:
         # Make the display context
         self.splash = displayio.Group()
         self.display.root_group = self.splash
+        self.labels = []
         
     def tft_set_background(self):
         color_bitmap = displayio.Bitmap(self.display.width, self.display.height, 1)
@@ -72,25 +73,25 @@ class Conf:
         bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
         self.splash.append(bg_sprite)
         
-    def tft_set_text(self,text,line):
-        text_area = label.Label(
-        terminalio.FONT,
-        text=text,
-        color=0xFF8B00,
-        scale=self.TEXT_SCALE,
-        anchor_point=(0, 0),
-        #anchored_position=(display.width // 2, display.height // 2),
-        anchored_position=(0, 20*line),
-        )
-        self.splash.append(text_area)
-        
-    def tft_clear(self):
-        for i in range(len(self.splash)):
-            self.splash[i].remove()
+    def tft_init_text(self, rows):
+        for s in range(rows):
+            self.labels.append(label.Label(
+            terminalio.FONT,
+            text=" ",
+            color=0xFF8B00,
+            scale=self.TEXT_SCALE,
+            anchor_point=(0, 0),
+            #anchored_position=(display.width // 2, display.height // 2),
+            anchored_position=(0, 20*s),
+            ))
+            self.splash.append(self.labels[s])
             
-    
+    def tft_clear(self, rows):
+        for s in range(rows):
+            self.labels[s].text="                        "
+            time.sleep(0.5)
         
-
+            
 #************************************
 ''' Main '''
 #************************************
@@ -99,9 +100,7 @@ def main():
         print(' Usage:\n  python3 mbta_signs.py <station-code> (<lines>)')
         usage()
         return
-    dP = Conf()
-    dP.tft_init()
-    dP.tft_set_background
+        
     station = sys.argv[1]
     if len(sys.argv) == 2:
         dP.list_items = 20
@@ -113,6 +112,11 @@ def main():
         line = []
         for i in range(2,len(sys.argv)):
             line.append(sys.argv[i])
+    
+    dP = Conf()
+    dP.tft_init()
+    dP.tft_set_background()
+    dP.tft_init_text(dP.list_items+4)
     
     ############################
     # get coord/name station
@@ -128,7 +132,6 @@ def main():
     print("\n")
 
     while True:
-        #dP.tft_clear()
         #pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
         pr_url = dP.url+"predictions/?filter[longitude]="+lo+"&filter[latitude]="+la+"&filter[radius]=0.001"
         pred = requests.get(pr_url,headers=dP.headers).json()['data']
@@ -178,8 +181,9 @@ def main():
         print("-----------------------------------------------------------------------------------------")
         print("\033[1m"+name+"\033[0m\t\t",current_time)
         print("-----------------------------------------------------------------------------------------")
-        
-        dP.tft_set_text(name+"\t"+current_time, 0)
+        dP.labels[0].text = "                          "
+        time.sleep(1)
+        dP.labels[0].text = name+"\t"+current_time
         
         d = 0
         f = 0
@@ -195,7 +199,6 @@ def main():
         print("-----------------------------------------------------------------------------------------")
         print("\n")
     
-        print(dP.splash[0])
         time.sleep(dP.refresh_time)
 
 ########################
@@ -211,6 +214,8 @@ def get_dir(line, a):
     return requests.get(rt_url,headers=Conf().headers).json()['data'][0]['attributes']['direction_destinations'][a]
 
 def arr_sign(a, b, st, station, type, line, tline, dP):
+    dP.labels[tline].text = "                          "
+    time.sleep(1)
     if a > 0 and a < 0.5:
         print(b,"\t ARR\t",type,"\t",line,"\t", st, station)
         label = b+" ARR "+type+" "+line
@@ -226,7 +231,7 @@ def arr_sign(a, b, st, station, type, line, tline, dP):
     if a<=-10:
         print(b,"\t ---\t",type,"\t",line,"\t", st, station)
         label = b+"   "+type+" "+line
-    dP.tft_set_text(label, tline)
+    dP.labels[tline].text = label
         
 def get_stop(stop):
     #st = Stops(key=Conf().key)

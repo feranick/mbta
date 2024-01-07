@@ -34,32 +34,25 @@ display_bus = FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
 display = ST7789(display_bus, width=320, height=170, colstart=35, rotation=90)
 
 # Make the display context
-splash = displayio.Group()
-display.root_group = splash
+main_group = displayio.Group()
+display.root_group = main_group
 
-# Draw a label
-text_area = label.Label(
-    terminalio.FONT,
-    text="Ciao",
-    color=0xFF8B00,
-    scale=TEXT_SCALE,
-    )
+# create the label
+updating_label = label.Label(
+    font=terminalio.FONT, text="Time Is:\n{}".format(time.monotonic()), scale=2
+)
 
-anchor_point=(0, 0),
-anchored_position=(0, 0),
+# set label position on the display
+updating_label.anchor_point = (0, 0)
+updating_label.anchored_position = (20, 20)
 
-splash.append(text_area)
+# add label to group that is showing on display
+main_group.append(updating_label)
 
-#print("\n Should erase now.")
-#display.root_group = None
-#time.sleep(1)
-#display.root_group = splash
-#splash.text="Ciao Angelo"
-
+# Main loop
 while True:
-    text_area.text="Ciao Angelo"
-    print("Angelo")
-    time.sleep(1)
-    text_area.text="Ciao Matteo"
-    print("Angelo")
+
+    # update text property to change the text showing on the display
+    updating_label.text = "Time Is:\n{}".format(time.monotonic())
+
     time.sleep(1)
