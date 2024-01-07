@@ -25,7 +25,7 @@ from adafruit_st7789 import ST7789
 #***************************************************
 # This is needed for installation through pip
 #***************************************************
-def mbta_signs():
+def mbta_tft():
     main()
 
 #************************************
