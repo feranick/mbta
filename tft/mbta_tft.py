@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS TFT
-* v2024.01.06.1
+* v2024.01.07.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -77,7 +77,7 @@ class Conf:
         for s in range(rows):
             self.labels.append(label.Label(
             terminalio.FONT,
-            text=" ",
+            text="",
             color=0xFF8B00,
             scale=self.TEXT_SCALE,
             anchor_point=(0, 0),
@@ -185,7 +185,7 @@ def main():
         print("-----------------------------------------------------------------------------------------")
         print("\033[1m"+name+"\033[0m\t\t",current_time)
         print("-----------------------------------------------------------------------------------------")
-        dP.labels[0].text = "                          "
+        #dP.labels[0].text = "                          "
         time.sleep(1)
         dP.labels[0].text = name+"\t"+current_time
         
