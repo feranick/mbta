@@ -250,6 +250,7 @@ def arr_sign(a, b, st, station, type, line, tline, dP):
         print(b,"\t ---\t",type,"\t",line,"\t", st, station)
         #label = b+"   "+type+" "+line
         label = "    "+type+" "+line
+    dP.labels[tline].text = "             "
     dP.labels[tline].text = b[:13]
     dP.labels2[tline].text = label
         
