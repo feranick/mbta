@@ -9,8 +9,8 @@ include = [
 
 [project]
 name = "MBTA_tft"
-version = "v2024.01.03.1"
-dependencies = ["pymbta3", "geopy"]
+version = "v2024.01.07.1"
+dependencies = ["adafruit-circuitpython-rgb-display", "adafruit-circuitpython-st7789" "adafruit-circuitpython-display-text"]
 authors = [{ name="Nicola Ferralis", email="ferralis@mit.edu" },]
 description = "Display MBTA arrivals at stations via TFT on Raspberry Pi"
 readme = "../README.md"

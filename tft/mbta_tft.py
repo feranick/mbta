@@ -64,6 +64,7 @@ class Conf:
         self.splash = displayio.Group()
         self.display.root_group = self.splash
         self.labels = []
+        self.labels2 = []
         
     def tft_set_background(self):
         color_bitmap = displayio.Bitmap(self.display.width, self.display.height, 1)
@@ -74,17 +75,7 @@ class Conf:
         self.splash.append(bg_sprite)
         
     def tft_init_text(self, rows):
-        self.labels.append(label.Label(
-        terminalio.FONT,
-        text=" ",
-        color=0xFF8B00,
-        scale=self.TEXT_SCALE,
-        anchor_point=(0, 0),
-        #anchored_position=(display.width // 2, display.height // 2),
-        anchored_position=(200, 0),
-        ))
-        self.splash.append(self.labels[0])
-        for s in range(1,rows):
+        for s in range(0,rows):
             self.labels.append(label.Label(
             terminalio.FONT,
             text=" ",
@@ -92,15 +83,24 @@ class Conf:
             scale=self.TEXT_SCALE,
             anchor_point=(0, 0),
             #anchored_position=(display.width // 2, display.height // 2),
-            anchored_position=(0, 20*(s-1)),
+            anchored_position=(0, 20*s),
             ))
             self.splash.append(self.labels[s])
-            
-    def tft_clear(self, rows):
-        for s in range(rows):
-            self.labels[s].text="                        "
-            time.sleep(1)
-        
+        for s in range(0,rows):
+            if s==0:
+                x = 220
+            else:
+                x = 160
+            self.labels2.append(label.Label(
+            terminalio.FONT,
+            text=" ",
+            color=0xFF8B00,
+            scale=self.TEXT_SCALE,
+            anchor_point=(0, 0),
+            #anchored_position=(display.width // 2, display.height // 2),
+            anchored_position=(x, 20*s),
+            ))
+            self.splash.append(self.labels2[s])
             
 #************************************
 ''' Main '''
@@ -195,22 +195,20 @@ def main():
         print("-----------------------------------------------------------------------------------------")
         print("\033[1m"+name+"\033[0m\t\t",current_time)
         print("-----------------------------------------------------------------------------------------")
-        #dP.labels[0].text = "                          "
-        #time.sleep(1)
-        #dP.labels[0].text = name+"\t"+current_time
-        dP.labels[1].text = name
-        dP.labels[0].text = current_time
+        
+        dP.labels[0].text = name[:17]
+        dP.labels2[0].text = current_time
         
         d = 0
         f = 0
         for j in range(0,len(direction)):
             if direction[j] == 0:
-                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], d+3,dP)
+                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], d+2,dP)
                 d+=1
         print("-----------------------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 1:
-                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], f+6,dP)
+                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], f+5,dP)
                 f+=1
         print("-----------------------------------------------------------------------------------------")
         print("\n")
@@ -234,20 +232,26 @@ def arr_sign(a, b, st, station, type, line, tline, dP):
     time.sleep(1)
     if a > 0 and a < 0.5:
         print(b,"\t ARR\t",type,"\t",line,"\t", st, station)
-        label = b+" ARR "+type+" "+line
+        #label = b+" ARR "+type+" "+line
+        label = " ARR "+type+" "+line
     if a > 0.5 and a < 1:
         print(b,"\t APPR\t",type,"\t",line,"\t", st, station)
-        label = b+" APPR "+type+" "+line
+        #label = b+" APPR "+type+" "+line
+        label = " APPR "+type+" "+line
     if a >= 1:
         print(b,"\t",round(a),"min\t",type,"\t",line,"\t", st, station)
-        label = b+" "+str(round(a))+"min "+type+" "+line
+        #label = b+" "+str(round(a))+"min "+type+" "+line
+        label = " "+str(round(a))+"min "+type+" "+line
     if a>-10 and a<= 0:
         print(b,"\t BOARD\t",type,"\t",line,"\t", st, station)
-        label = b+" BOARD "+type+" "+line
+        #label = b+" BOARD "+type+" "+line
+        label = " BOARD "+type+" "+line
     if a<=-10:
         print(b,"\t ---\t",type,"\t",line,"\t", st, station)
-        label = b+"   "+type+" "+line
-    dP.labels[tline].text = label
+        #label = b+"   "+type+" "+line
+        label = "    "+type+" "+line
+    dP.labels[tline].text = b[:13]
+    dP.labels2[tline].text = label
         
 def get_stop(stop):
     #st = Stops(key=Conf().key)
@@ -290,9 +294,6 @@ def train_type(line, veh):
     
 def find_routes_through_station(station):
     lines = []
-    #st = Stops(key=Conf().key)
-    #rt = Routes(key=Conf().key)
-    #routes = rt.get()['data']
     routes = requests.get(Conf().url+"routes/",headers=Conf().headers).json()['data']
     
     print("\n Searching for routes passing through:",station,"\n Please wait...\n")
