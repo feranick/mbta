@@ -89,7 +89,7 @@ class Conf:
     def tft_clear(self, rows):
         for s in range(rows):
             self.labels[s].text="                        "
-            time.sleep(0.5)
+            time.sleep(1)
         
             
 #************************************
@@ -117,6 +117,7 @@ def main():
     dP.tft_init()
     dP.tft_set_background()
     dP.tft_init_text(dP.list_items+4)
+    time.sleep(10)
     
     ############################
     # get coord/name station
@@ -139,6 +140,9 @@ def main():
         if len(pred) == 0:
             print(" No data currently available. Try again later.")
             print(" Possible cause: no service available at this time\n")
+            dP.labels[0].text=name
+            dP.labels[2].text="No data"
+            time.sleep(10)
             break
         dummy = 0
         pred_arr_times = []
@@ -214,7 +218,7 @@ def get_dir(line, a):
     return requests.get(rt_url,headers=Conf().headers).json()['data'][0]['attributes']['direction_destinations'][a]
 
 def arr_sign(a, b, st, station, type, line, tline, dP):
-    dP.labels[tline].text = "                          "
+    #dP.labels[tline].text = "                          "
     time.sleep(1)
     if a > 0 and a < 0.5:
         print(b,"\t ARR\t",type,"\t",line,"\t", st, station)
