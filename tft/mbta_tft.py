@@ -77,7 +77,7 @@ class Conf:
         for s in range(rows):
             self.labels.append(label.Label(
             terminalio.FONT,
-            text="",
+            text=" ",
             color=0xFF8B00,
             scale=self.TEXT_SCALE,
             anchor_point=(0, 0),
