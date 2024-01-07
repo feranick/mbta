@@ -34,7 +34,7 @@ def mbta_signs():
 class Conf:
     def __init__(self):
         self.refresh_time = 10
-        self.list_items = 10
+        self.list_items = 4
         self.show_location = False
 
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
@@ -47,8 +47,8 @@ class Conf:
         self.headers = {'Accept': 'application/json', 'x-api-key': self.key}
         #self.auth = HTTPBasicAuth('apikey', self.key)
             
+    def tft_init(self):
         self.TEXT_SCALE = 2
-        
         # Release any resources currently in use for the displays
         displayio.release_displays()
 
@@ -64,13 +64,31 @@ class Conf:
         self.splash = displayio.Group()
         self.display.root_group = self.splash
         
-    def self.background():
+    def tft_set_background(self):
         color_bitmap = displayio.Bitmap(self.display.width, self.display.height, 1)
         color_palette = displayio.Palette(1)
         #color_palette[0] = 0x00FF00  # Bright Green
         color_palette[0] = 0x000000  # Bright Green
         bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
         self.splash.append(bg_sprite)
+        
+    def tft_set_text(self,text,line):
+        text_area = label.Label(
+        terminalio.FONT,
+        text=text,
+        color=0xFF8B00,
+        scale=self.TEXT_SCALE,
+        anchor_point=(0, 0),
+        #anchored_position=(display.width // 2, display.height // 2),
+        anchored_position=(0, 20*line),
+        )
+        self.splash.append(text_area)
+        
+    def tft_clear(self):
+        for i in range(len(self.splash)):
+            self.splash[i].remove()
+            
+    
         
 
 #************************************
@@ -82,6 +100,8 @@ def main():
         usage()
         return
     dP = Conf()
+    dP.tft_init()
+    dP.tft_set_background
     station = sys.argv[1]
     if len(sys.argv) == 2:
         dP.list_items = 20
@@ -108,6 +128,7 @@ def main():
     print("\n")
 
     while True:
+        #dP.tft_clear()
         #pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
         pr_url = dP.url+"predictions/?filter[longitude]="+lo+"&filter[latitude]="+la+"&filter[radius]=0.001"
         pred = requests.get(pr_url,headers=dP.headers).json()['data']
@@ -153,31 +174,28 @@ def main():
                 except:
                     pass
                 dummy += 1
-           
+                
         print("-----------------------------------------------------------------------------------------")
         print("\033[1m"+name+"\033[0m\t\t",current_time)
         print("-----------------------------------------------------------------------------------------")
+        
+        dP.tft_set_text(name+"\t"+current_time, 0)
+        
+        d = 0
+        f = 0
         for j in range(0,len(direction)):
             if direction[j] == 0:
-                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j])
+                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], d+2,dP)
+                d+=1
         print("-----------------------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 1:
-                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j])
+                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], f+5,dP)
+                f+=1
         print("-----------------------------------------------------------------------------------------")
         print("\n")
-        if dP.show_location:
-            print("-----------------------------------------------------------------------------------------")
-            for j in range(0,len(direction)):
-                if direction[j] == 0:
-                    print(location[j])
-            print("-----------------------------------------------------------------------------------------")
-            for j in range(0,len(direction)):
-                if direction[j] == 1:
-                    print(location[j])
-            print("-----------------------------------------------------------------------------------------")
-            print("\n")
     
+        print(dP.splash[0])
         time.sleep(dP.refresh_time)
 
 ########################
@@ -192,17 +210,23 @@ def get_dir(line, a):
     rt_url = Conf().url+"routes/?filter[id]="+line
     return requests.get(rt_url,headers=Conf().headers).json()['data'][0]['attributes']['direction_destinations'][a]
 
-def arr_sign(a, b, st, station, type, line):
+def arr_sign(a, b, st, station, type, line, tline, dP):
     if a > 0 and a < 0.5:
         print(b,"\t ARR\t",type,"\t",line,"\t", st, station)
+        label = b+" ARR "+type+" "+line
     if a > 0.5 and a < 1:
         print(b,"\t APPR\t",type,"\t",line,"\t", st, station)
+        label = b+" APPR "+type+" "+line
     if a >= 1:
         print(b,"\t",round(a),"min\t",type,"\t",line,"\t", st, station)
+        label = b+" "+str(round(a))+"min "+type+" "+line
     if a>-10 and a<= 0:
         print(b,"\t BOARD\t",type,"\t",line,"\t", st, station)
+        label = b+" BOARD "+type+" "+line
     if a<=-10:
         print(b,"\t ---\t",type,"\t",line,"\t", st, station)
+        label = b+"   "+type+" "+line
+    dP.tft_set_text(label, tline)
         
 def get_stop(stop):
     #st = Stops(key=Conf().key)
