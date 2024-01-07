@@ -34,7 +34,7 @@ def mbta_signs():
 class Conf:
     def __init__(self):
         self.refresh_time = 10
-        self.list_items = 4
+        self.list_items = 6
         self.show_location = False
 
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
@@ -74,7 +74,17 @@ class Conf:
         self.splash.append(bg_sprite)
         
     def tft_init_text(self, rows):
-        for s in range(rows):
+        self.labels.append(label.Label(
+        terminalio.FONT,
+        text=" ",
+        color=0xFF8B00,
+        scale=self.TEXT_SCALE,
+        anchor_point=(0, 0),
+        #anchored_position=(display.width // 2, display.height // 2),
+        anchored_position=(200, 0),
+        ))
+        self.splash.append(self.labels[0])
+        for s in range(1,rows):
             self.labels.append(label.Label(
             terminalio.FONT,
             text=" ",
@@ -82,7 +92,7 @@ class Conf:
             scale=self.TEXT_SCALE,
             anchor_point=(0, 0),
             #anchored_position=(display.width // 2, display.height // 2),
-            anchored_position=(0, 20*s),
+            anchored_position=(0, 20*(s-1)),
             ))
             self.splash.append(self.labels[s])
             
@@ -186,19 +196,21 @@ def main():
         print("\033[1m"+name+"\033[0m\t\t",current_time)
         print("-----------------------------------------------------------------------------------------")
         #dP.labels[0].text = "                          "
-        time.sleep(1)
-        dP.labels[0].text = name+"\t"+current_time
+        #time.sleep(1)
+        #dP.labels[0].text = name+"\t"+current_time
+        dP.labels[1].text = name
+        dP.labels[0].text = current_time
         
         d = 0
         f = 0
         for j in range(0,len(direction)):
             if direction[j] == 0:
-                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], d+2,dP)
+                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], d+3,dP)
                 d+=1
         print("-----------------------------------------------------------------------------------------")
         for j in range(0,len(direction)):
             if direction[j] == 1:
-                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], f+5,dP)
+                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], f+6,dP)
                 f+=1
         print("-----------------------------------------------------------------------------------------")
         print("\n")
