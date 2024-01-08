@@ -1,6 +1,8 @@
 # mbta
 Visualize mbta times/info via TFT screen on a Raspberry Pi
 
+Display: https://learn.adafruit.com/adafruit-1-9-color-ips-tft-display
+
 Refer to individual scripts for details. 
 
 Set up Blinka:
