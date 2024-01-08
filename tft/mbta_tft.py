@@ -154,7 +154,7 @@ def main():
             dP.labels[2].text="No data"
             time.sleep(10)
             break
-        else
+        else:
             dummy = 0
             pred_arr_times = []
             direction = []
