@@ -35,7 +35,7 @@ class Conf:
     def __init__(self):
         self.refresh_time = 10
         self.list_items = 6
-        self.show_location = False
+        #self.show_location = False
 
         self.key = "91944a70800a4bcabe1b9c2023d12fc8"
         #self.rt = Routes(key=self.key)
@@ -154,66 +154,67 @@ def main():
             dP.labels[2].text="No data"
             time.sleep(10)
             break
-        dummy = 0
-        pred_arr_times = []
-        direction = []
-        status = []
-        vstation = []
-        vstatus = []
-        vtype = []
-        location = []
-        lines = []
+        else
+            dummy = 0
+            pred_arr_times = []
+            direction = []
+            status = []
+            vstation = []
+            vstatus = []
+            vtype = []
+            location = []
+            lines = []
     
-        for p in pred:
-            now = datetime.now()
-            current_time = now.strftime("%H:%M:%S")
-            id_line = p['relationships']['route']['data']['id']
-            if id_line in line and dummy < dP.list_items:
-                try:
-                    arr_time = p['attributes']['arrival_time'][11:][:8]
-                    dep_time = p['attributes']['departure_time'][11:][:8]
-                    arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
-                    dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
+            for p in pred:
+                now = datetime.now()
+                current_time = now.strftime("%H:%M:%S")
+                id_line = p['relationships']['route']['data']['id']
+                if id_line in line and dummy < dP.list_items:
+                    try:
+                        arr_time = p['attributes']['arrival_time'][11:][:8]
+                        dep_time = p['attributes']['departure_time'][11:][:8]
+                        arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
+                        dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
                 
-                    #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
-                    vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
-                    v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
+                        #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
+                        vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
+                        v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
                     
-                    lines.append(id_line)
-                    pred_arr_times.append(arr_time_mins)
-                    direction.append(p['attributes']['direction_id'])
-                    status.append(p['attributes']['status'])
-                    vtype.append(train_type(id_line,v['attributes']))
-                    vstatus.append(v['attributes']['current_status'])
-                    vstation.append(get_stop(v['relationships']['stop']['data']['id']))
-                    if dP.show_location:
-                        location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
-                except:
-                    pass
-                dummy += 1
-                
-        print("-----------------------------------------------------------------------------------------")
-        print("\033[1m"+name+"\033[0m\t\t",current_time)
-        print("-----------------------------------------------------------------------------------------")
+                        lines.append(id_line)
+                        pred_arr_times.append(arr_time_mins)
+                        direction.append(p['attributes']['direction_id'])
+                        status.append(p['attributes']['status'])
+                        vtype.append(train_type(id_line,v['attributes']))
+                        vstatus.append(v['attributes']['current_status'])
+                        vstation.append(get_stop(v['relationships']['stop']['data']['id']))
+                        #if dP.show_location:
+                            #location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
+                    except:
+                        pass
+                    dummy += 1
+                    
+            print("-----------------------------------------------------------------------------------------")
+            print("\033[1m"+name+"\033[0m\t\t",current_time)
+            print("-----------------------------------------------------------------------------------------")
         
-        dP.labels[0].text = name[:17]
-        dP.labels2[0].text = current_time
+            dP.labels[0].text = name[:17]
+            dP.labels2[0].text = current_time
         
-        d = 0
-        f = 0
-        for j in range(0,len(direction)):
-            if direction[j] == 0:
-                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], d+2,dP)
-                d+=1
-        print("-----------------------------------------------------------------------------------------")
-        for j in range(0,len(direction)):
-            if direction[j] == 1:
-                arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], f+5,dP)
-                f+=1
-        print("-----------------------------------------------------------------------------------------")
-        print("\n")
+            d = 0
+            f = 0
+            for j in range(0,len(direction)):
+                if direction[j] == 0:
+                    arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], d+2,dP)
+                    d+=1
+            print("-----------------------------------------------------------------------------------------")
+            for j in range(0,len(direction)):
+                if direction[j] == 1:
+                    arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j], f+5,dP)
+                    f+=1
+            print("-----------------------------------------------------------------------------------------")
+            print("\n")
     
-        time.sleep(dP.refresh_time)
+            time.sleep(dP.refresh_time)
 
 ########################
 # Definitions
