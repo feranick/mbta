@@ -115,7 +115,7 @@ def main():
                 #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
                 vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
                 v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
-                    
+                
                 lines.append(id_line)
                 pred_arr_times.append(arr_time_mins)
                 direction.append(p['attributes']['direction_id'])
@@ -123,12 +123,12 @@ def main():
                 vtype.append(train_type(id_line,v['attributes']))
                 vstatus.append(v['attributes']['current_status'])
                 vstation.append(get_stop(v['relationships']['stop']['data']['id']))
-                if dP.show_location:
-                    location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
+                if dP.show_location == True:
+                    location.append(dP.geolocator.reverse(str(v['attributes']['latitude'])+','+str(v['attributes']['longitude'])))
             except:
                 pass
             dummy += 1
-           
+    
     print("-----------------------------------------------------------------------------------------")
     print(name+"\t\t",current_time)
     print("-----------------------------------------------------------------------------------------")
