@@ -2,7 +2,6 @@
 if ($_POST['station'] and $_POST['lines']) {
     $station = $_POST['station'];
     $lines = $_POST['lines'];
-
     $command = "./mbta_signs.py $station $lines 2>&1";
     $output = shell_exec($command);
 } else if($_POST['lines']) {
@@ -12,6 +11,10 @@ if ($_POST['station'] and $_POST['lines']) {
 } else if($_POST['station']) {
     $station = $_POST['station'];
     $command = "./mbta_lines.py $station 2>&1";
+    $output = shell_exec($command);
+} else if($_POST['vehicle']) {
+    $vehicle = $_POST['vehicle'];
+    $command = "./mbta_vehicles_id.py $vehicle 2>&1";
     $output = shell_exec($command);
 }
 ?>
@@ -39,6 +42,7 @@ if ($_POST['station'] and $_POST['lines']) {
 <form name = "MBTA_sign" action = "index.php" method = "POST">
 <br>Station =  <input name="station" value="<?php echo $station;?>" placeholder="station" size="12" maxlength="30" type="text" id="Entry">
 <br><br>Lines =  <input name="lines" value="<?php echo $lines;?>" placeholder="lines" size="12" maxlength="50" type="text" id="Entry">
+<br><br>Vehicle ID =  <input name="vehicle" value="<?php echo $vehicle;?>" placeholder="vehicle id" size="12" maxlength="50" type="text" id="Entry">
 <br><br><input type = "submit" name ="submit" id="Submit" value = "Submit">
 </form>
 
