@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS
-* v2024.01.05.1
+* v2024.01.10.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -67,9 +67,13 @@ def main():
     # get coord/name station
     ############################
     
-    #s = dP.st.get(route=line, id=station)['data'][0]['attributes']
-    st_url = dP.url+"stops/?filter[route]="+line[0]+"&filter[id]="+station
-    s = requests.get(st_url).json()['data'][0]['attributes']
+    try:
+        #s = dP.st.get(route=line, id=station)['data'][0]['attributes']
+        st_url = dP.url+"stops/?filter[route]="+line[0]+"&filter[id]="+station
+        s = requests.get(st_url).json()['data'][0]['attributes']
+    except:
+        print("\n These lines do not stop at this station\n")
+        return
     
     la = str(s['latitude'])
     lo = str(s['longitude'])
