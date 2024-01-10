@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS
-* v2024.01.10.1
+* v2024.01.10.2
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -122,7 +122,7 @@ def main():
                     vstatus.append(v['attributes']['current_status'])
                     vstation.append(get_stop(v['relationships']['stop']['data']['id']))
                     if dP.show_location:
-                        location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
+                        location.append(dP.geolocator.reverse(str(v['attributes']['latitude'])+','+str(v['attributes']['longitude'])))
                 except:
                     pass
                 dummy += 1
