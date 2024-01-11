@@ -3,18 +3,22 @@ if ($_POST['station'] and $_POST['lines']) {
     $station = $_POST['station'];
     $lines = $_POST['lines'];
     $command = "./mbta_signs.py $station $lines 2>&1";
+    #$command = "python3 mbta_signs.cpython-310.pyc $station $lines 2>&1";
     $output = shell_exec($command);
 } else if($_POST['lines']) {
     $lines = $_POST['lines'];
     $command = "./mbta_stops.py $lines 2>&1";
+    //$command = "python3 mbta_stops.cpython-310.pyc $lines 2>&1";
     $output = shell_exec($command);
 } else if($_POST['station']) {
     $station = $_POST['station'];
     $command = "./mbta_lines.py $station 2>&1";
+    #$command = "python3 mbta_lines.cpython-310.pyc $station 2>&1";
     $output = shell_exec($command);
 } else if($_POST['vehicle']) {
     $vehicle = $_POST['vehicle'];
     $command = "./mbta_vehicles_id.py $vehicle 2>&1";
+    //$command = "python3 mbta_vehicles_id.cpython-310.pyc $vehicle 2>&1";
     $output = shell_exec($command);
 }
 ?>
