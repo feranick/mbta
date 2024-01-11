@@ -12,6 +12,10 @@ if ($_POST['station'] and $_POST['lines']) {
     $station = $_POST['station'];
     $command = "./mbta_lines.py $station 2>&1";
     $output = shell_exec($command);
+} else if($_POST['vehicle']) {
+    $vehicle = $_POST['vehicle'];
+    $command = "./mbta_vehicles_id.py $vehicle 2>&1";
+    $output = shell_exec($command);
 }
 ?>
 
