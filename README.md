@@ -15,3 +15,4 @@ More to come.
 
 Wheel packages: prepare it using `python -m build` in each of the folders. Install wheel using pip.
 
+Web versions require apache2, php, libapache2-mod-php
