@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script language="javascript" >
+function getCoords(){
+    latitude = 0;
+    longitude = 0;
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+        console.log("1");
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+        })
+    } else {
+        console.log("Geolocation is not supported by this browser.");
+        }
+        return latitude, longitude;}
+
+</script>
+
+<input type="submit" id="Status" value="Update Status" onclick=getCoords() />
+
+</body>
+</html>
