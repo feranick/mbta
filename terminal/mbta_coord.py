@@ -63,7 +63,12 @@ def main():
     #for s in st:
     #    name.append(s['attributes']['name'])
     
-    name = st[0]['attributes']['name']
+    if len(st) > 0:
+        print("\n Number of stations in this area:",len(st))
+        name = st[0]['attributes']['name']
+    else:
+        print("\n No station found")
+        name = ""
     print(name)
     
     print("\n")
