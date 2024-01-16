@@ -23,9 +23,9 @@ if ($_POST['station'] and $_POST['lines']) {
 }
 ?>
 
+<!DOCTYPE html>
 <html manifest="mbta.manifest">
 <html><head>
-
 <title>MBTA</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
     <!-- Eliminate url and button bars if added to home screen -->
@@ -39,9 +39,9 @@ if ($_POST['station'] and $_POST['lines']) {
 <body>
 
 <form name = "MBTA" action = "index.php" method = "POST">
-<br>Station =  <input name="station" value="<?php echo $station;?>" placeholder="station" size="12" maxlength="30" type="text" id="Entry">
-<br><br>Lines =  <input name="lines" value="<?php echo $lines;?>" placeholder="lines" size="12" maxlength="50" type="text" id="Entry">
-<br><br>Vehicle ID =  <input name="vehicle" value="<?php echo $vehicle;?>" placeholder="vehicle id" size="12" maxlength="50" type="text" id="Entry">
+<br>Station =  <input name="station" value="<?php echo $station;?>" placeholder="station" size="12" maxlength="30" type="text" id="EntryStation">
+<br><br>Lines =  <input name="lines" value="<?php echo $lines;?>" placeholder="lines" size="12" maxlength="50" type="text" id="EntryLines">
+<br><br>Vehicle ID =  <input name="vehicle" value="<?php echo $vehicle;?>" placeholder="vehicle id" size="12" maxlength="50" type="text" id="EntryVehicle">
 <br><br><input type = "submit" name ="submit" id="Submit" value = "Submit">
 </form>
 

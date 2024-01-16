@@ -13,8 +13,8 @@ body{
  text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
  font-weight: bold;}
 
-#Submit{ 
- -webkit-border-image:url(btn.png) 0 4 0 4 stretch stretch; 
+input[type="submit"]{
+ -webkit-border-image:url(btn.png) 0 4 0 4 stretch stretch;
  font-size: 20px;
  font-weight: bold;
  color: #FFFFFF; 
@@ -26,7 +26,7 @@ body{
  right:0px; 
  padding: 0px;}
  
-#Entry{ font-size: 16px;
+input[type="text"]{ font-size: 16px;
   -webkit-border-radius: 20px;
   width: 200px; 
   border: 1px black solid;}
