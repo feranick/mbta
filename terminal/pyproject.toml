@@ -9,7 +9,7 @@ include = [
 
 [project]
 name = "MBTA_Tools"
-version = "v2024.01.10.2"
+version = "v2024.01.15.1"
 dependencies = ["geopy"]
 authors = [{ name="Nicola Ferralis", email="ferralis@mit.edu" },]
 description = "Display MBTA arrivals at stations"
@@ -30,6 +30,7 @@ classifiers = [
 
 [project.scripts]
 mbta_signs = "mbta_signs:mbta_signs"
+mbta_coord = "mbta_coord:mbta_coord
 mbta_alerts = "mbta_alerts:mbta_alerts"
 mbta_lines = "mbta_lines:mbta_lines"
 mbta_routes_id = "mbta_routes_id:mbta_routes_id"
