@@ -26,7 +26,7 @@ if ($_POST['station'] and $_POST['lines']) {
 <!DOCTYPE html>
 <html manifest="mbta.manifest">
 <html><head>
-<title>MBTA</title>
+<title>MBTA Tools</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
     <!-- Eliminate url and button bars if added to home screen -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
