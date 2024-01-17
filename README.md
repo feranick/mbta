@@ -3,7 +3,7 @@ Visualize mbta times/info
 
 Refer to individual scripts for details. 
 
-Requires `pymbta3, geopy`
+Requires `geopy`
 
 Three versions available: 
 
