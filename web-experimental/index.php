@@ -63,6 +63,8 @@ function getCoords(){
         document.cookie = 'latitude='.concat(latitude.toString());
         document.cookie = 'longitude='.concat(longitude.toString());
         }
+function waitWarn() {
+    document.getElementById("warnLabel").innerHTML = "Please wait...";}
 </script>
 
 <form name = "MBTA" action = "index.php" method = "POST">
@@ -72,5 +74,6 @@ function getCoords(){
 <br><br><input type = "submit" name ="submit" id="Submit" value = "Submit">
 <input type = "submit" name ="coord" id="Coord" value = "Coord" onclick = "getCoords()" />
 </form>
+<label id="warnLabel"></label>
 <text_area><pre><?php echo $output; ?></pre></text_area>
 </body></html>
