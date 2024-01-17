@@ -30,7 +30,7 @@ classifiers = [
 
 [project.scripts]
 mbta_signs = "mbta_signs:mbta_signs"
-mbta_coord = "mbta_coord:mbta_coord
+mbta_coord = "mbta_coord:mbta_coord"
 mbta_alerts = "mbta_alerts:mbta_alerts"
 mbta_lines = "mbta_lines:mbta_lines"
 mbta_routes_id = "mbta_routes_id:mbta_routes_id"
