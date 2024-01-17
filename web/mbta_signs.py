@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS WEB
-* v2024.01.17.1
+* v2024.01.17.2
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -100,6 +100,8 @@ def main():
     vtype = []
     location = []
     lines = []
+    vla = []
+    vlo = []
     
     for p in pred:
         now = datetime.now()
@@ -122,23 +124,27 @@ def main():
                 status.append(p['attributes']['status'])
                 vtype.append(train_type(id_line,v['attributes']))
                 vstatus.append(v['attributes']['current_status'])
-                vstation.append(get_stop(v['relationships']['stop']['data']['id']))
+                vstation.append(v['relationships']['stop']['data']['id'])
+                vla.append(str(v['attributes']['latitude']))
+                vlo.append(str(v['attributes']['longitude']))
                 if dP.show_location == True:
-                    location.append(dP.geolocator.reverse(str(v['attributes']['latitude'])+','+str(v['attributes']['longitude'])))
+                    location.append(dP.geolocator.reverse(vla[-1]+','+vlo[-1]))
             except:
                 pass
             dummy += 1
     
     print("-----------------------------------------------------------------------------------------")
-    print(name+"\t\t",current_time)
+    print(mk_stop_URL(station)+"\t\t",current_time)
     print("-----------------------------------------------------------------------------------------")
     for j in range(0,len(direction)):
         if direction[j] == 0:
-            arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j])
+            arr_sign(pred_arr_times[j], mk_coord_URL(get_dir(lines[j],direction[j]), vla[j], vlo[j]),
+                vstatus[j], mk_stop_URL(vstation[j]), vtype[j], lines[j])
     print("-----------------------------------------------------------------------------------------")
     for j in range(0,len(direction)):
         if direction[j] == 1:
-            arr_sign(pred_arr_times[j], get_dir(lines[j], direction[j]), vstatus[j], vstation[j], vtype[j], lines[j])
+            arr_sign(pred_arr_times[j], mk_coord_URL(get_dir(lines[j],direction[j]), vla[j], vlo[j]),
+                vstatus[j], mk_stop_URL(vstation[j]), vtype[j], lines[j])
     print("-----------------------------------------------------------------------------------------")
     print("\n")
     if dP.show_location:
@@ -238,7 +244,13 @@ def find_routes_through_station(station):
     
     print(" ".join(lines),"\n")
     return lines
-        
+    
+def mk_coord_URL(a, la, lo):
+    return "<a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>"
+
+def mk_stop_URL(station):
+    return "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+get_stop(station)+"</a>"
+
 #************************************
 # Lists the stations and lines
 #************************************

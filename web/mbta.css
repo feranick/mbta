@@ -37,6 +37,21 @@ text_area{
     margin-top: 100px; height:30px; text-align: left;
 }
 
+a:link {
+  color: white;
+}
+a:visited {
+  color: green;
+}
+
+a:hover {
+  color: hotpink;
+}
+
+a:active {
+  color: blue;
+}
+
 .hidden{display: none;}
 .show{display: block;}
 .done{opacity:0.2;}

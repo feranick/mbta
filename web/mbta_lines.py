@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA LINES
-* v2024.01.10.1
+* v2024.01.17.2
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -34,7 +34,7 @@ def main():
     dP = Conf()
     
     station = sys.argv[1]
-    print("Lines running through "+station+":\n")
+    print("Lines running through "+mk_stop_URL(station)+":\n")
     lines = []
 
     #st = Stops(key=dP.key)
@@ -51,12 +51,27 @@ def main():
         
         for s in stops:
             if s['id'] == station:
-                lines.append(r['id'])
+                lines.append(mk_line_URL(r['id']))
         #print(s['id'],s['attributes']['name'])
         #tmp_stops.append(s['id'])
     print(" ".join(lines))
     print("\n")
 
+
+def mk_line_URL(line):
+    return "<a href=\"https://mbta.com/schedules/"+line+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+line+"</a>"
+    
+def mk_stop_URL(station):
+    return "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+get_stop(station)+" ("+station+")</a>"
+    
+def get_stop(stop):
+    st_url = Conf().url+"stops/?filter[id]="+stop
+    s = requests.get(st_url,headers=Conf().headers).json()['data']
+    if len(s) == 0:
+        return ''
+    else:
+        return s[0]['attributes']['name']
+    
 #************************************
 ''' Main initialization routine '''
 #************************************

@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA STOPS
-* v2024.01.10.1
+* v2024.01.17.2
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -36,12 +36,14 @@ def main():
     st_url = dP.url+"stops/?filter[route]="+sys.argv[1]
     stops = requests.get(st_url,headers=dP.headers).json()['data']
 
-    print("\n ID, name")
+    print("\n  ID, name")
     for s in stops:
-        #print(s)
-        print(" ",s['id'],s['attributes']['name'])
+        #print(" ",s['id'],s['attributes']['name'])
+        print(" "+s['id']+"  <a href=\"https://mbta.com/stops/"+s['id']+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+s['attributes']['name']+"</a>")
     print("\n")
     
+    
+
 #************************************
 ''' Main initialization routine '''
 #************************************
