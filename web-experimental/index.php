@@ -46,6 +46,7 @@ if ($_POST['station'] and $_POST['lines']) {
 
 <script language="javascript" >
 function getCoords(){
+    document.getElementById("warnLabel").innerHTML = "Please wait...";}
     latitude = 123;
     longitude = 123;
     if (navigator.geolocation) {
@@ -63,9 +64,6 @@ function getCoords(){
         document.cookie = 'latitude='.concat(latitude.toString());
         document.cookie = 'longitude='.concat(longitude.toString());
         }
-function waitWarn() {
-    document.getElementById("warnLabel").innerHTML = "Please wait...";}
-</script>
 
 <form name = "MBTA" action = "index.php" method = "POST">
 <br>Station =  <input name="station" placeholder="station" size="12" maxlength="30" type="text" id="EntryStation">
