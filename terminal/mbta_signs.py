@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS
-* v2024.01.10.2
+* v2024.01.17.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -106,9 +106,9 @@ def main():
             if id_line in line and dummy < dP.list_items:
                 try:
                     arr_time = p['attributes']['arrival_time'][11:][:8]
-                    dep_time = p['attributes']['departure_time'][11:][:8]
+                    #dep_time = p['attributes']['departure_time'][11:][:8]
                     arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
-                    dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
+                    #dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
                 
                     #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
                     vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']

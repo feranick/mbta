@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA LEDS SIMPLE
-* v2024.01.10.1
+* v2024.01.17.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -98,9 +98,9 @@ def main():
             if p['relationships']['route']['data']['id'] == line and dummy < dP.list_items:
                 try:
                     arr_time = p['attributes']['arrival_time'][11:][:8]
-                    dep_time = p['attributes']['departure_time'][11:][:8]
+                    #dep_time = p['attributes']['departure_time'][11:][:8]
                     arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
-                    dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
+                    #dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
                     pred_arr_times.append(arr_time_mins)
                     direction.append(p['attributes']['direction_id'])
                 except:
