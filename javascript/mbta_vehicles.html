@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script language="javascript" >
+
+url = "https://api-v3.mbta.com/";
+key = "91944a70800a4bcabe1b9c2023d12fc8";
+headers = {'Accept': 'application/json', 'x-api-key': key};
+
+function setURL() {
+    const vh = document.getElementById("vehicle").value;
+    //document.getElementById("results").innerHTML = url+"vehicles/?filter[label]="+vh;
+    return url+"vehicles/?filter[label]="+vh;
+}
+
+function getFeed() {
+    fetch(setURL(), {
+    method: "GET",
+    headers: headers
+    }).then(res => res.json())
+    .then(data => prediction(data['data']))
+    .catch(err => console.log(err));
+    }
+
+function prediction(v) {
+    label = "\n Vehicle label: "+document.getElementById("vehicle").value+"\n";
+    for (let i=0; i<v.length; i++) {
+    label += " Vehicle ID: "+v[i]['id']+"\n";
+    label += "\n Route: "+v[i]['relationships']['route']['data']['id']+" \n";
+    label += " Occupancy:"+v[i]['attributes']['occupancy_status']+" \n";
+    label += " Longitude:"+v[i]['attributes']['longitude']+" \n";
+    label += " Latitude: "+v[i]['attributes']['latitude']+" \n";
+    label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
+    label += " Speed: "+v[i]['attributes']['speed']+" \n";
+    label += " Vehicle type: "+v[i]['id']+" \n";
+    label += " Stop sequence:"+v[i]['attributes']['current_stop_sequence']+" \n";
+    label += " Status: "+v[i]['attributes']['current_status']+" "+v[i]['relationships']['stop']['data']['id']+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
+    //label += " Status: ",v[i]['attributes']['current_status'],mk_stop_URL(v['relationships']['stop']['data']['id']),"(Stop ID:",v['relationships']['stop']['data']['id']+")")
+    
+    label += " Time:"+v[i]['attributes']['updated_at']+" \n";
+    }
+    document.getElementById("results").innerHTML = "".concat(...label);}
+    
+</script>
+<input name="station" id="vehicle" value="1859" size="12" maxlength="12" type="text">
+<input type="submit" id="Search" value="Search Vehicle ID" onclick=getFeed() />
+<br><textarea id="results" rows="50" cols="100" ></textarea>
+
+
+</body>
+</html>
