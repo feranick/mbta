@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA VEHICLES ID
-* v2024.01.17.2
+* v2024.01.19.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -96,7 +96,7 @@ def get_type(v):
             return "Bus: D40LF"
         elif a in range(1200,1224):
             return "Bus: DE60LFR"
-        elif a in range(1400,1459) or a in range(1775,1924) or a in range(3000,3005) or a in range(1925,2118) or a in range(3100,3159) or a in range(3200,3359):
+        elif a in range(1400,1459) or a in range(1775,2118) or a in range(3000,3005) or a in range(3100,3359):
             return "Bus: XDE40 - Hybrid"
         elif a in range(1600,1774):
             return "Bus: XN40 - GNG"
