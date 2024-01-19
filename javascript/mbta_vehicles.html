@@ -14,15 +14,6 @@ function setURL() {
     return url+"vehicles/?filter[label]="+vh;
 }
 
-function getFeed() {
-    fetch(setURL(), {
-    method: "GET",
-    headers: headers
-    }).then(res => res.json())
-    .then(data => prediction(data['data']))
-    .catch(err => console.log(err));
-    }
-
 function prediction(v) {
     label = "\n Vehicle label: "+document.getElementById("vehicle").value+"\n";
     for (let i=0; i<v.length; i++) {
@@ -42,9 +33,25 @@ function prediction(v) {
     }
     document.getElementById("results").innerHTML = "".concat(...label);}
     
+function getFeed(url) {
+    fetch(url, {
+    method: "GET",
+    headers: headers
+    }).then(res => res.json())
+    .then(data => funcSelector(data,0))
+    .catch(err => console.log(err));
+    }
+
+function funcSelector(a, t) {
+    if (t=="0") {
+        prediction(a['data']);
+    } else {
+        document.getElementById("results").innerHTML = "1234";
+    }}
+    
 </script>
 <input name="station" id="vehicle" value="1859" size="12" maxlength="12" type="text">
-<input type="submit" id="Search" value="Search Vehicle ID" onclick=getFeed() />
+<input type="submit" id="Search" value="Search Vehicle ID" onclick=getFeed(setURL()) />
 <br><textarea id="results" rows="50" cols="100" ></textarea>
 
 
