@@ -45,7 +45,7 @@ function waitWarn() {
 
 <form name = "MBTA" action = "index.php" method = "POST">
 <br>Station =  <input name="station" value="<?php echo $station;?>" placeholder="station" size="12" maxlength="30" type="text" id="EntryStation">
-<br><br>Lines =  <input name="lines" value="<?php echo $lines;?>" placeholder="lines" size="12" maxlength="50" type="text" id="EntryLines">
+<br><br>Lines =  <input name="lines" value="<?php echo $lines;?>" placeholder="lines" size="12" maxlength="200" type="text" id="EntryLines">
 <br><br>Vehicle ID =  <input name="vehicle" value="<?php echo $vehicle;?>" placeholder="vehicle id" size="12" maxlength="50" type="text" id="EntryVehicle">
 <br><br><input type = "submit" name ="submit" id="Submit" value = "Submit" onclick=waitWarn()>
 <label id="warnLabel"></label>
