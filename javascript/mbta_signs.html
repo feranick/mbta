@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MBTA Tools</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+    <!-- Eliminate url and button bars if added to home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- Choose how to handle the phone status bar -->
+    <meta names="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="stylesheet" type="text/css" href="mbta.css" media="screen" />
+    <!-- Choose a 57x57 image for the icon -->
+    <link rel="apple-touch-icon" href="mbta_icon.png" />
+    
+</head>
+<body>
+
+<script language="javascript" >
+
+url = "https://api-v3.mbta.com/";
+key = "91944a70800a4bcabe1b9c2023d12fc8";
+headers = {'Accept': 'application/json', 'x-api-key': key};
+
+async function getFeed(url) {
+    const res = await fetch(url);
+    const obj = await res.json();
+    return obj;
+    }
+
+async function prediction() {
+    station = document.getElementById("station").value;
+    line = document.getElementById("line").value;
+    
+    rt_url = url+"routes/?filter[id]="+line;
+    dest = (await getFeed(rt_url))['data'][0]['attributes']['direction_destinations'];
+    
+    pr_url = url+"predictions/?filter[stop]="+station;
+    p = (await getFeed(pr_url))['data'];
+    console.log(p);
+    
+    if (p.length ==0) {
+        print(" No data currently available. Try again later.");
+        print(" Possible cause: no service available at this time\n");
+        return;
+        }
+    
+    dummy = 0;
+    
+    label0 = []
+    label1 = []
+    pred_arr_times = [];
+    direction = [];
+    status = [];
+    vstation = [];
+    vstatus = [];
+    vtype = [];
+    locat = [];
+    lines = [];
+    vla = [];
+    vlo = [];
+    
+    let now = new Date(Date.now());
+    current_time = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
+    document.getElementById("results").innerHTML = "TEST";
+    
+    for (let i=0; i<p.length; i++) {
+        id_line = p[i]['relationships']['route']['data']['id'];
+        
+        //if id_line in line and dummy < dP.list_items:
+        if (id_line == line || dummy < 20) {
+            if (p[i]['attributes']['arrival_time'] !== null) {
+                arr_time = p[i]['attributes']['arrival_time'].slice(11).slice(0,-6);
+                arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60;
+            } else {
+                arr_time_mins = "";
+                }
+            
+            if (p[i]['attributes']['direction_id'] == 0) {
+                label0 += dest[p[i]['attributes']['direction_id']]+" \t";
+                label0 += get_sign(arr_time_mins);
+                label0 += p[i]['attributes']['status']+"\n";
+                }
+                
+            if (p[i]['attributes']['direction_id'] == 1) {
+                label1 += dest[p[i]['attributes']['direction_id']]+" \t";
+                label1 += get_sign(arr_time_mins);
+                label1 += p[i]['attributes']['status']+"\n";
+                }
+            
+            //vh_url = url+"vehicles/?filter[id]="+p[i]['relationships']['vehicle']['data']['id'];
+            //v = (await getFeed(vh_url))['data'][0];
+            //await sleep(100);
+            //vtype += train_type(id_line,v['attributes']));
+            /*
+            vtype += "";
+            vstatus += v['attributes']['current_status'];
+            vstation += v['relationships']['stop']['data']['id'];
+            vla += v['attributes']['latitude'];
+            vlo += v['attributes']['longitude'];
+            */
+            dummy += 1;
+            
+        } else {
+            console.log("Fail");
+        }}
+    
+    
+    label = "<hr>"+label0+"<hr>"+label1+"<hr>";
+    document.getElementById("results").innerHTML = "".concat(...label);
+    }
+    
+function get_sec(time_str) {
+    t = time_str.split(':');
+    return t[0] * 3600 + t[1] * 60 + t[2]*1;
+    }
+
+function get_sign(a) {
+    if (a > 0 && a < 0.5) {return " ARR\t";}
+    if (a >= 0.5 && a < 1) {return " APPR\t";}
+    if (a >= 1) {return Math.round(a)+" min\t";}
+    if (a > -10 && a <= 0) {return "BOARD \t";}
+    if (a <= -10) {return "--- \t";}
+    }
+    
+function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+   }
+
+</script>
+<input name="station" id="station" size="12" type="text" placeholder="Station" value="place-knncl">
+<input name="line" id="line" size="12" type="text" placeholder="Line" value="Red">
+<br><br><input type="submit" id="Search" value="Search Station ID" onclick=prediction() />
+<br><text_area id="results" rows="50" cols="100" ></text_area>
+
+
+</body>
+</html>
