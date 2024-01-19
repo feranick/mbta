@@ -8,15 +8,23 @@ url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 headers = {'Accept': 'application/json', 'x-api-key': key};
 
-function setURL() {
-    const vh = document.getElementById("vehicle").value;
-    //document.getElementById("results").innerHTML = url+"vehicles/?filter[label]="+vh;
-    return url+"vehicles/?filter[label]="+vh;
-}
+async function getFeed(url) {
+    const res = await fetch(url);
+    const obj = await res.json();
+    return obj;
+    }
 
-function prediction(v) {
+async function prediction() {
+    v_url = url+"vehicles/?filter[label]="+document.getElementById("vehicle").value;
+    v = (await getFeed(v_url))['data'];
+    
+    if (v.length > 0) {
     label = "\n Vehicle label: "+document.getElementById("vehicle").value+"\n";
+    
     for (let i=0; i<v.length; i++) {
+    st_url = url+"stops/?filter[id]="+v[i]['relationships']['stop']['data']['id'];
+    station = (await getFeed(st_url))['data'][0]['attributes']['name'];
+    
     label += " Vehicle ID: "+v[i]['id']+"\n";
     label += "\n Route: "+v[i]['relationships']['route']['data']['id']+" \n";
     label += " Occupancy:"+v[i]['attributes']['occupancy_status']+" \n";
@@ -24,34 +32,48 @@ function prediction(v) {
     label += " Latitude: "+v[i]['attributes']['latitude']+" \n";
     label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
     label += " Speed: "+v[i]['attributes']['speed']+" \n";
-    label += " Vehicle type: "+v[i]['id']+" \n";
-    label += " Stop sequence:"+v[i]['attributes']['current_stop_sequence']+" \n";
-    label += " Status: "+v[i]['attributes']['current_status']+" "+v[i]['relationships']['stop']['data']['id']+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
-    //label += " Status: ",v[i]['attributes']['current_status'],mk_stop_URL(v['relationships']['stop']['data']['id']),"(Stop ID:",v['relationships']['stop']['data']['id']+")")
+    label += " Vehicle type: "+get_type(v[i]['id'])+" \n";
+    label += "\n Stop sequence:"+v[i]['attributes']['current_stop_sequence']+" \n";
+    label += " Status: "+v[i]['attributes']['current_status']+" "+station+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
+    label += " Time: "+v[i]['attributes']['updated_at']+" \n";
+    label += mk_coord_URL(v[i]['attributes']['latitude'], v[i]['attributes']['longitude']);
     
-    label += " Time:"+v[i]['attributes']['updated_at']+" \n";
     }
-    document.getElementById("results").innerHTML = "".concat(...label);}
+    document.getElementById("results").innerHTML = "".concat(...label);
     
-function getFeed(url) {
-    fetch(url, {
-    method: "GET",
-    headers: headers
-    }).then(res => res.json())
-    .then(data => funcSelector(data,0))
-    .catch(err => console.log(err));
+    }  else {
+        document.getElementById("results").innerHTML = "\n No Vehicle with this ID currently in operation\n";}
     }
 
-function funcSelector(a, t) {
-    if (t=="0") {
-        prediction(a['data']);
-    } else {
-        document.getElementById("results").innerHTML = "1234";
-    }}
+function get_type(v) {
+    if (v[0] == "y") {
+        a = v.slice(1)*1;
+        if (a>=600 && a<=910) {
+            return "Bus: D40LF";}
+        else if (a>=1200 && a<=1224) {
+            return "Bus: DE60LFR";}
+        else if ((a>=1400 && a<=1459) || (a>=1775 && a<=2118) || (a>=3000 && a<=3005) || (a>=3100 && a<=3359) || (a>=1200 && a<=1224)) {
+            return "Bus: XDE40 - Hybrid";}
+        else if (a>=1600 && a<=1774) {
+            return "Bus: XN40 - GNG";}
+        else if ((a>=1250 && a<=1294) || (a>=1300 && a<=1344)) {
+            return "Bus: XDE60 - Hybrid";}
+        else if (a>=1295 && a<=1299) {
+            return "Bus: XE60 - Battery Electric";}
+        else {
+            return "Bus: N/A";}
+        }
+    else {
+        return "N/A";}
+    }
     
+function mk_coord_URL(la, lo) {
+    return "<a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">Current Location</a>";
+    }
+
 </script>
-<input name="station" id="vehicle" value="1859" size="12" maxlength="12" type="text">
-<input type="submit" id="Search" value="Search Vehicle ID" onclick=getFeed(setURL()) />
+<input name="station" id="vehicle" value="1889" size="12" maxlength="12" type="text">
+<input type="submit" id="Search" value="Search Vehicle ID" onclick=prediction() />
 <br><textarea id="results" rows="50" cols="100" ></textarea>
 
 
