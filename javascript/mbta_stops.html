@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MBTA Tools</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+    <!-- Eliminate url and button bars if added to home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- Choose how to handle the phone status bar -->
+    <meta names="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="stylesheet" type="text/css" href="mbta.css" media="screen" />
+    <!-- Choose a 57x57 image for the icon -->
+    <link rel="apple-touch-icon" href="mbta_icon.png" />
+    
+</head>
+<body>
+
+<script language="javascript" >
+
+url = "https://api-v3.mbta.com/";
+key = "91944a70800a4bcabe1b9c2023d12fc8";
+headers = {'Accept': 'application/json', 'x-api-key': key};
+
+async function getFeed(url) {
+    const res = await fetch(url);
+    const obj = await res.json();
+    return obj;
+    }
+
+async function prediction() {
+    rt_url = url+"stops/?filter[route]="+document.getElementById("route").value;
+    r = (await getFeed(rt_url))['data'];
+    
+    if (r.length > 0) {
+    label = "\n Route: <a href=\"https://mbta.com/schedules/"+document.getElementById("route").value+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+document.getElementById("route").value+"</a>\n";
+    label += "\n Station ID\tName\n";
+    
+    for (let i=0; i<r.length; i++) {
+        label += " "+r[i]['id']+"\t<a href=\"https://mbta.com/stops/"+r[i]['id']+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+r[i]['attributes']['name']+"</a>\n";
+    }
+    document.getElementById("results").innerHTML = "".concat(...label);
+    
+    }  else {
+        document.getElementById("results").innerHTML = "\n No Routes with this ID currently in operation\n";}
+    }
+
+</script>
+<input name="route" id="route" size="12" maxlength="12" type="text" placeholder="Route">
+<br><br><input type="submit" id="Search" value="Search Station ID" onclick=prediction() />
+<br><text_area id="results" rows="50" cols="100" ></text_area>
+
+
+</body>
+</html>

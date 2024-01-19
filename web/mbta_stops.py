@@ -42,8 +42,6 @@ def main():
         print(" "+s['id']+"  <a href=\"https://mbta.com/stops/"+s['id']+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+s['attributes']['name']+"</a>")
     print("\n")
     
-    
-
 #************************************
 ''' Main initialization routine '''
 #************************************
