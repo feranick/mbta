@@ -1,5 +1,18 @@
 <!DOCTYPE html>
 <html>
+<head>
+<title>MBTA Tools</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+    <!-- Eliminate url and button bars if added to home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- Choose how to handle the phone status bar -->
+    <meta names="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="stylesheet" type="text/css" href="mbta.css" media="screen" />
+    <!-- Choose a 57x57 image for the icon -->
+    <link rel="apple-touch-icon" href="mbta_icon.png" />
+    
+</head>
 <body>
 
 <script language="javascript" >
@@ -22,19 +35,20 @@ async function prediction() {
     label = "\n Vehicle label: "+document.getElementById("vehicle").value+"\n";
     
     for (let i=0; i<v.length; i++) {
-    st_url = url+"stops/?filter[id]="+v[i]['relationships']['stop']['data']['id'];
+    stat_id = v[i]['relationships']['stop']['data']['id']
+    st_url = url+"stops/?filter[id]="+stat_id;
     station = (await getFeed(st_url))['data'][0]['attributes']['name'];
     
     label += " Vehicle ID: "+v[i]['id']+"\n";
     label += "\n Route: "+v[i]['relationships']['route']['data']['id']+" \n";
     label += " Occupancy:"+v[i]['attributes']['occupancy_status']+" \n";
     label += " Longitude:"+v[i]['attributes']['longitude']+" \n";
-    label += " Latitude: "+v[i]['attributes']['latitude']+" \n";
     label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
+    label += " Latitude: "+v[i]['attributes']['latitude']+" \n";
     label += " Speed: "+v[i]['attributes']['speed']+" \n";
     label += " Vehicle type: "+get_type(v[i]['id'])+" \n";
     label += "\n Stop sequence:"+v[i]['attributes']['current_stop_sequence']+" \n";
-    label += " Status: "+v[i]['attributes']['current_status']+" "+station+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
+    label += " Status: "+v[i]['attributes']['current_status']+" "+mk_stop_URL(stat_id, station)+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
     label += " Time: "+v[i]['attributes']['updated_at']+" \n";
     label += mk_coord_URL(v[i]['attributes']['latitude'], v[i]['attributes']['longitude']);
     
@@ -68,13 +82,17 @@ function get_type(v) {
     }
     
 function mk_coord_URL(la, lo) {
-    return "<a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">Current Location</a>";
+    return "\n <a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">Current Location</a>";
+    }
+
+function mk_stop_URL(a, b) {
+    return "<a href=\"https://mbta.com/stops/"+a+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+b+"</a>"
     }
 
 </script>
 <input name="station" id="vehicle" value="1889" size="12" maxlength="12" type="text">
-<input type="submit" id="Search" value="Search Vehicle ID" onclick=prediction() />
-<br><textarea id="results" rows="50" cols="100" ></textarea>
+<br><br><input type="submit" id="Search" value="Search Vehicle ID" onclick=prediction() />
+<br><text_area id="results" rows="50" cols="100" ></text_area>
 
 
 </body>
