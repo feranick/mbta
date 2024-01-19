@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA LINES
-* v2024.01.04.1
+* v2024.01.19.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -32,31 +32,18 @@ class Conf:
 #************************************
 def main():
     dP = Conf()
-    print("\n Find which line runs through a specific station:")
-    station = input()
-    print("\n Searching for routes passing through:",station,"\n Please wait...\n")
+    
+    station = sys.argv[1]
+    print("\n Lines running through "+station+":\n")
     lines = []
 
-    #st = Stops(key=dP.key)
-    #rt = Routes(key=dP.key)
-    #routes = rt.get()['data']
-    
-    routes = requests.get(dP.url+"routes/",headers=dP.headers).json()['data']
-    
+    routes = requests.get(dP.url+"routes/?filter[stop]="+station,headers=dP.headers).json()['data']    
     for r in routes:
-        #print(r['id'], r['attributes']['short_name'])
-        #stops = st.get(route=r['id'])['data']
-        st_url = dP.url+"stops/?filter[route]="+r['id']
-        stops = requests.get(st_url,headers=dP.headers).json()['data']
-        
-        for s in stops:
-            if s['id'] == station:
-                lines.append(r['id'])
-        #print(s['id'],s['attributes']['name'])
-        #tmp_stops.append(s['id'])
-    print(lines)
+        lines.append(r['id'])
+    
+    print(" ".join(lines))
     print("\n")
-
+    
 #************************************
 ''' Main initialization routine '''
 #************************************

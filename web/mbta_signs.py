@@ -234,20 +234,9 @@ def train_type(line, veh):
     
 def find_routes_through_station(station):
     lines = []
-    #st = Stops(key=Conf().key)
-    #rt = Routes(key=Conf().key)
-    #routes = rt.get()['data']
-    routes = requests.get(Conf().url+"routes/",headers=Conf().headers).json()['data']
-    
-    print("\n Searching for routes passing through:",station,"\n Please wait...\n")
+    routes = requests.get(Conf().url+"routes/?filter[stop]="+station,headers=Conf().headers).json()['data']
     for r in routes:
-    
-        #stops = st.get(route=r['id'])['data']
-        stops = requests.get(Conf().url+"stops/?filter[route]="+r['id'],headers=Conf().headers).json()['data']
-        
-        for s in stops:
-            if s['id'] == station:
-                lines.append(r['id'])
+        lines.append(r['id'])
     
     print(" ".join(lines),"\n")
     return lines
