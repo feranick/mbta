@@ -41,11 +41,10 @@ async function prediction() {
     vh_url = url+"vehicles/";
     vh = (await getFeed(vh_url))['data'];
     
-    // This is to be replaced by a get_stop()
     st_url = url+"stops/?filter[id]="+station;
     s = (await getFeed(st_url))['data'];
     statName = s[0]['attributes']['name'];
-    //
+    
     
     rt_url = url+"routes/?filter[id]="+line;
     dest = (await getFeed(rt_url))['data'][0]['attributes']['direction_destinations'];
@@ -158,15 +157,6 @@ function get_sign(a) {
     if (a >= 1) {return Math.round(a)+" min\t";}
     if (a > -10 && a <= 0) {return "BOARD \t";}
     if (a <= -10) {return "--- \t";}
-    }
-    
-async function get_stop(stop) {
-    st_url = url+"stops/?filter[id]="+stop;
-    s = (await getFeed(st_url))['data'];
-    sleep(100);
-    console.log(s[0]['attributes']['name']);
-    if (s.length == 0) {return '';}
-    else {return s[0]['attributes']['name'];}
     }
 
 function mk_coord_URL(a, la, lo) {
