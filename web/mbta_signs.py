@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS WEB
-* v2024.01.17.3
+* v2024.01.19.2
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -83,7 +83,8 @@ def main():
     print("\n")
 
     #pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
-    pr_url = dP.url+"predictions/?filter[longitude]="+lo+"&filter[latitude]="+la+"&filter[radius]=0.001"
+    #pr_url = dP.url+"predictions/?filter[longitude]="+lo+"&filter[latitude]="+la+"&filter[radius]=0.001"
+    pr_url = dP.url+"predictions/?filter[stop]="+station;
     pred = requests.get(pr_url,headers=dP.headers).json()['data']
         
     if len(pred) == 0:
