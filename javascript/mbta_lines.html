@@ -32,8 +32,6 @@ async function prediction() {
     st_url = url+"stops/?filter[id]="+stat_id;
     station = (await getFeed(st_url))['data'][0]['attributes']['name'];
     
-    
-    
     rt_url = url+"routes/?filter[stop]="+stat_id;
     console.log(rt_url);
     r = (await getFeed(rt_url))['data'];

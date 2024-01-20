@@ -27,10 +27,10 @@ async function getFeed(url) {
     return obj;
     }
 
-async function prediction() {
+async function signs() {
     label = []
     station = document.getElementById("station").value;
-    line = document.getElementById("line").value;
+    line = document.getElementById("route").value;
     
     // This is to be replaced by a get_stop()
     st_url = url+"stops/?filter[id]="+station;
@@ -86,21 +86,18 @@ async function prediction() {
             if (p[i]['relationships']['vehicle']['data']['id'] !== null) {
                 vh_url = url+"vehicles/?filter[id]="+p[i]['relationships']['vehicle']['data']['id'];
                 v = (await getFeed(vh_url))['data'][0];
-                await sleep(500);
-                console.log(v['attributes']['latitude']+v['attributes']['longitude']);
+                await sleep(600);
                 vtype.push(train_type(id_line,v['attributes']));
                 //vtype += "";
                 vstatus.push(v['attributes']['current_status']);
                 vstation.push(v['relationships']['stop']['data']['id']);
                 vst_url = url+"stops/?filter[id]="+v['relationships']['stop']['data']['id'];
-                console.log(v['relationships']['stop']['data']['id']);
                 vstatName.push("<a href=\"https://mbta.com/stops/"+vstation[i]+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+(await getFeed(vst_url))['data'][0]['attributes']['name']+"</a>");
-                await sleep(500);
+                await sleep(600);
                 vla.push(v['attributes']['latitude']);
                 vlo.push(v['attributes']['longitude']);
                 }
             dummy += 1;
-            console.log(dummy);
             
         } else {
             console.log("Fail");
@@ -121,6 +118,98 @@ async function prediction() {
     label += "<hr>";
     //label = "<hr>"+label0+"<hr>"+label1+"<hr>";
     document.getElementById("results").innerHTML = "".concat(...label);
+    }
+    
+async function routes() {
+    stat_id = document.getElementById("station").value;
+    st_url = url+"stops/?filter[id]="+stat_id;
+    station = (await getFeed(st_url))['data'][0]['attributes']['name'];
+    
+    rt_url = url+"routes/?filter[stop]="+stat_id;
+    r = (await getFeed(rt_url))['data'];
+    
+    if (r.length > 0) {
+        label = "\n Routes going through: <a href=\"https://mbta.com/stops/"+stat_id+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+station+" ("+stat_id+")</a>\n\n ";
+        
+        for (let i=0; i<r.length; i++) {
+            label += r[i]['id']+" ";
+            }
+    
+    document.getElementById("results").innerHTML = "".concat(...label);
+    
+    }  else {
+        document.getElementById("results").innerHTML = "\n No Routes currently in operation through this station\n";}
+    }
+    
+async function stops() {
+    rt_url = url+"stops/?filter[route]="+document.getElementById("route").value;
+    r = (await getFeed(rt_url))['data'];
+        
+    if (r.length > 0) {
+    label = "\n Route: <a href=\"https://mbta.com/schedules/"+document.getElementById("route").value+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+document.getElementById("route").value+"</a>\n";
+    label += "\n Station ID\tName\n";
+    
+    for (let i=0; i<r.length; i++) {
+        label += " "+r[i]['id']+"\t<a href=\"https://mbta.com/stops/"+r[i]['id']+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+r[i]['attributes']['name']+"</a>\n";
+    }
+    document.getElementById("results").innerHTML = "".concat(...label);
+    
+    }  else {
+        document.getElementById("results").innerHTML = "\n No Routes with this ID currently in operation\n";}
+    }
+    
+async function vehicle() {
+    v_url = url+"vehicles/?filter[label]="+document.getElementById("vehicle").value;
+    v = (await getFeed(v_url))['data'];
+    
+    if (v.length > 0) {
+    label = "\n Vehicle label: "+document.getElementById("vehicle").value+"\n";
+    
+    for (let i=0; i<v.length; i++) {
+    stat_id = v[i]['relationships']['stop']['data']['id']
+    st_url = url+"stops/?filter[id]="+stat_id;
+    station = (await getFeed(st_url))['data'][0]['attributes']['name'];
+    
+    label += " Vehicle ID: "+v[i]['id']+"\n";
+    label += "\n Route: "+v[i]['relationships']['route']['data']['id']+" \n";
+    label += " Occupancy:"+v[i]['attributes']['occupancy_status']+" \n";
+    label += " Longitude:"+v[i]['attributes']['longitude']+" \n";
+    label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
+    label += " Latitude: "+v[i]['attributes']['latitude']+" \n";
+    label += " Speed: "+v[i]['attributes']['speed']+" \n";
+    label += " Vehicle type: "+get_type(v[i]['id'])+" \n";
+    label += "\n Stop sequence:"+v[i]['attributes']['current_stop_sequence']+" \n";
+    label += " Status: "+v[i]['attributes']['current_status']+" "+mk_stop_URL(stat_id, station)+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
+    label += " Time: "+v[i]['attributes']['updated_at']+" \n";
+    label += mk_coord_URL("Current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude']);
+    
+    }
+    document.getElementById("results").innerHTML = "".concat(...label);
+    
+    }  else {
+        document.getElementById("results").innerHTML = "\n No Vehicle with this ID currently in operation\n";}
+    }
+
+function get_type(v) {
+    if (v[0] == "y") {
+        a = v.slice(1)*1;
+        if (a>=600 && a<=910) {
+            return "Bus: D40LF";}
+        else if (a>=1200 && a<=1224) {
+            return "Bus: DE60LFR";}
+        else if ((a>=1400 && a<=1459) || (a>=1775 && a<=2118) || (a>=3000 && a<=3005) || (a>=3100 && a<=3359) || (a>=1200 && a<=1224)) {
+            return "Bus: XDE40 - Hybrid";}
+        else if (a>=1600 && a<=1774) {
+            return "Bus: XN40 - GNG";}
+        else if ((a>=1250 && a<=1294) || (a>=1300 && a<=1344)) {
+            return "Bus: XDE60 - Hybrid";}
+        else if (a>=1295 && a<=1299) {
+            return "Bus: XE60 - Battery Electric";}
+        else {
+            return "Bus: N/A";}
+        }
+    else {
+        return "N/A";}
     }
     
 function get_sec(time_str) {
@@ -152,7 +241,11 @@ function mk_coord_URL(a, la, lo) {
 function mk_line_URL(line) {
     return "<a href=\"https://mbta.com/schedules/"+line+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+line+"</a>";
     }
-    
+
+function mk_stop_URL(a, b) {
+    return "<a href=\"https://mbta.com/stops/"+a+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+b+"</a>"
+    }
+
 function train_type(line, veh) {
     if (veh['carriages'][0]['label'] !== null) {
         code = veh['carriages'][0]['label'];}
@@ -190,8 +283,12 @@ function sleep(ms) {
 
 </script>
 <input name="station" id="station" size="12" type="text" placeholder="Station" value="place-knncl">
-<input name="line" id="line" size="12" type="text" placeholder="Line" value="Red">
-<br><br><input type="submit" id="Search" value="Search Station ID" onclick=prediction() />
+  <input type="submit" id="SearchStation" value="Search Stations" onclick=stops() />
+<br><input name="route" id="route" size="12" type="text" placeholder="Line" value="Red">
+ <input type="submit" id="SearchLines" value="Search Lines" onclick=routes() />
+<br><input name="vehicle" id="vehicle" size="12" type="text" placeholder="Vehicle ID">
+ <input type="submit" id="SearchVehicle" value="Search Vehicle" onclick=vehicle() />
+<br><br><input type="submit" id="Search" value="Current Trains" onclick=signs() />
 <br><text_area id="results" rows="50" cols="100" ></text_area>
 
 

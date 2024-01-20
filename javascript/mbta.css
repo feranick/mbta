@@ -34,7 +34,7 @@ input[type="text"]{ font-size: 16px;
 text_area{
     position: left;
     font-size: 16px;
-    margin-top: 0px; height:10px; text-align: left;
+    margin-top: 20px; height:20px; text-align: left;
     white-space: pre-wrap;
 }
 
