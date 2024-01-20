@@ -31,6 +31,12 @@ async function prediction() {
     station = document.getElementById("station").value;
     line = document.getElementById("line").value;
     
+    // This is to be replaced by a get_stop()
+    st_url = url+"stops/?filter[id]="+station;
+    s = (await getFeed(st_url))['data'];
+    statName = s[0]['attributes']['name'];
+    //
+    
     rt_url = url+"routes/?filter[id]="+line;
     dest = (await getFeed(rt_url))['data'][0]['attributes']['direction_destinations'];
     
@@ -46,8 +52,7 @@ async function prediction() {
     
     dummy = 0;
     
-    label0 = []
-    label1 = []
+    label = []
     pred_arr_times = [];
     direction = [];
     status = [];
@@ -61,7 +66,7 @@ async function prediction() {
     
     let now = new Date(Date.now());
     current_time = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
-    document.getElementById("results").innerHTML = "TEST";
+    document.getElementById("results").innerHTML = "Please wait...";
     
     for (let i=0; i<p.length; i++) {
         id_line = p[i]['relationships']['route']['data']['id'];
@@ -75,38 +80,42 @@ async function prediction() {
                 arr_time_mins = "";
                 }
             
-            if (p[i]['attributes']['direction_id'] == 0) {
-                label0 += dest[p[i]['attributes']['direction_id']]+" \t";
-                label0 += get_sign(arr_time_mins);
-                label0 += p[i]['attributes']['status']+"\n";
+            direction += p[i]['attributes']['direction_id'];
+            pred_arr_times.push(get_sign(arr_time_mins));
+
+            if (p[i]['relationships']['vehicle']['data']['id'] !== null) {
+                vh_url = url+"vehicles/?filter[id]="+p[i]['relationships']['vehicle']['data']['id'];
+                v = (await getFeed(vh_url))['data'][0];
+                await sleep(300);
+                console.log(v['attributes']['latitude']+v['attributes']['longitude']);
+                vtype.push(train_type(id_line,v['attributes']));
+                //vtype += "";
+                vstatus.push(v['attributes']['current_status']);
+                vstation.push(v['relationships']['stop']['data']['id']);
+                vla.push(v['attributes']['latitude']);
+                vlo.push(v['attributes']['longitude']);
                 }
-                
-            if (p[i]['attributes']['direction_id'] == 1) {
-                label1 += dest[p[i]['attributes']['direction_id']]+" \t";
-                label1 += get_sign(arr_time_mins);
-                label1 += p[i]['attributes']['status']+"\n";
-                }
-            
-            //vh_url = url+"vehicles/?filter[id]="+p[i]['relationships']['vehicle']['data']['id'];
-            //v = (await getFeed(vh_url))['data'][0];
-            //await sleep(100);
-            //vtype += train_type(id_line,v['attributes']));
-            /*
-            vtype += "";
-            vstatus += v['attributes']['current_status'];
-            vstation += v['relationships']['stop']['data']['id'];
-            vla += v['attributes']['latitude'];
-            vlo += v['attributes']['longitude'];
-            */
             dummy += 1;
             
         } else {
             console.log("Fail");
         }}
-    
-    
-    label = "<hr>"+label0+"<hr>"+label1+"<hr>";
+    label += "<hr>";
+    label += mk_stop_URL(station, statName)+"\t\t"+current_time+"\n";
+    label += "<hr>";
+    for (let j=0; j<direction.length; j++) {
+        if (p[j]['attributes']['direction_id'] == 0) {
+        label += dest[p[j]['attributes']['direction_id']]+"\t"+pred_arr_times[j]+"\t"+vtype[j]+"\t"+line+"\t\t"+vstatus[j]+"\t"+vstation[j]+"\n";
+        }}
+    label += "<hr>";
+    for (let j=0; j<direction.length; j++) {
+        if (p[j]['attributes']['direction_id'] == 1) {
+        label += dest[p[j]['attributes']['direction_id']]+"\t"+pred_arr_times[j]+"\t"+vtype[j]+"\t"+line+"\t\t"+vstatus[j]+"\t"+vstation[j]+"\n";
+        }}
+    label += "<hr>";
+    //label = "<hr>"+label0+"<hr>"+label1+"<hr>";
     document.getElementById("results").innerHTML = "".concat(...label);
+    console.log(get_stop(station));
     }
     
 function get_sec(time_str) {
@@ -121,6 +130,58 @@ function get_sign(a) {
     if (a > -10 && a <= 0) {return "BOARD \t";}
     if (a <= -10) {return "--- \t";}
     }
+    
+async function get_stop(stop) {
+    st_url = url+"stops/?filter[id]="+stop;
+    s = (await getFeed(st_url))['data'];
+    sleep(100);
+    console.log(s[0]['attributes']['name']);
+    if (s.length == 0) {return '';}
+    else {return s[0]['attributes']['name'];}
+    }
+
+function mk_coord_URL(a, la, lo) {
+    return "<a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>";
+    }
+
+function mk_stop_URL(station, statName) {
+    return "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statName+"</a>";
+    }
+    
+function mk_line_URL(line) {
+    return "<a href=\"https://mbta.com/schedules/"+line+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+line+"</a>";
+    }
+    
+function train_type(line, veh) {
+    if (veh['carriages'][0]['label'] !== null) {
+        code = veh['carriages'][0]['label'];}
+    else {
+        code = veh['label'];}
+    if (line == "Red") {
+        if (code < 1800) {
+            return "O1";}
+        if (code >= 1800 && code < 1900) {
+            return "O2";}
+        if (code >= 1900) {
+            return "N";}
+        }
+    if (line == "Orange") {
+        if (code < 1400) {
+            return "O";}
+        if (code >= 1400) {
+            return "N";}
+        }
+    if (line.slice(0,5) == "Green") {
+        if (code < 3900) {
+            return "O";}
+        if (code >= 3900) {
+            return "N";}
+        }
+    if (line.slice(0,2) == "CR") {
+        return "CR";}
+    else {
+        return str(code);}
+        }
     
 function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
