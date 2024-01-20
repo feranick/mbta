@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS
-* v2024.01.19.2
+* v2024.01.20.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -64,19 +64,25 @@ def main():
             line.append(sys.argv[i])
     
     ############################
-    # get coord/name station
+    # get all stops/vehicles
     ############################
+    st_url = dP.url+"stops/"
+    stops = requests.get(st_url).json()['data']
     
+    vh_url = dP.url+"vehicles/"
+    vh = requests.get(vh_url,headers=dP.headers).json()['data']
+    
+    ############################
+    # get name station
+    ############################
     try:
         #s = dP.st.get(route=line, id=station)['data'][0]['attributes']
-        st_url = dP.url+"stops/?filter[route]="+line[0]+"&filter[id]="+station
-        s = requests.get(st_url).json()['data'][0]['attributes']
+        strt_url = dP.url+"stops/?filter[route]="+line[0]+"&filter[id]="+station
+        s = requests.get(strt_url).json()['data'][0]['attributes']
     except:
         print("\n These lines do not stop at this station\n")
         return
     
-    la = str(s['latitude'])
-    lo = str(s['longitude'])
     name = s['name']
     print("\n")
 
@@ -113,18 +119,22 @@ def main():
                     #dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
                 
                     #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
-                    vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
-                    v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
+                    #vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
+                    #v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
                     
                     lines.append(id_line)
                     pred_arr_times.append(arr_time_mins)
                     direction.append(p['attributes']['direction_id'])
                     status.append(p['attributes']['status'])
-                    vtype.append(train_type(id_line,v['attributes']))
-                    vstatus.append(v['attributes']['current_status'])
-                    vstation.append(get_stop(v['relationships']['stop']['data']['id']))
-                    if dP.show_location:
-                        location.append(dP.geolocator.reverse(str(v['attributes']['latitude'])+','+str(v['attributes']['longitude'])))
+                    for v in vh:
+                        if v['id'] == p['relationships']['vehicle']['data']['id']:
+                            vtype.append(train_type(id_line,v['attributes']))
+                            vstatus.append(v['attributes']['current_status'])
+                            vstation.append(get_stop(v['relationships']['stop']['data']['id']))
+                            vla.append(str(v['attributes']['latitude']))
+                            vlo.append(str(v['attributes']['longitude']))
+                            if dP.show_location == True:
+                                location.append(dP.geolocator.reverse(vla[-1]+','+vlo[-1]))
                 except:
                     pass
                 dummy += 1
