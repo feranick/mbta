@@ -28,6 +28,7 @@ async function getFeed(url) {
     }
 
 async function prediction() {
+    label = []
     station = document.getElementById("station").value;
     line = document.getElementById("line").value;
     
@@ -42,17 +43,15 @@ async function prediction() {
     
     pr_url = url+"predictions/?filter[stop]="+station;
     p = (await getFeed(pr_url))['data'];
-    console.log(p);
     
     if (p.length ==0) {
-        print(" No data currently available. Try again later.");
-        print(" Possible cause: no service available at this time\n");
+        label += "\n No data currently available. Try again later.\n";
+        label += " Possible cause: no service available at this time\n";
+        document.getElementById("results").innerHTML = "".concat(...label);
         return;
         }
     
     dummy = 0;
-    
-    label = []
     pred_arr_times = [];
     direction = [];
     status = [];
@@ -115,7 +114,6 @@ async function prediction() {
     label += "<hr>";
     //label = "<hr>"+label0+"<hr>"+label1+"<hr>";
     document.getElementById("results").innerHTML = "".concat(...label);
-    console.log(get_stop(station));
     }
     
 function get_sec(time_str) {
