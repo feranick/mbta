@@ -94,6 +94,7 @@ async function prediction() {
             lines.push(id_line);
             direction += p[i]['attributes']['direction_id'];
             pred_arr_times.push(get_sign(arr_time_mins));
+            
 
             if (p[i]['relationships']['vehicle']['data']['id'] !== null) {
                 for (let j=0; j<vh.length; j++) {
@@ -105,13 +106,12 @@ async function prediction() {
                 vstatus.push(v['attributes']['current_status']);
                 vstation.push(v['relationships']['stop']['data']['id']);
                 vst_url = url+"stops/?filter[id]="+v['relationships']['stop']['data']['id'];
-                
                 for (let j=0; j<stops.length; j++) {
-                    if (stops[j]['id'] == vstation[i]) {
+                    if (stops[j]['id'] == v['relationships']['stop']['data']['id']) {
                         statName = stops[j]['attributes']['name'];
                     }
                 }
-                vstatName.push("<a href=\"https://mbta.com/stops/"+vstation[i]+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statName+"</a>");
+                vstatName.push("<a href=\"https://mbta.com/stops/"+v['relationships']['stop']['data']['id']+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statName+"</a>");
                 vla.push(v['attributes']['latitude']);
                 vlo.push(v['attributes']['longitude']);
                 }
@@ -125,12 +125,12 @@ async function prediction() {
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (p[j]['attributes']['direction_id'] == 0) {
-        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(lines[j],vtype[j])+"\t"+mk_line_URL(line)+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
+        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (p[j]['attributes']['direction_id'] == 1) {
-        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(id_line,vtype[j])+"\t"+mk_line_URL(line)+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
+        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(id_line,vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
     document.getElementById("results").innerHTML = "".concat(...label);
@@ -191,8 +191,8 @@ function sleep(ms) {
    }
 
 </script>
-<input name="station" id="station" size="12" type="text" placeholder="Station" value="place-knncl">
-<input name="route" id="route" size="12" type="text" placeholder="Line" value="Red Orange">
+<input name="station" id="station" size="12" type="text" placeholder="Station" value="place-rugg">
+<input name="route" id="route" size="12" type="text" placeholder="Line" value="Orange">
 <br><br><input type="submit" id="Search" value="Search Station ID" onclick=prediction() />
  <label id="warnLabel"></label>
 <br><text_area id="results" rows="50" cols="100" ></text_area>
