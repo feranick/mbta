@@ -124,13 +124,15 @@ async function prediction() {
     label += "\t\t"+current_time+"\n";
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
-        if (p[j]['attributes']['direction_id'] == 0) {
-        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
+        if (direction[j] == 0) {
+        console.log(direction[j]);
+        label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
-        if (p[j]['attributes']['direction_id'] == 1) {
-        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(id_line,vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
+        if (direction[j] == 1) {
+        console.log(direction[j]);
+        label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(id_line,vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
     document.getElementById("results").innerHTML = "".concat(...label);
