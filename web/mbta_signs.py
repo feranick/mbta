@@ -261,7 +261,6 @@ def mk_coord_URL(a, la, lo):
     return "<a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>"
 
 def mk_stop_URL(station, stops):
-    print(station)
     return "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+get_stop(station, stops)+"</a>"
     
 def mk_line_URL(line):
