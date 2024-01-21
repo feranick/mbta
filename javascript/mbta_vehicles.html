@@ -27,8 +27,14 @@ async function getFeed(url) {
     return obj;
     }
 
-async function prediction() {
-    v_url = url+"vehicles/?filter[label]="+document.getElementById("vehicle").value;
+function prediction() {
+    id = document.getElementById("vehicle").value;
+    get_vehicle(id);
+    }
+    
+async function get_vehicle(id) {
+    //v_url = url+"vehicles/?filter[label]="+document.getElementById("vehicle").value;
+    v_url = url+"vehicles/?filter[label]="+id;
     v = (await getFeed(v_url))['data'];
     
     if (v.length > 0) {

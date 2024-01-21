@@ -97,7 +97,7 @@ async function signs() {
                         v = vh[j];
                     }
                 }
-                vtype.push(train_type(id_line,v['attributes']));
+                vtype.push(v['attributes']);
                 vstatus.push(v['attributes']['current_status']);
                 vstation.push(v['relationships']['stop']['data']['id']);
                 vst_url = url+"stops/?filter[id]="+v['relationships']['stop']['data']['id'];
@@ -112,7 +112,6 @@ async function signs() {
                 vlo.push(v['attributes']['longitude']);
                 }
             dummy += 1;
-            
         } else {
             console.log("Fail");
         }}
@@ -122,12 +121,12 @@ async function signs() {
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (p[j]['attributes']['direction_id'] == 0) {
-        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vtype[j]+"\t"+mk_line_URL(line)+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
+        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(id_line,vtype[j])+"\t"+mk_line_URL(line)+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (p[j]['attributes']['direction_id'] == 1) {
-        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vtype[j]+"\t"+mk_line_URL(line)+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
+        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(id_line,vtype[j])+"\t"+mk_line_URL(line)+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
     document.getElementById("results").innerHTML = "".concat(...label);
@@ -175,10 +174,16 @@ async function stops() {
         document.getElementById("results").innerHTML = "\n No Routes with this ID currently in operation\n";}
     document.getElementById("warnLabel").innerHTML = "";
     }
+
+function vehicle() {
+    id = document.getElementById("vehicle").value;
+    get_vehicle(id);
+    }
     
-async function vehicle() {
+async function get_vehicle(id) {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
-    v_url = url+"vehicles/?filter[label]="+document.getElementById("vehicle").value;
+    //v_url = url+"vehicles/?filter[label]="+document.getElementById("vehicle").value;
+    v_url = url+"vehicles/?filter[label]="+id;
     v = (await getFeed(v_url))['data'];
     
     if (v.length > 0) {
