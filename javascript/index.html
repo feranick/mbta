@@ -28,6 +28,7 @@ async function getFeed(url) {
     }
 
 async function signs() {
+    document.getElementById("warnLabel").innerHTML = "Please wait...";
     label = []
     station = document.getElementById("station").value;
     line = document.getElementById("route").value;
@@ -43,8 +44,7 @@ async function signs() {
     
     st_url = url+"stops/?filter[id]="+station;
     s = (await getFeed(st_url))['data'];
-    statName = s[0]['attributes']['name'];
-    
+    statNameCurr = s[0]['attributes']['name'];
     
     rt_url = url+"routes/?filter[id]="+line;
     dest = (await getFeed(rt_url))['data'][0]['attributes']['direction_destinations'];
@@ -92,23 +92,15 @@ async function signs() {
             pred_arr_times.push(get_sign(arr_time_mins));
 
             if (p[i]['relationships']['vehicle']['data']['id'] !== null) {
-                //vh_url = url+"vehicles/?filter[id]="+p[i]['relationships']['vehicle']['data']['id'];
-                //v = (await getFeed(vh_url))['data'][0];
-                //await sleep(500);
-                //console.log(v['attributes']['latitude']+v['attributes']['longitude']);
-                
-                console.log(vh.length);
                 for (let j=0; j<vh.length; j++) {
                     if (vh[j]['id'] == p[i]['relationships']['vehicle']['data']['id']) {
                         v = vh[j];
                     }
                 }
                 vtype.push(train_type(id_line,v['attributes']));
-                //vtype += "";
                 vstatus.push(v['attributes']['current_status']);
                 vstation.push(v['relationships']['stop']['data']['id']);
                 vst_url = url+"stops/?filter[id]="+v['relationships']['stop']['data']['id'];
-                console.log(v['relationships']['stop']['data']['id']);
                 
                 for (let j=0; j<stops.length; j++) {
                     if (stops[j]['id'] == vstation[i]) {
@@ -120,30 +112,30 @@ async function signs() {
                 vlo.push(v['attributes']['longitude']);
                 }
             dummy += 1;
-            console.log(dummy);
             
         } else {
             console.log("Fail");
         }}
     label += "<hr>";
-    label += "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statName+"</a>";
+    label += "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statNameCurr+"</a>";
     label += "\t\t"+current_time+"\n";
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (p[j]['attributes']['direction_id'] == 0) {
-        label += dest[p[j]['attributes']['direction_id']]+"\t"+pred_arr_times[j]+"\t"+vtype[j]+"\t"+line+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
+        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vtype[j]+"\t"+mk_line_URL(line)+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (p[j]['attributes']['direction_id'] == 1) {
-        label += dest[p[j]['attributes']['direction_id']]+"\t"+pred_arr_times[j]+"\t"+vtype[j]+"\t"+line+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
+        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vtype[j]+"\t"+mk_line_URL(line)+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
-    //label = "<hr>"+label0+"<hr>"+label1+"<hr>";
     document.getElementById("results").innerHTML = "".concat(...label);
+    document.getElementById("warnLabel").innerHTML = "";
     }
     
 async function routes() {
+    document.getElementById("warnLabel").innerHTML = "Please wait...";
     stat_id = document.getElementById("station").value;
     st_url = url+"stops/?filter[id]="+stat_id;
     station = (await getFeed(st_url))['data'][0]['attributes']['name'];
@@ -162,9 +154,11 @@ async function routes() {
     
     }  else {
         document.getElementById("results").innerHTML = "\n No Routes currently in operation through this station\n";}
+    document.getElementById("warnLabel").innerHTML = "";
     }
     
 async function stops() {
+    document.getElementById("warnLabel").innerHTML = "Please wait...";
     rt_url = url+"stops/?filter[route]="+document.getElementById("route").value;
     r = (await getFeed(rt_url))['data'];
         
@@ -179,9 +173,11 @@ async function stops() {
     
     }  else {
         document.getElementById("results").innerHTML = "\n No Routes with this ID currently in operation\n";}
+    document.getElementById("warnLabel").innerHTML = "";
     }
     
 async function vehicle() {
+    document.getElementById("warnLabel").innerHTML = "Please wait...";
     v_url = url+"vehicles/?filter[label]="+document.getElementById("vehicle").value;
     v = (await getFeed(v_url))['data'];
     
@@ -211,6 +207,7 @@ async function vehicle() {
     
     }  else {
         document.getElementById("results").innerHTML = "\n No Vehicle with this ID currently in operation\n";}
+    document.getElementById("warnLabel").innerHTML = "";
     }
 
 function get_type(v) {
@@ -252,7 +249,6 @@ async function get_stop(stop) {
     st_url = url+"stops/?filter[id]="+stop;
     s = (await getFeed(st_url))['data'];
     sleep(100);
-    console.log(s[0]['attributes']['name']);
     if (s.length == 0) {return '';}
     else {return s[0]['attributes']['name'];}
     }
@@ -312,6 +308,7 @@ function sleep(ms) {
 <br><input name="vehicle" id="vehicle" size="12" type="text" placeholder="Vehicle ID">
  <input type="submit" id="SearchVehicle" value="Search Vehicle" onclick=vehicle() />
 <br><br><input type="submit" id="Search" value="Current Trains" onclick=signs() />
+ <label id="warnLabel"></label>
 <br><text_area id="results" rows="50" cols="100" ></text_area>
 
 
