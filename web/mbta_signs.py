@@ -134,7 +134,7 @@ def main():
                     if v['id'] == p['relationships']['vehicle']['data']['id']:
                         vtype.append(train_type(id_line,v['attributes']))
                         vstatus.append(v['attributes']['current_status'])
-                        vstation.append(get_stop(v['relationships']['stop']['data']['id'], stops))
+                        vstation.append(v['relationships']['stop']['data']['id'])
                         vla.append(str(v['attributes']['latitude']))
                         vlo.append(str(v['attributes']['longitude']))
                         if dP.show_location == True:
@@ -261,6 +261,7 @@ def mk_coord_URL(a, la, lo):
     return "<a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>"
 
 def mk_stop_URL(station, stops):
+    print(station)
     return "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+get_stop(station, stops)+"</a>"
     
 def mk_line_URL(line):
