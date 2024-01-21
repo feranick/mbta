@@ -145,19 +145,19 @@ def main():
     
     #print("-----------------------------------------------------------------------------------------")
     print("<hr>")
-    print(mk_stop_URL(station)+"\t\t",current_time)
+    print(mk_stop_URL(station, stops)+"\t\t",current_time)
     #print("-----------------------------------------------------------------------------------------")
     print("<hr>")
     for j in range(0,len(direction)):
         if direction[j] == 0:
             arr_sign(pred_arr_times[j], mk_coord_URL(get_dir(lines[j],direction[j]), vla[j], vlo[j]),
-                vstatus[j], mk_stop_URL(vstation[j]), vtype[j], mk_line_URL(lines[j]))
+                vstatus[j], mk_stop_URL(vstation[j],stops), vtype[j], mk_line_URL(lines[j]))
     #print("-----------------------------------------------------------------------------------------")
     print("<hr>")
     for j in range(0,len(direction)):
         if direction[j] == 1:
             arr_sign(pred_arr_times[j], mk_coord_URL(get_dir(lines[j],direction[j]), vla[j], vlo[j]),
-                vstatus[j], mk_stop_URL(vstation[j]), vtype[j], mk_line_URL(lines[j]))
+                vstatus[j], mk_stop_URL(vstation[j],stops), vtype[j], mk_line_URL(lines[j]))
     #print("-----------------------------------------------------------------------------------------")
     print("<hr>")
     print("\n")
@@ -260,8 +260,8 @@ def find_routes_through_station(station):
 def mk_coord_URL(a, la, lo):
     return "<a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>"
 
-def mk_stop_URL(station):
-    return "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+get_stop(station)+"</a>"
+def mk_stop_URL(station, stops):
+    return "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+get_stop(station, stops)+"</a>"
     
 def mk_line_URL(line):
     return "<a href=\"https://mbta.com/schedules/"+line+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+line+"</a>"
