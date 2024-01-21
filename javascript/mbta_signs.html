@@ -31,7 +31,9 @@ async function prediction() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
     label = []
     station = document.getElementById("station").value;
-    line = document.getElementById("route").value;
+    routes = document.getElementById("route").value;
+    
+    line = routes.split(" ");
     
     //############################
     //# get all stops/vehicles
@@ -75,12 +77,13 @@ async function prediction() {
     let now = new Date(Date.now());
     current_time = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
     document.getElementById("results").innerHTML = "Please wait...";
-    
+        
     for (let i=0; i<p.length; i++) {
         id_line = p[i]['relationships']['route']['data']['id'];
         
         //if id_line in line and dummy < dP.list_items:
-        if (id_line == line && dummy < 10) {
+        //if (id_line == line && dummy < 10) {
+        if (line.includes(id_line) == true && dummy < 10) {
             if (p[i]['attributes']['arrival_time'] !== null) {
                 arr_time = p[i]['attributes']['arrival_time'].slice(11).slice(0,-6);
                 arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60;
@@ -88,6 +91,7 @@ async function prediction() {
                 arr_time_mins = "";
                 }
             
+            lines.push(id_line);
             direction += p[i]['attributes']['direction_id'];
             pred_arr_times.push(get_sign(arr_time_mins));
 
@@ -121,7 +125,7 @@ async function prediction() {
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (p[j]['attributes']['direction_id'] == 0) {
-        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(id_line,vtype[j])+"\t"+mk_line_URL(line)+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
+        label += mk_coord_URL(dest[p[j]['attributes']['direction_id']],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(lines[j],vtype[j])+"\t"+mk_line_URL(line)+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
@@ -188,7 +192,7 @@ function sleep(ms) {
 
 </script>
 <input name="station" id="station" size="12" type="text" placeholder="Station" value="place-knncl">
-<input name="route" id="route" size="12" type="text" placeholder="Line" value="Red">
+<input name="route" id="route" size="12" type="text" placeholder="Line" value="Red Orange">
 <br><br><input type="submit" id="Search" value="Search Station ID" onclick=prediction() />
  <label id="warnLabel"></label>
 <br><text_area id="results" rows="50" cols="100" ></text_area>
