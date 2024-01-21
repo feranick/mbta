@@ -266,10 +266,7 @@ function mk_stop_URL(a, b) {
     }
 
 function train_type(line, veh) {
-    if (veh['carriages'][0]['label'] !== null) {
-        code = veh['carriages'][0]['label'];}
-    else {
-        code = veh['carriages']['label'];}
+    code = veh['label'];
     if (line == "Red") {
         if (code < 1800) {
             return "O1";}
@@ -293,7 +290,7 @@ function train_type(line, veh) {
     if (line.slice(0,2) == "CR") {
         return "CR";}
     else {
-        return str(code);}
+        return code;}
         }
     
 function sleep(ms) {

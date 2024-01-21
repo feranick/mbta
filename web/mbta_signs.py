@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS WEB
-* v2024.01.20.2
+* v2024.01.21.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -222,10 +222,7 @@ def get_stop(stop, stops):
     #    return s[0]['attributes']['name']
         
 def train_type(line, veh):
-    try:
-        code = int(veh['carriages'][0]['label'])
-    except:
-        code = int(veh['label'])
+    code = int(veh['label'])
     if line == "Red":
         if code < 1800:
             return "O1"
