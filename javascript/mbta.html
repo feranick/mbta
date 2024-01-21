@@ -30,13 +30,21 @@ async function getFeed(url) {
 async function signs() {
     label = []
     station = document.getElementById("station").value;
-    line = document.getElementById("route").value;
+    line = document.getElementById("line").value;
     
-    // This is to be replaced by a get_stop()
+    //############################
+    //# get all stops/vehicles
+    //############################
+    stops_url = url+"stops/";
+    stops = (await getFeed(stops_url))['data'];
+    
+    vh_url = url+"vehicles/";
+    vh = (await getFeed(vh_url))['data'];
+    
     st_url = url+"stops/?filter[id]="+station;
     s = (await getFeed(st_url))['data'];
     statName = s[0]['attributes']['name'];
-    //
+    
     
     rt_url = url+"routes/?filter[id]="+line;
     dest = (await getFeed(rt_url))['data'][0]['attributes']['direction_destinations'];
@@ -84,20 +92,35 @@ async function signs() {
             pred_arr_times.push(get_sign(arr_time_mins));
 
             if (p[i]['relationships']['vehicle']['data']['id'] !== null) {
-                vh_url = url+"vehicles/?filter[id]="+p[i]['relationships']['vehicle']['data']['id'];
-                v = (await getFeed(vh_url))['data'][0];
-                await sleep(600);
+                //vh_url = url+"vehicles/?filter[id]="+p[i]['relationships']['vehicle']['data']['id'];
+                //v = (await getFeed(vh_url))['data'][0];
+                //await sleep(500);
+                //console.log(v['attributes']['latitude']+v['attributes']['longitude']);
+                
+                console.log(vh.length);
+                for (let j=0; j<vh.length; j++) {
+                    if (vh[j]['id'] == p[i]['relationships']['vehicle']['data']['id']) {
+                        v = vh[j];
+                    }
+                }
                 vtype.push(train_type(id_line,v['attributes']));
                 //vtype += "";
                 vstatus.push(v['attributes']['current_status']);
                 vstation.push(v['relationships']['stop']['data']['id']);
                 vst_url = url+"stops/?filter[id]="+v['relationships']['stop']['data']['id'];
-                vstatName.push("<a href=\"https://mbta.com/stops/"+vstation[i]+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+(await getFeed(vst_url))['data'][0]['attributes']['name']+"</a>");
-                await sleep(600);
+                console.log(v['relationships']['stop']['data']['id']);
+                
+                for (let j=0; j<stops.length; j++) {
+                    if (stops[j]['id'] == vstation[i]) {
+                        statName = stops[j]['attributes']['name'];
+                    }
+                }
+                vstatName.push("<a href=\"https://mbta.com/stops/"+vstation[i]+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statName+"</a>");
                 vla.push(v['attributes']['latitude']);
                 vlo.push(v['attributes']['longitude']);
                 }
             dummy += 1;
+            console.log(dummy);
             
         } else {
             console.log("Fail");
