@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS
-* v2024.01.20.1
+* v2024.01.20.2
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -130,7 +130,7 @@ def main():
                         if v['id'] == p['relationships']['vehicle']['data']['id']:
                             vtype.append(train_type(id_line,v['attributes']))
                             vstatus.append(v['attributes']['current_status'])
-                            vstation.append(get_stop(v['relationships']['stop']['data']['id']))
+                            vstation.append(get_stop(v['relationships']['stop']['data']['id'], stops))
                             vla.append(str(v['attributes']['latitude']))
                             vlo.append(str(v['attributes']['longitude']))
                             if dP.show_location == True:
@@ -188,18 +188,23 @@ def arr_sign(a, b, st, station, type, line):
         print(b,"\t BOARD\t",type,"\t",line,"\t", st, station)
     if a<=-10:
         print(b,"\t ---\t",type,"\t",line,"\t", st, station)
-        
-def get_stop(stop):
+    
+def get_stop(stop, stops):
+    for j in range(len(stops)):
+        if stops[j]['id'] == stop:
+            return stops[j]['attributes']['name']
+    if flag is False:
+        return ""
     #st = Stops(key=Conf().key)
     #s = st.get(route='Red', longitude=lo, latitude=la, radius=0.005)['data']
     #st_url = Conf().url+"stops/?filter[longitude]="+str(lo)+"&filter[latitude]="+str(la)+"&filter[radius]=0.001"
     #st_url = Conf().url+"stops/?filter[route]="+line+"&filter[id]="+stop
-    st_url = Conf().url+"stops/?filter[id]="+stop
-    s = requests.get(st_url,headers=Conf().headers).json()['data']
-    if len(s) == 0:
-        return ''
-    else:
-        return s[0]['attributes']['name']
+    #st_url = Conf().url+"stops/?filter[id]="+stop
+    #s = requests.get(st_url,headers=Conf().headers).json()['data']
+    #if len(s) == 0:
+    #    return ''
+    #else:
+    #    return s[0]['attributes']['name']
         
 def train_type(line, veh):
     try:
