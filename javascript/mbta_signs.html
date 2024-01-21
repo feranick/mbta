@@ -103,8 +103,6 @@ async function prediction() {
                         v = vh[j];
                     }
                 }
-                
-                    
                 vtype.push(train_type(id_line,v['attributes']));
                 //vtype += "";
                 vstatus.push(v['attributes']['current_status']);
@@ -117,7 +115,6 @@ async function prediction() {
                         statName = stops[j]['attributes']['name'];
                     }
                 }
-                
                 vstatName.push("<a href=\"https://mbta.com/stops/"+vstation[i]+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statName+"</a>");
                 vla.push(v['attributes']['latitude']);
                 vlo.push(v['attributes']['longitude']);
