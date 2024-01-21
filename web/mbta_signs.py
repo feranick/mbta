@@ -134,7 +134,7 @@ def main():
                     if v['id'] == p['relationships']['vehicle']['data']['id']:
                         vtype.append(train_type(id_line,v['attributes']))
                         vstatus.append(v['attributes']['current_status'])
-                        vstation.append(get_stop(v['relationships']['stop']['data']['id']))
+                        vstation.append(get_stop(v['relationships']['stop']['data']['id'], stops))
                         vla.append(str(v['attributes']['latitude']))
                         vlo.append(str(v['attributes']['longitude']))
                         if dP.show_location == True:
@@ -203,7 +203,7 @@ def arr_sign(a, b, st, station, type, line):
     if a<=-10:
         print(b,"\t ---\t",type,"\t",line,"\t", st, station)
         
-def get_stop(stop):
+def get_stop(stop, stops):
     flag = False
     for j in range(len(stops)):
         if stops[j]['id'] == stop:
