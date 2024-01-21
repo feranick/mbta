@@ -295,7 +295,8 @@ function train_type(line, veh) {
     if (line.slice(0,2) == "CR") {
         return "CR";}
     else {
-        return code;}
+        //return code;}
+        return "<a href='javascript:get_vehicle(code);'>"+code+'</a>';}
         }
     
 function sleep(ms) {
