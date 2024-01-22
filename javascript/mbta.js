@@ -8,6 +8,53 @@ async function getFeed(url) {
     return obj;
     }
 
+async function getNearbyStations() {
+    /*
+    lat = 0;
+    long = 0;
+    
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+        lat = position.coords.latitude;
+        long = position.coords.longitude;
+        console.log(`Latitude: ${lat}, Longitude: ${long}`);
+        })
+    } else {
+        console.log("Geolocation is not supported by this browser.");
+        }
+    */
+    lat = 42.362491;
+    long = -71.086176;
+    nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]=0.0001";
+    nst = (await getFeed(nst_url))['data'];
+     
+     console.log(nst);
+        
+    if (nst.length == 0) {
+        console.log(" No data currently available. Try again later.");
+        console.log(" Possible cause: no service available at this time\n");
+        return;
+        }
+    
+    var select = document.getElementById("nearbyStations");
+    select.innerHTML = "";
+
+    for(var i = 0; i < nst.length; i++) {
+        var opt = nst[i]['id'];
+        select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nst[i]['id'] + "</option>";
+        get_stop(nst[i]['id']).then((data) => {document.getElementById("nearbyStatName").innerHTML = data;});
+    }
+    }
+    
+async function setNearbyStations() {
+    label = [];
+    select = document.getElementById("nearbyStations");
+    stat_id = select.options[select.selectedIndex].text;
+    document.getElementById("station").value = stat_id;
+    get_stop(stat_id ).then((data) => {document.getElementById("nearbyStatName").innerHTML = data;});
+    getRoutes(stat_id);
+    }
+
 function predSigns() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
     station = document.getElementById("station").value;
@@ -131,7 +178,11 @@ async function predStops() {
     label += "\n Station ID\tName\n";
     
     for (let i=0; i<r.length; i++) {
-        label += " "+r[i]['id']+"\t<a href=\"https://mbta.com/stops/"+r[i]['id']+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+r[i]['attributes']['name']+"</a>\n";
+        //label += " "+r[i]['id'];
+        //label += " <a href=\"#\" onclick=javascript:{document.getElementById('station').value='TEST';}>test</a>";
+        //label += " <a href=\"#\" onclick=javascript:{document.getElementById('station').value='"+r[i]['id']+"';}>"+r[i]['id']+"</a>";
+        label += " <a href=\"#\" onclick=javascript:setStops('"+r[i]['id']+"');>"+r[i]['id']+"</a>";
+        label += "\t<a href=\"https://mbta.com/stops/"+r[i]['id']+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+r[i]['attributes']['name']+"</a>\n";
     }
     document.getElementById("results").innerHTML = "".concat(...label);
     
@@ -139,9 +190,19 @@ async function predStops() {
         document.getElementById("results").innerHTML = "\n No Routes with this ID currently in operation\n";}
     document.getElementById("warnLabel").innerHTML = "";
     }
+    
+function setStops(stop) {
+    document.getElementById('station').value=stop;
+    getRoutes(stop);
+}
 
-async function predRoutes() {
+function predRoutes() {
     stat_id = document.getElementById("station").value;
+    getRoutes(stat_id);
+}
+
+async function getRoutes(stat_id) {
+    label = []
     st_url = url+"stops/?filter[id]="+stat_id;
     station = (await getFeed(st_url))['data'][0]['attributes']['name'];
     
@@ -149,13 +210,13 @@ async function predRoutes() {
     r = (await getFeed(rt_url))['data'];
     
     if (r.length > 0) {
-        label = "\n Routes going through: <a href=\"https://mbta.com/stops/"+stat_id+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+station+" ("+stat_id+")</a>\n\n ";
+        //label = "\n Routes going through: <a href=\"https://mbta.com/stops/"+stat_id+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+station+" ("+stat_id+")</a>\n\n ";
         
         for (let i=0; i<r.length; i++) {
             label += r[i]['id']+" ";
             }
     
-    document.getElementById("results").innerHTML = "".concat(...label);
+    document.getElementById("route").value = "".concat(...label);
     
     }  else {
         document.getElementById("results").innerHTML = "\n No Routes currently in operation through this station\n";}
