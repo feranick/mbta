@@ -8,7 +8,7 @@ async function getFeed(url) {
     return obj;
     }
 
-async function signs() {
+async function predSigns() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
     label = []
     station = document.getElementById("station").value;
@@ -106,13 +106,11 @@ async function signs() {
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (direction[j] == 0) {
-        console.log(direction[j]);
         label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (direction[j] == 1) {
-        console.log(direction[j]);
         label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+train_type(id_line,vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
         }}
     label += "<hr>";
@@ -120,7 +118,7 @@ async function signs() {
     document.getElementById("warnLabel").innerHTML = "";
     }
     
-async function stops() {
+async function predStops() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
     rt_url = url+"stops/?filter[route]="+document.getElementById("route").value;
     r = (await getFeed(rt_url))['data'];
@@ -139,13 +137,12 @@ async function stops() {
     document.getElementById("warnLabel").innerHTML = "";
     }
 
-async function routes() {
+async function predRoutes() {
     stat_id = document.getElementById("station").value;
     st_url = url+"stops/?filter[id]="+stat_id;
     station = (await getFeed(st_url))['data'][0]['attributes']['name'];
     
     rt_url = url+"routes/?filter[stop]="+stat_id;
-    console.log(rt_url);
     r = (await getFeed(rt_url))['data'];
     
     if (r.length > 0) {
@@ -161,7 +158,7 @@ async function routes() {
         document.getElementById("results").innerHTML = "\n No Routes currently in operation through this station\n";}
     }
 
-function vehicle() {
+function predVehicle() {
     id = document.getElementById("vehicle").value;
     get_vehicle(id);
     }
