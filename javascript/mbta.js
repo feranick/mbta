@@ -64,7 +64,7 @@ async function predSigns() {
         
         //if id_line in line and dummy < dP.list_items:
         //if (id_line == line && dummy < 10) {
-        if (line.includes(id_line) == true && dummy < 10) {
+        if (line.includes(id_line) == true && dummy < 10 && p[i]['attributes']['schedule_relationship'] != "CANCELLED") {
             if (p[i]['attributes']['arrival_time'] !== null) {
                 arr_time = p[i]['attributes']['arrival_time'].slice(11).slice(0,-6);
                 arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60;

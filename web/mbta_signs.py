@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS WEB
-* v2024.01.21.1
+* v2024.01.21.3
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -115,7 +115,7 @@ def main():
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
         id_line = p['relationships']['route']['data']['id']
-        if id_line in line and dummy < dP.list_items:
+        if id_line in line and dummy < dP.list_items and p['attributes']['schedule_relationship'] != "CANCELLED":
             try:
                 arr_time = p['attributes']['arrival_time'][11:][:8]
                 #dep_time = p['attributes']['departure_time'][11:][:8]
