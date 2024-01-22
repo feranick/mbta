@@ -27,12 +27,15 @@ async function getFeed(url) {
     return obj;
     }
 
-async function prediction() {
+function prediction() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
-    label = []
     station = document.getElementById("station").value;
     routes = document.getElementById("route").value;
-    
+    getSigns(station, routes);
+}
+
+async function getSigns(station, routes) {
+    label = []
     line = routes.split(" ");
     
     //############################

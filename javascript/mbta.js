@@ -8,12 +8,15 @@ async function getFeed(url) {
     return obj;
     }
 
-async function predSigns() {
+function predSigns() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
-    label = []
     station = document.getElementById("station").value;
     routes = document.getElementById("route").value;
-    
+    getSigns(station, routes);
+}
+
+async function getSigns(station, routes) {
+    label = []
     line = routes.split(" ");
     
     //############################
