@@ -132,7 +132,7 @@ def main():
                 status.append(p['attributes']['status'])
                 for v in vh:
                     if v['id'] == p['relationships']['vehicle']['data']:
-                        vtype.append(train_type(id_line,v['attributes']))
+                        vtype.append(vehicle_type(id_line,v['attributes']))
                         vstatus.append(v['attributes']['current_status'])
                         vstation.append(v['relationships']['stop']['data']['id'])
                         vla.append(str(v['attributes']['latitude']))
@@ -226,7 +226,7 @@ def get_stop(stop, stops):
     #else:
     #    return s[0]['attributes']['name']
         
-def train_type(line, veh):
+def vehicle_type(line, veh):
     code = int(veh['label'])
     if line == "Red":
         if code < 1800:
