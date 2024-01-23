@@ -292,12 +292,21 @@ function get_sec(time_str) {
     }
     
 function get_current_time() {
+
+    function get_dig(a) {
+        if (a<10) {
+        secs = "0"+a;}
+        else {
+        secs = a;}
+        return secs;}
+        
     let now = new Date(Date.now());
     if (now.getSeconds()<10) {
         secs = "0"+now.getSeconds();}
     else {
         secs = now.getSeconds();}
-    return now.getHours()+":"+now.getMinutes()+":"+secs;
+        
+    return get_dig(now.getHours())+":"+get_dig(now.getMinutes())+":"+get_dig(now.getSeconds());
     }
 
 function get_sign(a) {
