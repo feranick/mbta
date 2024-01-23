@@ -107,11 +107,6 @@ async function getSigns(station, routes) {
     current_time = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
     document.getElementById("results").innerHTML = "Please wait...";
     
-    console.log(p.length);
-    for (let i=0; i<p.length; i++) {
-        console.log(i, p[i]['relationships']['vehicle']['data']);
-        }
-    
     for (let i=0; i<p.length; i++) {
         id_line = p[i]['relationships']['route']['data']['id'];
         
