@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS
-* v2024.01.22.1
+* v2024.01.23.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -103,7 +103,10 @@ def main():
         status = []
         vstation = []
         vstatus = []
+        vstatName = []
         vtype = []
+        vlo = []
+        vla = []
         location = []
         lines = []
     
@@ -113,35 +116,40 @@ def main():
             id_line = p['relationships']['route']['data']['id']
             if id_line in line and dummy < dP.list_items and p['attributes']['schedule_relationship'] != "CANCELLED":
                 try:
-                    arr_time = p['attributes']['arrival_time'][11:][:8]
+                    if p['attributes']['arrival_time'] != None:
+                        arr_time = p['attributes']['arrival_time'][11:][:8]
+                        arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
+                    else:
+                        arr_time_mins = -10
+                    
                     #dep_time = p['attributes']['departure_time'][11:][:8]
-                    arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60
                     #dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
-                
-                    #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
-                    #vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
-                    #v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
                     
                     lines.append(id_line)
                     pred_arr_times.append(arr_time_mins)
                     direction.append(p['attributes']['direction_id'])
                     status.append(p['attributes']['status'])
-                    for v in vh:
-                        if v['id'] == p['relationships']['vehicle']['data']:
-                            vtype.append(vehicle_type(id_line,v['attributes']))
-                            vstatus.append(v['attributes']['current_status'])
-                            vstation.append(get_stop(v['relationships']['stop']['data']['id'], stops))
-                            vla.append(str(v['attributes']['latitude']))
-                            vlo.append(str(v['attributes']['longitude']))
-                            if dP.show_location == True:
-                                location.append(dP.geolocator.reverse(vla[-1]+','+vlo[-1]))
+                    
+                    if p['relationships']['vehicle']['data'] != None:
+                        for v in vh:
+                            if v['id'] == p['relationships']['vehicle']['data']['id']:
+                                vtype.append(vehicle_type(id_line,v['attributes']))
+                                vstatus.append(v['attributes']['current_status'])
+                                vstation.append(get_stop(v['relationships']['stop']['data']['id'], stops))
+                                vla.append(str(v['attributes']['latitude']))
+                                vlo.append(str(v['attributes']['longitude']))
+                                if dP.show_location == True:
+                                    location.append(dP.geolocator.reverse(vla[-1]+','+vlo[-1]))
+                    else:
+                        vtype.append("NA")
+                        vstatus.append("")
+                        vstation.append("")
+                        vstatName.append("")
+                        vla.append("")
+                        vlo.append("")
+                    
                 except:
-                    vtype.append("NA")
-                    vstatus.append("")
-                    vstation.append("")
-                    vstatName.append("")
-                    vla.append("")
-                    vlo.append("")
+                   print("Fail...")
                 dummy += 1
            
         print("-----------------------------------------------------------------------------------------")
@@ -212,30 +220,33 @@ def get_stop(stop, stops):
     #    return s[0]['attributes']['name']
         
 def vehicle_type(line, veh):
-    code = int(veh['label'])
-    if line == "Red":
-        if code < 1800:
-            return "O1"
-        if code >= 1800 and code < 1900:
-            return "O2"
-        if code >= 1900:
-            return "N"
-    if line == "Orange":
-        if code < 1400:
-            return "O"
-        if code >= 1400:
-            return "N"
-    if line[:5] == "Green":
-        if code < 3900:
-            return "O"
-        if code >= 3900:
-            return "N"
-    if line[:2] == "CR":
-        return "CR"
-    if code == "NA":
-        return ""
+    if veh['label'] != None:
+        code = int(veh['label'])
+        if line == "Red":
+            if code < 1800:
+                return "O1"
+            if code >= 1800 and code < 1900:
+                return "O2"
+            if code >= 1900:
+                return "N"
+        if line == "Orange":
+            if code < 1400:
+                return "O"
+            if code >= 1400:
+                return "N"
+        if line[:5] == "Green":
+            if code < 3900:
+                return "O"
+            if code >= 3900:
+                return "N"
+        if line[:2] == "CR":
+            return "CR"
+        if code == "NA":
+            return "\t"
+        else:
+            return str(code)
     else:
-        return str(code)
+        return "\t"
     
 def find_routes_through_station(station):
     lines = []

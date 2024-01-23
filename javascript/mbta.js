@@ -116,7 +116,7 @@ async function getSigns(station, routes) {
                 arr_time = p[i]['attributes']['arrival_time'].slice(11).slice(0,-6);
                 arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60;
             } else {
-                arr_time_mins = "";
+                arr_time_mins = -10;
                 }
             
             lines.push(id_line);
@@ -337,7 +337,8 @@ function mk_stop_URL(a, b) {
     }
 
 function vehicle_type(line, veh) {
-    code = veh['label'];
+    if (veh.hasOwnProperty('label') == true) {
+        code = veh['label'];
     if (line == "Red") {
         if (code < 1800) {
             return "O1";}
@@ -360,12 +361,13 @@ function vehicle_type(line, veh) {
         }
     if (line.slice(0,2) == "CR") {
         return "CR";}
-    if (code ="NA") {
-        return "";}
+    if (code =="NA") {
+        return "\t";}
     else {
-        //return code;}
-        return "<a href='javascript:get_vehicle(code);'>"+code+'</a>';}
+        return "<a href='javascript:get_vehicle(code);'>"+code+'</a>';
         }
+    } else {return "\t";}
+    }
     
 function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
