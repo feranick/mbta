@@ -336,7 +336,7 @@ function mk_stop_URL(a, b) {
     return "<a href=\"https://mbta.com/stops/"+a+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+b+"</a>"
     }
 
-function vechicle_type(line, veh) {
+function vehicle_type(line, veh) {
     code = veh['label'];
     if (line == "Red") {
         if (code < 1800) {
