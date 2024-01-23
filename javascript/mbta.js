@@ -105,7 +105,7 @@ async function getSigns(station, routes) {
     vlo = [];
     
     current_time = get_current_time();
-    document.getElementById("results").innerHTML = "Please wait...";
+    document.getElementById("results").innerHTML = "Something is wrong. Please reload page.";
     
     for (let i=0; i<p.length; i++) {
         id_line = p[i]['relationships']['route']['data']['id'];
@@ -347,6 +347,7 @@ function mk_stop_URL(a, b) {
     }
 
 function vehicle_type(line, veh) {
+    if (typeof veh == 'object') {
     if (veh.hasOwnProperty('label') == true) {
         code = veh['label'];
     if (line == "Red") {
@@ -376,7 +377,7 @@ function vehicle_type(line, veh) {
     else {
         return "<a href='javascript:get_vehicle(code);'>"+code+'</a>';
         }
-    } else {return "\t";}
+    }} else {return "\t";}
     }
     
 function get_radius(a) {
