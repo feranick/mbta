@@ -27,13 +27,15 @@ input[type="submit"]{
  padding: 0px;}
  
 input[type="text"]{ font-size: 16px;
+  padding: 5px;
   -webkit-border-radius: 20px;
-  width: 200px; 
+  width: 230px; 
   border: 1px black solid;}
   
 select{ font-size: 16px;
+  padding: 5px
   -webkit-border-radius: 20px;
-  width: 300px;
+  width: 240px;
   border: 1px black solid;}
 
 text_area{
