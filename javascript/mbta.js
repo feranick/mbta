@@ -24,9 +24,7 @@ async function getNearbyStations() {
 
     nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]="+radius;
     nst = (await getFeed(nst_url))['data'];
-     
-    console.log(nst);
-        
+             
     if (nst.length == 0) {
         console.log(" No data currently available. Try again later.");
         console.log(" Possible cause: no service available at this time\n");
@@ -42,7 +40,6 @@ async function getNearbyStations() {
     for(var i = 0; i < nst.length; i++) {
         var opt = nst[i]['id'];
         nameSt = await get_stops(nst[i]['id'], stops);
-        console.log("<option value=\"" + nst[i]['id'] + "\">" + nameSt + "</option>");
         select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "</option>";
     }
     document.getElementById("warnLabel").innerHTML = "";
