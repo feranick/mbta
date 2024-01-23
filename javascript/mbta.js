@@ -106,7 +106,12 @@ async function getSigns(station, routes) {
     let now = new Date(Date.now());
     current_time = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
     document.getElementById("results").innerHTML = "Please wait...";
-        
+    
+    console.log(p.length);
+    for (let i=0; i<p.length; i++) {
+        console.log(i, p[i]['relationships']['vehicle']['data']);
+        }
+    
     for (let i=0; i<p.length; i++) {
         id_line = p[i]['relationships']['route']['data']['id'];
         
@@ -124,8 +129,7 @@ async function getSigns(station, routes) {
             direction += p[i]['attributes']['direction_id'];
             pred_arr_times.push(get_sign(arr_time_mins));
             
-
-            if (p[i]['relationships']['vehicle']['data']['id'] !== null) {
+            if (p[i]['relationships']['vehicle']['data'] !== null) {
                 for (let j=0; j<vh.length; j++) {
                     if (vh[j]['id'] == p[i]['relationships']['vehicle']['data']['id']) {
                         v = vh[j];
@@ -146,7 +150,12 @@ async function getSigns(station, routes) {
                 }
             dummy += 1;
         } else {
-            console.log("Fail");
+                vtype.push("NA");
+                vstatus.push("");
+                vstation.push("");
+                vstatName.push("");
+                vla.push("");
+                vlo.push("");
         }}
     label += "<hr>";
     label += "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statNameCurr+"</a>";
@@ -348,6 +357,8 @@ function train_type(line, veh) {
         }
     if (line.slice(0,2) == "CR") {
         return "CR";}
+    if (code ="NA") {
+        return "";}
     else {
         //return code;}
         return "<a href='javascript:get_vehicle(code);'>"+code+'</a>';}

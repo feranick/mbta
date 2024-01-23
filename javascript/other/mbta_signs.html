@@ -98,7 +98,7 @@ async function getSigns(station, routes) {
             direction += p[i]['attributes']['direction_id'];
             pred_arr_times.push(get_sign(arr_time_mins));
             
-            if (p[i]['relationships']['vehicle']['data']['id'] !== null) {
+            if (p[i]['relationships']['vehicle']['data'] !== null) {
                 for (let j=0; j<vh.length; j++) {
                     if (vh[j]['id'] == p[i]['relationships']['vehicle']['data']['id']) {
                         v = vh[j];
@@ -119,7 +119,12 @@ async function getSigns(station, routes) {
                 }
             dummy += 1;
         } else {
-            console.log("Fail");
+            vtype.push("NA");
+            vstatus.push("");
+            vstation.push("");
+            vstatName.push("");
+            vla.push("");
+            vlo.push("");
         }}
     label += "<hr>";
     label += "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statNameCurr+"</a>";

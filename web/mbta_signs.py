@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS WEB
-* v2024.01.21.3
+* v2024.01.22.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -131,7 +131,7 @@ def main():
                 direction.append(p['attributes']['direction_id'])
                 status.append(p['attributes']['status'])
                 for v in vh:
-                    if v['id'] == p['relationships']['vehicle']['data']['id']:
+                    if v['id'] == p['relationships']['vehicle']['data']:
                         vtype.append(train_type(id_line,v['attributes']))
                         vstatus.append(v['attributes']['current_status'])
                         vstation.append(v['relationships']['stop']['data']['id'])
@@ -140,7 +140,12 @@ def main():
                         if dP.show_location == True:
                             location.append(dP.geolocator.reverse(vla[-1]+','+vlo[-1]))
             except:
-                pass
+                vtype.append("NA")
+                vstatus.append("")
+                vstation.append("")
+                vstatName.append("")
+                vla.append("")
+                vlo.append("")
             dummy += 1
     
     #print("-----------------------------------------------------------------------------------------")
@@ -242,6 +247,8 @@ def train_type(line, veh):
             return "N"
     if line[:2] == "CR":
         return "CR"
+    if code == "NA":
+        return ""
     else:
         return str(code)
     
