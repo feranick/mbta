@@ -103,8 +103,7 @@ async function getSigns(station, routes) {
     vla = [];
     vlo = [];
     
-    let now = new Date(Date.now());
-    current_time = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
+    current_time = get_current_time();
     document.getElementById("results").innerHTML = "Please wait...";
     
     for (let i=0; i<p.length; i++) {
@@ -289,6 +288,15 @@ function get_type(v) {
 function get_sec(time_str) {
     t = time_str.split(':');
     return t[0] * 3600 + t[1] * 60 + t[2]*1;
+    }
+    
+function get_current_time() {
+    let now = new Date(Date.now());
+    if (now.getSeconds()<10) {
+        secs = "0"+now.getSeconds();}
+    else {
+        secs = now.getSeconds();}
+    return now.getHours()+":"+now.getMinutes()+":"+secs;
     }
 
 function get_sign(a) {
