@@ -1,7 +1,7 @@
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 headers = {'Accept': 'application/json', 'x-api-key': key};
-radius = 0.007;
+//radius = 0.007;
 maxPredEntries = 20;
 
 async function getFeed(url) {
@@ -17,6 +17,7 @@ function getCoords() {
 
 async function getNearbyStations() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
+    radius = get_radius(document.getElementById("radius").value);
     let position = await getCoords(),
             { coords } = position;
         lat = position['coords']['latitude'];
@@ -369,6 +370,10 @@ function vehicle_type(line, veh) {
     } else {return "\t";}
     }
     
+function get_radius(a) {
+    return a*0.02;
+}
+
 function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
    }

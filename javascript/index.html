@@ -22,9 +22,10 @@
  <input type="submit" id="SearchStation" value="Search Stations" onclick=predStops() />
 <br><br><input name="vehicle" id="vehicle" size="12" type="text" placeholder="Vehicle ID">
  <input type="submit" id="SearchVehicle" value="Search Vehicle" onclick=predVehicle() />
- <br><br><select name="nearbyStations" id="nearbyStations" onchange="setNearbyStations()"></select>
- <input type="submit" id="SearchNearby" value="Nearby Station" placeholder="List of nearby stations" onclick=getNearbyStations() />
- <br><br><input type="submit" id="Search" value="Timetable" onclick=predSigns() />
+ <br><br><br><select name="nearbyStations" id="nearbyStations" onchange="setNearbyStations()"></select>
+ <input type="submit" id="SearchNearby" value="Nearby Station" onclick=getNearbyStations() />
+ <br> <label id="radiusLabel">Radius in miles: </label><input name="radius" id="radius" size="12" type="text" value="0.2">
+ <br><br><br><input type="submit" id="Search" value="Timetable" onclick=predSigns() />
  <label id="warnLabel"></label>
 <br><text_area id="results" rows="50" cols="200" ></text_area>
 
