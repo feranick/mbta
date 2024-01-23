@@ -16,14 +16,14 @@
 
 </head>
 <body>
-<br><input name="station" id="station" size="12" type="text" placeholder="Station" value="place-knn>
+<br><input name="station" id="station" size="12" type="text" placeholder="Station" value="place-knncl">
  <input type="submit" id="SearchLines" value="Search Lines" onclick=predRoutes() />
 <br><br><input name="route" id="route" size="12" type="text" placeholder="Line" value="Red">
  <input type="submit" id="SearchStation" value="Search Stations" onclick=predStops() />
 <br><br><input name="vehicle" id="vehicle" size="12" type="text" placeholder="Vehicle ID">
  <input type="submit" id="SearchVehicle" value="Search Vehicle" onclick=predVehicle() />
  <br><br><select name="nearbyStations" id="nearbyStations" onchange="setNearbyStations()"></select>
- <input type="submit" id="SearchNearby" value="Nearby Station" placeholder="List of nearby stations>
+ <input type="submit" id="SearchNearby" value="Nearby Station" placeholder="List of nearby stations" onclick=getNearbyStations() />
  <br><br><input type="submit" id="Search" value="Timetable" onclick=predSigns() />
  <label id="warnLabel"></label>
 <br><text_area id="results" rows="50" cols="200" ></text_area>

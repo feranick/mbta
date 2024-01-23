@@ -33,7 +33,7 @@ input[type="text"]{ font-size: 16px;
   border: 1px black solid;}
   
 select{ font-size: 16px;
-  padding: 5px
+  padding: 5px;
   -webkit-border-radius: 20px;
   width: 240px;
   border: 1px black solid;}
