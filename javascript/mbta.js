@@ -1,6 +1,8 @@
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 headers = {'Accept': 'application/json', 'x-api-key': key};
+radius = 0.007;
+maxPredEntries = 20;
 
 async function getFeed(url) {
     const res = await fetch(url);
@@ -8,27 +10,22 @@ async function getFeed(url) {
     return obj;
     }
 
+function getCoords() {
+    return new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject));
+    }
+
 async function getNearbyStations() {
-    /*
-    lat = 0;
-    long = 0;
-    
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-        lat = position.coords.latitude;
-        long = position.coords.longitude;
-        console.log(`Latitude: ${lat}, Longitude: ${long}`);
-        })
-    } else {
-        console.log("Geolocation is not supported by this browser.");
-        }
-    */
-    lat = 42.362491;
-    long = -71.086176;
-    nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]=0.0001";
+    document.getElementById("warnLabel").innerHTML = "Please wait...";
+    let position = await getCoords(),
+            { coords } = position;
+        lat = position['coords']['latitude'];
+        long = position['coords']['longitude'];
+
+    nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]="+radius;
     nst = (await getFeed(nst_url))['data'];
      
-     console.log(nst);
+    console.log(nst);
         
     if (nst.length == 0) {
         console.log(" No data currently available. Try again later.");
@@ -39,19 +36,23 @@ async function getNearbyStations() {
     var select = document.getElementById("nearbyStations");
     select.innerHTML = "";
 
+    stops_url = url+"stops/";
+    stops = (await getFeed(stops_url))['data'];
+    
     for(var i = 0; i < nst.length; i++) {
         var opt = nst[i]['id'];
-        select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nst[i]['id'] + "</option>";
-        get_stop(nst[i]['id']).then((data) => {document.getElementById("nearbyStatName").innerHTML = data;});
+        nameSt = await get_stops(nst[i]['id'], stops);
+        console.log("<option value=\"" + nst[i]['id'] + "\">" + nameSt + "</option>");
+        select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "</option>";
     }
+    document.getElementById("warnLabel").innerHTML = "";
     }
     
 async function setNearbyStations() {
     label = [];
     select = document.getElementById("nearbyStations");
-    stat_id = select.options[select.selectedIndex].text;
+    stat_id = select.options[select.selectedIndex].value;
     document.getElementById("station").value = stat_id;
-    get_stop(stat_id ).then((data) => {document.getElementById("nearbyStatName").innerHTML = data;});
     getRoutes(stat_id);
     }
 
@@ -114,7 +115,7 @@ async function getSigns(station, routes) {
         
         //if id_line in line and dummy < dP.list_items:
         //if (id_line == line && dummy < 10) {
-        if (line.includes(id_line) == true && dummy < 10 && p[i]['attributes']['schedule_relationship'] != "CANCELLED") {
+        if (line.includes(id_line) == true && dummy < maxPredEntries && p[i]['attributes']['schedule_relationship'] != "CANCELLED") {
             if (p[i]['attributes']['arrival_time'] !== null) {
                 arr_time = p[i]['attributes']['arrival_time'].slice(11).slice(0,-6);
                 arr_time_mins = (get_sec(arr_time) - get_sec(current_time))/60;
@@ -303,6 +304,15 @@ async function get_stop(stop) {
     sleep(100);
     if (s.length == 0) {return '';}
     else {return s[0]['attributes']['name'];}
+    }
+    
+async function get_stops(stop, stops) {
+    let name = "";
+    for (let j=0; j<stops.length; j++) {
+        if (stops[j]['id'] == stop) {
+            name = stops[j]['attributes']['name'];
+            }}
+    return name;
     }
 
 function mk_coord_URL(a, la, lo) {
