@@ -3,7 +3,7 @@
 '''
 **********************************************
 * MBTA SIGNS TFT
-* v2024.01.17.1
+* v2024.01.22.1
 * By: Nicola Ferralis <feranick@hotmail.com>
 **********************************************
 '''
@@ -130,9 +130,17 @@ def main():
     time.sleep(10)
     
     ############################
+    # get all stops/vehicles
+    ############################
+    st_url = dP.url+"stops/"
+    stops = requests.get(st_url).json()['data']
+    
+    vh_url = dP.url+"vehicles/"
+    vh = requests.get(vh_url,headers=dP.headers).json()['data']
+    
+    ############################
     # get coord/name station
     ############################
-    
     try:
         #s = dP.st.get(route=line, id=station)['data'][0]['attributes']
         st_url = dP.url+"stops/?filter[route]="+line[0]+"&filter[id]="+station
@@ -141,14 +149,13 @@ def main():
         print("\n These lines do not stop at this station\n")
         return
     
-    la = str(s['latitude'])
-    lo = str(s['longitude'])
     name = s['name']
     print("\n")
 
     while True:
         #pred = dP.pr.get(longitude=lo, latitude=la, radius=0.001)['data']
-        pr_url = dP.url+"predictions/?filter[longitude]="+lo+"&filter[latitude]="+la+"&filter[radius]=0.001"
+        pr_url = #dP.url+"predictions/?filter[longitude]="+lo+"&filter[latitude]="+la+"&filter[radius]=0.001"
+        pr_url = dP.url+"predictions/?filter[stop]="+station;
         pred = requests.get(pr_url,headers=dP.headers).json()['data']
         
         if len(pred) == 0:
@@ -181,20 +188,27 @@ def main():
                         #dep_time_mins = (get_sec(dep_time) - get_sec(current_time))/60
                 
                         #v = dP.vh.get(id=p['relationships']['vehicle']['data']['id'])['data'][0]['attributes']
-                        vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
-                        v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
+                        #vh_url = dP.url+"vehicles/?filter[id]="+p['relationships']['vehicle']['data']['id']
+                        #v = requests.get(vh_url,headers=dP.headers).json()['data'][0]
                     
                         lines.append(id_line)
                         pred_arr_times.append(arr_time_mins)
                         direction.append(p['attributes']['direction_id'])
                         status.append(p['attributes']['status'])
-                        vtype.append(train_type(id_line,v['attributes']))
-                        vstatus.append(v['attributes']['current_status'])
-                        vstation.append(get_stop(v['relationships']['stop']['data']['id']))
-                        #if dP.show_location:
-                            #location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
+                        for v in vh:
+                            if v['id'] == p['relationships']['vehicle']['data']:
+                            vtype.append(train_type(id_line,v['attributes']))
+                            vstatus.append(v['attributes']['current_status'])
+                            vstation.append(get_stop(v['relationships']['stop']['data']['id'], stops))
+                            #if dP.show_location:
+                                #location.append(dP.geolocator.reverse(str(v['latitude'])+','+str(v['longitude'])))
                     except:
-                        pass
+                        vtype.append("NA")
+                        vstatus.append("")
+                        vstation.append("")
+                        vstatName.append("")
+                        vla.append("")
+                        vlo.append("")
                     dummy += 1
                     
             print("-----------------------------------------------------------------------------------------")
@@ -259,17 +273,22 @@ def arr_sign(a, b, st, station, type, line, tline, dP):
     dP.labels[tline].text = b[:13]
     dP.labels2[tline].text = label
         
-def get_stop(stop):
+def get_stop(stop, stops):
+    for j in range(len(stops)):
+        if stops[j]['id'] == stop:
+            return stops[j]['attributes']['name']
+    if flag is False:
+        return ""
     #st = Stops(key=Conf().key)
     #s = st.get(route='Red', longitude=lo, latitude=la, radius=0.005)['data']
     #st_url = Conf().url+"stops/?filter[longitude]="+str(lo)+"&filter[latitude]="+str(la)+"&filter[radius]=0.001"
     #st_url = Conf().url+"stops/?filter[route]="+line+"&filter[id]="+stop
-    st_url = Conf().url+"stops/?filter[id]="+stop
-    s = requests.get(st_url,headers=Conf().headers).json()['data']
-    if len(s) == 0:
-        return ''
-    else:
-        return s[0]['attributes']['name']
+    #st_url = Conf().url+"stops/?filter[id]="+stop
+    #s = requests.get(st_url,headers=Conf().headers).json()['data']
+    #if len(s) == 0:
+    #    return ''
+    #else:
+    #    return s[0]['attributes']['name']
         
 def train_type(line, veh):
     try:
@@ -295,22 +314,16 @@ def train_type(line, veh):
             return "N"
     if line[:2] == "CR":
         return "CR"
+    if code == "NA":
+        return ""
     else:
         return str(code)
     
 def find_routes_through_station(station):
     lines = []
-    routes = requests.get(Conf().url+"routes/",headers=Conf().headers).json()['data']
-    
-    print("\n Searching for routes passing through:",station,"\n Please wait...\n")
+    routes = requests.get(Conf().url+"routes/?filter[stop]="+station,headers=Conf().headers).json()['data']
     for r in routes:
-    
-        #stops = st.get(route=r['id'])['data']
-        stops = requests.get(Conf().url+"stops/?filter[route]="+r['id'],headers=Conf().headers).json()['data']
-        
-        for s in stops:
-            if s['id'] == station:
-                lines.append(r['id'])
+        lines.append(r['id'])
     
     print(" ".join(lines),"\n")
     return lines
