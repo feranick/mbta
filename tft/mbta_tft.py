@@ -196,14 +196,6 @@ def main():
                                 vlo.append(str(v['attributes']['longitude']))
                                 if dP.show_location == True:
                                     location.append(dP.geolocator.reverse(vla[-1]+','+vlo[-1]))
-                    else:
-                        vtype.append("NA")
-                        vstatus.append("")
-                        vstation.append("")
-                        vstatName.append("")
-                        vla.append("")
-                        vlo.append("")
-                    
                 except:
                    print("Fail...")
                 dummy += 1

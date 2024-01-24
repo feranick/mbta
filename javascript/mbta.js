@@ -144,14 +144,8 @@ async function getSigns(station, routes) {
                 vlo.push(v['attributes']['longitude']);
                 }
             dummy += 1;
-        } else {
-                vtype.push("NA");
-                vstatus.push("");
-                vstation.push("");
-                vstatName.push("");
-                vla.push("");
-                vlo.push("");
         }}
+        
     label += "<hr>";
     label += "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statNameCurr+"</a>";
     label += "\t\t"+current_time+"\n";
