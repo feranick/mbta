@@ -51,6 +51,10 @@ text_area{
     white-space: pre;
 }
 
+#map {
+  height: 100%;
+}
+
 a:link {
   color: white;
 }

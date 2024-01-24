@@ -1,5 +1,6 @@
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
+gkey = "AIzaSyAHgQhGH6_52Xqv92ZqkcvaIqQayZQ_nso";
 headers = {'Accept': 'application/json', 'x-api-key': key};
 maxPredEntries = 20;
 
@@ -228,23 +229,27 @@ async function get_vehicle(id) {
     
     label += " Vehicle ID: "+v[i]['id']+"\n";
     label += "\n Route: "+v[i]['relationships']['route']['data']['id']+" \n";
-    label += " Occupancy:"+v[i]['attributes']['occupancy_status']+" \n";
-    label += " Longitude:"+v[i]['attributes']['longitude']+" \n";
-    label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
+    label += " Occupancy: "+v[i]['attributes']['occupancy_status']+" \n";
     label += " Latitude: "+v[i]['attributes']['latitude']+" \n";
+    label += " Longitude: "+v[i]['attributes']['longitude']+" \n";
+    label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
     label += " Speed: "+v[i]['attributes']['speed']+" \n";
     label += " Vehicle type: "+get_type(v[i]['id'])+" \n";
     label += "\n Stop sequence:"+v[i]['attributes']['current_stop_sequence']+" \n";
     label += " Status: "+v[i]['attributes']['current_status']+" "+mk_stop_URL(stat_id, station)+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
     label += " Time: "+v[i]['attributes']['updated_at']+" \n";
     label += mk_coord_URL("Current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude']);
-    
+    label += draw_map(gkey,v[i]['attributes']['latitude'],v[i]['attributes']['longitude']);
     }
     document.getElementById("results").innerHTML = "".concat(...label);
     
     }  else {
         document.getElementById("results").innerHTML = "\n No Vehicle with this ID currently in operation\n";}
     document.getElementById("warnLabel").innerHTML = "";
+    }
+    
+function draw_map(gkey, lat, long) {
+    return tag = "\n\n <iframe width=\"450\" height=\"250\" frameborder=\"0\" style=\"border:0\" referrerpolicy=\"no-referrer-when-downgrade\"    src=\"https://www.google.com/maps/embed/v1/view?key="+gkey+"&center="+lat+","+long+"&zoom=17\"</iframe>";
     }
 
 function get_type(v) {
