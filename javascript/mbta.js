@@ -1,7 +1,6 @@
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 headers = {'Accept': 'application/json', 'x-api-key': key};
-//radius = 0.007;
 maxPredEntries = 20;
 
 async function getFeed(url) {
@@ -109,9 +108,7 @@ async function getSigns(station, routes) {
     
     for (let i=0; i<p.length; i++) {
         id_line = p[i]['relationships']['route']['data']['id'];
-        
-        //if id_line in line and dummy < dP.list_items:
-        //if (id_line == line && dummy < 10) {
+
         if (line.includes(id_line) == true && dummy < maxPredEntries && p[i]['attributes']['schedule_relationship'] != "CANCELLED") {
             if (p[i]['attributes']['arrival_time'] !== null) {
                 arr_time = p[i]['attributes']['arrival_time'].slice(11).slice(0,-6);
@@ -174,9 +171,6 @@ async function predStops() {
     label += "\n Station ID\tName\n";
     
     for (let i=0; i<r.length; i++) {
-        //label += " "+r[i]['id'];
-        //label += " <a href=\"#\" onclick=javascript:{document.getElementById('station').value='TEST';}>test</a>";
-        //label += " <a href=\"#\" onclick=javascript:{document.getElementById('station').value='"+r[i]['id']+"';}>"+r[i]['id']+"</a>";
         label += " <a href=\"#\" onclick=javascript:setStops('"+r[i]['id']+"');>"+r[i]['id']+"</a>";
         label += "\t<a href=\"https://mbta.com/stops/"+r[i]['id']+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+r[i]['attributes']['name']+"</a>\n";
     }
@@ -206,14 +200,10 @@ async function getRoutes(stat_id) {
     r = (await getFeed(rt_url))['data'];
     
     if (r.length > 0) {
-        //label = "\n Routes going through: <a href=\"https://mbta.com/stops/"+stat_id+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+station+" ("+stat_id+")</a>\n\n ";
-        
         for (let i=0; i<r.length; i++) {
             label += r[i]['id']+" ";
             }
-    
     document.getElementById("route").value = "".concat(...label);
-    
     }  else {
         document.getElementById("results").innerHTML = "\n No Routes currently in operation through this station\n";}
     }
@@ -225,7 +215,6 @@ function predVehicle() {
     
 async function get_vehicle(id) {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
-    //v_url = url+"vehicles/?filter[label]="+document.getElementById("vehicle").value;
     v_url = url+"vehicles/?filter[label]="+id;
     v = (await getFeed(v_url))['data'];
     
@@ -329,7 +318,7 @@ async function get_stops(stop, stops) {
     }
 
 function mk_coord_URL(a, la, lo) {
-    return "<a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>";
+    return "\n <a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>";
     }
     
 function mk_line_URL(line) {
