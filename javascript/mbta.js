@@ -121,6 +121,7 @@ async function getSigns(station, routes) {
             lines.push(id_line);
             direction += p[i]['attributes']['direction_id'];
             pred_arr_times.push(get_sign(arr_time_mins));
+            console.log(direction);
             
             if (p[i]['relationships']['vehicle']['data'] !== null) {
                 for (let j=0; j<vh.length; j++) {
@@ -145,18 +146,20 @@ async function getSigns(station, routes) {
         }}
         
     label += "<hr>";
-    label += "<a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statNameCurr+"</a>";
+    label += " <a href=\"https://mbta.com/stops/"+station+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+statNameCurr+"</a>";
     label += "\t\t"+current_time+"\n";
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (direction[j] == 0) {
-        label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
+        label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j];
         }}
+        
+    if (direction.includes(1)) {
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (direction[j] == 1) {
-        label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(id_line,vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j]+"\n";
-        }}
+        label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(id_line,vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+vstatus[j]+"\t"+vstatName[j];
+        }}}
     label += "<hr>";
     document.getElementById("results").innerHTML = "".concat(...label);
     document.getElementById("warnLabel").innerHTML = "";
