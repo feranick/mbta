@@ -129,6 +129,7 @@ async function getSigns(station, routes) {
                         v = vh[j];
                     }
                 }
+                
                 vtype.push(v['attributes']);
                 vstatus.push(v['attributes']['current_status']);
                 vstation.push(v['relationships']['stop']['data']['id']);
@@ -214,41 +215,46 @@ async function getRoutes(stat_id) {
 
 function predVehicle() {
     id = document.getElementById("vehicle").value;
-    get_vehicle(id);
+    get_vehicle(id, "ALL");
     }
     
-async function get_vehicle(id) {
+async function get_vehicle(id, line) {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
     v_url = url+"vehicles/?filter[label]="+id;
     v = (await getFeed(v_url))['data'];
     
+    if (line == "ALL") {
+        art_url = url+"routes/";
+        art = (await getFeed(art_url))['data'];
+        routes = []
+        for (f=0; f<art.length; f++) {
+            routes.push(art[f]['id']);}
+        line = routes;}
+        
     if (v.length > 0) {
     label = "<hr>";
     label += " Vehicle label: "+id+"\n";
     
-    
     for (let i=0; i<v.length; i++) {
-    if (v[i]['relationships']['stop']['data'] != null) {
+    if ((v[i]['relationships']['stop']['data'] != null) && (line.includes(v[i]['relationships']['route']['data']['id']))) {
     stat_id = v[i]['relationships']['stop']['data']['id']
     st_url = url+"stops/?filter[id]="+stat_id;
     station = (await getFeed(st_url))['data'][0]['attributes']['name'];
     label += "<hr>";
     label += " Vehicle ID: "+v[i]['id']+"\n";
     label += "\n Route: "+mk_line_URL(v[i]['relationships']['route']['data']['id'])+" \n";
-    label += " Occupancy: "+v[i]['attributes']['occupancy_status']+" \n";
+    label += " Occupancy: "+format_null(v[i]['attributes']['occupancy_status'])+" \n";
     label += " Stop sequence: "+v[i]['attributes']['current_stop_sequence']+" \n";
     label += " Status: "+v[i]['attributes']['current_status']+" "+mk_stop_URL(stat_id, station)+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
     label += " Time: "+format_time(v[i]['attributes']['updated_at'])+" \n";
     label += "\n Latitude: "+v[i]['attributes']['latitude']+" \n";
     label += " Longitude: "+v[i]['attributes']['longitude']+" \n";
     label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
-    label += " Speed: "+v[i]['attributes']['speed']+" \n";
-    label += " Vehicle type: "+get_bus_type(v[i]['id'])+" \n";
+    label += " Speed: "+format_null(v[i]['attributes']['speed'])+" mph\n";
+    label += " Vehicle type: "+vehicle_model(v[i]['id'])+" \n";
     label += mk_coord_URL("Current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude'])+"\n\n";
     //label += draw_map(gkey,v[i]['attributes']['latitude'],v[i]['attributes']['longitude']);
-    } else {
-    label += "\n No details about this vehicle are currently available.\n";}
-    }
+    }}
     document.getElementById("results").innerHTML = "".concat(...label);
     
     }  else {
@@ -256,7 +262,41 @@ async function get_vehicle(id) {
     document.getElementById("warnLabel").innerHTML = "";
     }
 
-function get_bus_type(v) {
+function vehicle_type(line, veh) {
+    tag = "N/A";
+    if (typeof veh == 'object') {
+    if (veh.hasOwnProperty('label') == true) {
+        code = veh['label'];
+    if (line == "Red") {
+        if (code < 1800) {
+            tag = "O1";}
+        if (code >= 1800 && code < 1900) {
+            tag = "O2";}
+        if (code >= 1900) {
+            tag = "N";}
+        }
+    else if (line == "Orange") {
+        if (code < 1400) {
+            tag = "O";}
+        if (code >= 1400) {
+            tag = "N";}
+        }
+    else if (line.slice(0,5) == "Green") {
+        if ((code >= 3600) || (code<=3719)) {
+            tag = "O1";}
+        if ((code >= 3800)  || (code <= 3894)) {
+            tag ="O2";}
+        if (code >= 3900) {
+            tag = "N";}
+        }
+    else {
+        tag = code;
+        }
+    return "<a href='javascript:get_vehicle("+code+",\""+line+"\");'>"+tag+'</a>';
+    }} else {return "\t";}
+    }
+
+function vehicle_model(v) {
     if (v[0] == "y") {
         a = v.slice(1)*1;
         if (a>=600 && a<=910) {
@@ -290,54 +330,6 @@ function get_bus_type(v) {
         return "N/A";}
     }
     
-function vehicle_type(line, veh) {
-    if (typeof veh == 'object') {
-    if (veh.hasOwnProperty('label') == true) {
-        code = veh['label'];
-    if (line == "Red") {
-        if (code < 1800) {
-            return "O1";}
-        if (code >= 1800 && code < 1900) {
-            return "O2";}
-        if (code >= 1900) {
-            return "N";}
-        }
-    if (line == "Orange") {
-        if (code < 1400) {
-            return "O";}
-        if (code >= 1400) {
-            return "N";}
-        }
-    if (line.slice(0,5) == "Green") {
-        if ((code >= 3600) || (code<=3719)) {
-            return "O1";}
-        if ((code >= 3800)  || (code <= 3894)) {
-            return "O2";}
-        if (code >= 3900) {
-            return "N";}
-        }
-        
-    if (line.slice(0,2) == "CR") {
-        if (a>=1115 && a<=1139) {
-            return "GP40MC";}
-        else if ((a>=1050 && a<=1075) || (a>=1025 && a<=1036)) {
-            return "F40PH-3C";}
-        else if (a>=010 && a<=011) {
-            return "MP36PH-3C";}
-        else if (a>=2000 && a<=2039) {
-            return "GP40MC";}
-        else
-            {return code;}
-        }
-        
-    if (code =="NA") {
-        return "\t";}
-    else {
-        return "<a href='javascript:get_vehicle(code);'>"+code+'</a>';
-        }
-    }} else {return "\t";}
-    }
-
 function set_SL_CT(line) {
     if (line == "741") { return "SL1";}
     if (line == "742") { return "SL2";}
@@ -430,6 +422,13 @@ function format_time(time_str) {
 function get_radius(a) {
     return a*0.02;
 }
+
+function format_null(a) {
+    if (a == null) {
+        return "--";}
+    else {
+        return a;}
+    }
 
 function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
