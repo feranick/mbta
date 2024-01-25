@@ -313,6 +313,16 @@ function vehicle_model(v, line) {
         if ((a >= 1900) && (a<=2151)) {
             return "Bombardier (2021-2025)";}
     }
+    
+    if (line == "Orange") {
+    a = v['attributes']['label'];
+        if ((a >= 1400) && (a<=1551)) {
+            return "CRRC (2018-2023)";}
+    }
+    
+    if (line == "Blue") {
+        return "Siemens 700-series (2007-2009)";
+    }
 
     if (line.slice(0,5) == "Green") {
         a = v['attributes']['label'];
