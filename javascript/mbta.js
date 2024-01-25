@@ -230,7 +230,7 @@ async function get_vehicle(id, line) {
         for (f=0; f<art.length; f++) {
             routes.push(art[f]['id']);}
         line = routes;}
-        
+                    
     if (v.length > 0) {
     label = "<hr>";
     label += " Vehicle label: "+id+"\n";
@@ -292,7 +292,7 @@ function vehicle_type(line, veh) {
     else {
         tag = code;
         }
-    return "<a href='javascript:get_vehicle("+code+",\""+line+"\");'>"+tag+'</a>';
+    return "<a href='javascript:get_vehicle(\""+code+"\",\""+line+"\");'>"+tag+'</a>';
     }} else {return "\t";}
     }
 
