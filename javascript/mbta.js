@@ -121,7 +121,6 @@ async function getSigns(station, routes) {
             lines.push(id_line);
             direction += p[i]['attributes']['direction_id'];
             pred_arr_times.push(get_sign(arr_time_mins));
-            console.log(direction);
             
             if (p[i]['relationships']['vehicle']['data'] !== null) {
                 for (let j=0; j<vh.length; j++) {
