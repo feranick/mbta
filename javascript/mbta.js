@@ -240,7 +240,7 @@ async function get_vehicle(id) {
     label += " Longitude: "+v[i]['attributes']['longitude']+" \n";
     label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
     label += " Speed: "+v[i]['attributes']['speed']+" \n";
-    label += " Vehicle type: "+get_type(v[i]['id'])+" \n";
+    label += " Vehicle type: "+get_bus_type(v[i]['id'])+" \n";
     label += mk_coord_URL("Current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude'])+"\n\n";
     //label += draw_map(gkey,v[i]['attributes']['latitude'],v[i]['attributes']['longitude']);
     }
@@ -250,12 +250,8 @@ async function get_vehicle(id) {
         document.getElementById("results").innerHTML = "\n No Vehicle with this ID currently in operation\n";}
     document.getElementById("warnLabel").innerHTML = "";
     }
-    
-function draw_map(gkey, lat, long) {
-    return "\n\n <iframe width=\"450\" height=\"250\" frameborder=\"0\" style=\"border:0\" referrerpolicy=\"no-referrer-when-downgrade\"    src=\"https://www.google.com/maps/embed/v1/view?key="+gkey+"&center="+lat+","+long+"&zoom=17\"</iframe>";
-    }
 
-function get_type(v) {
+function get_bus_type(v) {
     if (v[0] == "y") {
         a = v.slice(1)*1;
         if (a>=600 && a<=910) {
@@ -277,41 +273,39 @@ function get_type(v) {
         return "N/A";}
     }
     
-function undef_format(a) {
-    if (a === undefined)
-        { return "";}
-    else
-        {return a;}
-    }
-    
-function get_sec(time_str) {
-    t = time_str.split(':');
-    return t[0] * 3600 + t[1] * 60 + t[2]*1;
-    }
-    
-function get_current_time() {
-
-    function get_dig(a) {
-        if (a<10) {
-        secs = "0"+a;}
-        else {
-        secs = a;}
-        return secs;}
-        
-    let now = new Date(Date.now());
-    if (now.getSeconds()<10) {
-        secs = "0"+now.getSeconds();}
+function vehicle_type(line, veh) {
+    if (typeof veh == 'object') {
+    if (veh.hasOwnProperty('label') == true) {
+        code = veh['label'];
+    if (line == "Red") {
+        if (code < 1800) {
+            return "O1";}
+        if (code >= 1800 && code < 1900) {
+            return "O2";}
+        if (code >= 1900) {
+            return "N";}
+        }
+    if (line == "Orange") {
+        if (code < 1400) {
+            return "O";}
+        if (code >= 1400) {
+            return "N";}
+        }
+    if (line.slice(0,5) == "Green") {
+        if (code < 3900) {
+            return "O";}
+        if (code >= 3900) {
+            return "N";}
+        }
+    if (line.slice(0,2) == "CR") {
+        return "CR";}
+    if (code =="NA") {
+        return "\t";}
     else {
-        secs = now.getSeconds();}
-    return get_dig(now.getHours())+":"+get_dig(now.getMinutes())+":"+get_dig(now.getSeconds());
+        return "<a href='javascript:get_vehicle(code);'>"+code+'</a>';
+        }
+    }} else {return "\t";}
     }
-
-function format_time(time_str) {
-    //2024-01-24T18:40:02-05:00
-    t = time_str.split(/-|T|:/);
-    //return t[1]+"/"+t[2]+"/"+t[0]+"  "+t[3]+":"+t[4]+":"+t[5]
-    return t[3]+":"+t[4]+":"+t[5];
-}
 
 function get_sign(a) {
     if (a > 0 && a < 0.5) {return " ARR\t";}
@@ -349,41 +343,47 @@ function mk_line_URL(line) {
 function mk_stop_URL(a, b) {
     return "<a href=\"https://mbta.com/stops/"+a+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+b+"</a>"
     }
+    
+function draw_map(gkey, lat, long) {
+    return "\n\n <iframe width=\"450\" height=\"250\" frameborder=\"0\" style=\"border:0\" referrerpolicy=\"no-referrer-when-downgrade\"    src=\"https://www.google.com/maps/embed/v1/view?key="+gkey+"&center="+lat+","+long+"&zoom=17\"</iframe>";
+    }
 
-function vehicle_type(line, veh) {
-    if (typeof veh == 'object') {
-    if (veh.hasOwnProperty('label') == true) {
-        code = veh['label'];
-    if (line == "Red") {
-        if (code < 1800) {
-            return "O1";}
-        if (code >= 1800 && code < 1900) {
-            return "O2";}
-        if (code >= 1900) {
-            return "N";}
-        }
-    if (line == "Orange") {
-        if (code < 1400) {
-            return "O";}
-        if (code >= 1400) {
-            return "N";}
-        }
-    if (line.slice(0,5) == "Green") {
-        if (code < 3900) {
-            return "O";}
-        if (code >= 3900) {
-            return "N";}
-        }
-    if (line.slice(0,2) == "CR") {
-        return "CR";}
-    if (code =="NA") {
-        return "\t";}
-    else {
-        return "<a href='javascript:get_vehicle(code);'>"+code+'</a>';
-        }
-    }} else {return "\t";}
+function undef_format(a) {
+    if (a === undefined)
+        { return "";}
+    else
+        {return a;}
     }
     
+function get_sec(time_str) {
+    t = time_str.split(':');
+    return t[0] * 3600 + t[1] * 60 + t[2]*1;
+    }
+    
+function get_current_time() {
+
+    function get_dig(a) {
+        if (a<10) {
+        secs = "0"+a;}
+        else {
+        secs = a;}
+        return secs;}
+        
+    let now = new Date(Date.now());
+    if (now.getSeconds()<10) {
+        secs = "0"+now.getSeconds();}
+    else {
+        secs = now.getSeconds();}
+    return get_dig(now.getHours())+":"+get_dig(now.getMinutes())+":"+get_dig(now.getSeconds());
+    }
+
+function format_time(time_str) {
+    //2024-01-24T18:40:02-05:00
+    t = time_str.split(/-|T|:/);
+    //return t[1]+"/"+t[2]+"/"+t[0]+"  "+t[3]+":"+t[4]+":"+t[5]
+    return t[3]+":"+t[4]+":"+t[5];
+}
+
 function get_radius(a) {
     return a*0.02;
 }
