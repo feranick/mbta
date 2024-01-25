@@ -157,7 +157,7 @@ async function getSigns(station, routes) {
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (direction[j] == 1) {
-        label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(id_line,vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+undef_format(vstatus[j])+"\t"+undef_format(vstatName[j]);
+        label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+undef_format(vstatus[j])+"\t"+undef_format(vstatName[j]);
         }}}
     label += "<hr>";
     document.getElementById("results").innerHTML = "".concat(...label);
@@ -262,8 +262,10 @@ function get_bus_type(v) {
             return "Bus: XDE40 - Hybrid";}
         else if (a>=1600 && a<=1774) {
             return "Bus: XN40 - GNG";}
-        else if ((a>=1250 && a<=1294) || (a>=1300 && a<=1344)) {
+        else if ((a>=1250 && a<=1293) || (a>=1300 && a<=1344)) {
             return "Bus: XDE60 - Hybrid";}
+         else if (a==1250) {
+            return "Bus: XDE60 - Hybrid - Extended Battery";}   
         else if (a>=1295 && a<=1299) {
             return "Bus: XE60 - Battery Electric";}
         else {
