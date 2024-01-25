@@ -306,6 +306,18 @@ function vehicle_type(line, veh) {
         }
     }} else {return "\t";}
     }
+    
+function set_SL_CT(line) {
+    if (line == "741") { return "SL1";}
+    if (line == "742") { return "SL2";}
+    if (line == "743") { return "SL3";}
+    if (line == "751") { return "SL4";}
+    if (line == "749") { return "SL5";}
+    if (line == "746") { return "SLW";}
+    if (line == "747") { return "CT2";}
+    if (line == "708") { return "CT3";}
+    else {return line;}
+}
 
 function get_sign(a) {
     if (a > 0 && a < 0.5) {return " ARR\t";}
@@ -337,7 +349,7 @@ function mk_coord_URL(a, la, lo) {
     }
     
 function mk_line_URL(line) {
-    return "<a href=\"https://mbta.com/schedules/"+line+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+line+"</a>";
+    return "<a href=\"https://mbta.com/schedules/"+line+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+set_SL_CT(line)+"</a>";
     }
 
 function mk_stop_URL(a, b) {
