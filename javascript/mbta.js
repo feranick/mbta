@@ -1,6 +1,6 @@
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
-gkey = "AIzaSyAHgQhGH6_52Xqv92ZqkcvaIqQayZQ_nso";
+gkey = "YOUR_GOOGLE_MAPPING_KEY";
 headers = {'Accept': 'application/json', 'x-api-key': key};
 maxPredEntries = 20;
 
@@ -220,26 +220,27 @@ async function get_vehicle(id) {
     v = (await getFeed(v_url))['data'];
     
     if (v.length > 0) {
-    label = "\n Vehicle label: "+document.getElementById("vehicle").value+"\n";
+    label = "<hr>";
+    label += " Vehicle label: "+document.getElementById("vehicle").value+"\n";
     
     for (let i=0; i<v.length; i++) {
     stat_id = v[i]['relationships']['stop']['data']['id']
     st_url = url+"stops/?filter[id]="+stat_id;
     station = (await getFeed(st_url))['data'][0]['attributes']['name'];
-    
+    label += "<hr>";
     label += " Vehicle ID: "+v[i]['id']+"\n";
     label += "\n Route: "+v[i]['relationships']['route']['data']['id']+" \n";
     label += " Occupancy: "+v[i]['attributes']['occupancy_status']+" \n";
-    label += " Latitude: "+v[i]['attributes']['latitude']+" \n";
+    label += " Stop sequence:"+v[i]['attributes']['current_stop_sequence']+" \n";
+    label += " Status: "+v[i]['attributes']['current_status']+" "+mk_stop_URL(stat_id, station)+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
+    label += " Time: "+format_time(v[i]['attributes']['updated_at'])+" \n";
+    label += "\n Latitude: "+v[i]['attributes']['latitude']+" \n";
     label += " Longitude: "+v[i]['attributes']['longitude']+" \n";
     label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
     label += " Speed: "+v[i]['attributes']['speed']+" \n";
     label += " Vehicle type: "+get_type(v[i]['id'])+" \n";
-    label += "\n Stop sequence:"+v[i]['attributes']['current_stop_sequence']+" \n";
-    label += " Status: "+v[i]['attributes']['current_status']+" "+mk_stop_URL(stat_id, station)+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
-    label += " Time: "+v[i]['attributes']['updated_at']+" \n";
-    label += mk_coord_URL("Current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude']);
-    label += draw_map(gkey,v[i]['attributes']['latitude'],v[i]['attributes']['longitude']);
+    label += mk_coord_URL("Current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude'])+"\n\n";
+    //label += draw_map(gkey,v[i]['attributes']['latitude'],v[i]['attributes']['longitude']);
     }
     document.getElementById("results").innerHTML = "".concat(...label);
     
@@ -249,7 +250,7 @@ async function get_vehicle(id) {
     }
     
 function draw_map(gkey, lat, long) {
-    return tag = "\n\n <iframe width=\"450\" height=\"250\" frameborder=\"0\" style=\"border:0\" referrerpolicy=\"no-referrer-when-downgrade\"    src=\"https://www.google.com/maps/embed/v1/view?key="+gkey+"&center="+lat+","+long+"&zoom=17\"</iframe>";
+    return "\n\n <iframe width=\"450\" height=\"250\" frameborder=\"0\" style=\"border:0\" referrerpolicy=\"no-referrer-when-downgrade\"    src=\"https://www.google.com/maps/embed/v1/view?key="+gkey+"&center="+lat+","+long+"&zoom=17\"</iframe>";
     }
 
 function get_type(v) {
@@ -293,9 +294,15 @@ function get_current_time() {
         secs = "0"+now.getSeconds();}
     else {
         secs = now.getSeconds();}
-        
     return get_dig(now.getHours())+":"+get_dig(now.getMinutes())+":"+get_dig(now.getSeconds());
     }
+
+function format_time(time_str) {
+    //2024-01-24T18:40:02-05:00
+    t = time_str.split(/-|T|:/);
+    //return t[1]+"/"+t[2]+"/"+t[0]+"  "+t[3]+":"+t[4]+":"+t[5]
+    return t[3]+":"+t[4]+":"+t[5];
+}
 
 function get_sign(a) {
     if (a > 0 && a < 0.5) {return " ARR\t";}
