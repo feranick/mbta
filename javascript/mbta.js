@@ -126,6 +126,7 @@ async function getSigns(station, routes) {
             if (p[i]['relationships']['vehicle']['data'] !== null) {
                 for (let j=0; j<vh.length; j++) {
                     if (vh[j]['id'] == p[i]['relationships']['vehicle']['data']['id']) {
+                        console.log("OK");
                         v = vh[j];
                     }
                 }
@@ -251,7 +252,7 @@ async function get_vehicle(id, line) {
     label += " Longitude: "+v[i]['attributes']['longitude']+" \n";
     label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
     label += " Speed: "+format_null(v[i]['attributes']['speed'])+" mph\n";
-    label += " Vehicle type: "+vehicle_model(v[i]['id'])+" \n";
+    label += " Vehicle type: "+vehicle_model(v[i], v[i]['relationships']['route']['data']['id'])+" \n";
     label += mk_coord_URL("Current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude'])+"\n\n";
     //label += draw_map(gkey,v[i]['attributes']['latitude'],v[i]['attributes']['longitude']);
     }}
@@ -282,6 +283,8 @@ function vehicle_type(line, veh) {
             tag = "N";}
         }
     else if (line.slice(0,5) == "Green") {
+        if(code.length > 4) {
+            code = code.slice(0,4);}
         if ((code >= 3600) || (code<=3719)) {
             tag = "O1";}
         if ((code >= 3800)  || (code <= 3894)) {
@@ -296,9 +299,23 @@ function vehicle_type(line, veh) {
     }} else {return "\t";}
     }
 
-function vehicle_model(v) {
+function vehicle_model(v, line) {
+    if (line.slice(0,5) == "Green") {
+        a = v['attributes']['label'];
+        if(a.length > 4) {
+            a = a.slice(0,4);}
+        if ((a >= 3600) || (a<=3699)) {
+            return "Kinki Sharyo Type 7 LRV (1986-1988)";}
+        if ((a >= 3700) || (a<=3719)) {
+            return "Kinki Sharyo Type 7 LRV (1997)";}
+        if ((a >= 3800)  || (a <= 3894)) {
+            return "AnsaldoBreda Type 8 LRV (1998-2007)";}
+        if (a >= 3900) {
+            return "CAF USA Type 9 LRV (2018-2020)";}
+        
+    }
     if (v[0] == "y") {
-        a = v.slice(1)*1;
+        a = v['id'].slice(1)*1;
         if (a>=600 && a<=910) {
             return "Bus: D40LF (2006-2008)";}
         else if (a>=1200 && a<=1224) {
