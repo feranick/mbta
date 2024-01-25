@@ -152,13 +152,13 @@ async function getSigns(station, routes) {
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (direction[j] == 0) {
-        label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+undef_format(vstatus[j])+"\t"+undef_format(vstatName[j]);
+        label += mk_map_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+undef_format(vstatus[j])+"\t"+undef_format(vstatName[j]);
         }}}
     if (direction.includes(1)) {
     label += "<hr>";
     for (let j=0; j<direction.length; j++) {
         if (direction[j] == 1) {
-        label += mk_coord_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+undef_format(vstatus[j])+"\t"+undef_format(vstatName[j]);
+        label += mk_map_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+undef_format(vstatus[j])+"\t"+undef_format(vstatName[j]);
         }}}
     label += "<hr>";
     document.getElementById("results").innerHTML = "".concat(...label);
@@ -251,8 +251,12 @@ async function get_vehicle(id, line) {
     label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
     label += " Speed: "+format_null(v[i]['attributes']['speed'])+" mph\n";
     label += " Vehicle type: "+vehicle_model(v[i], v[i]['relationships']['route']['data']['id'])+" \n";
-    label += mk_coord_URL("Current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude'])+"\n\n";
-    //label += draw_map(gkey,v[i]['attributes']['latitude'],v[i]['attributes']['longitude']);
+    label += mk_map_URL("Map current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude'])+"\n";
+    label += mk_streetview_URL("StreetView", v[i]['attributes']['latitude'], v[i]['attributes']['longitude'],v[i]['attributes']['bearing'])+"\n";
+    label += await (mk_gmaps_dir_URL("Route map", v[i]['relationships']['route']['data']['id']))+"\n";
+    
+    mk_gmaps_dir_URL
+    //label += embed_map(gkey,v[i]['attributes']['latitude'],v[i]['attributes']['longitude']);
     }}
     document.getElementById("results").innerHTML = "".concat(...label);
     
@@ -407,10 +411,22 @@ async function get_stops(stop, stops) {
     return name;
     }
 
-function mk_coord_URL(a, la, lo) {
-    return "\n <a href=\"https://www.google.com/maps/search/?api=1&query="+la+"%2C"+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>";
+function mk_map_URL(a, la, lo) {
+    return "\n <a href=\"https://www.google.com/maps/@?api=1&map_action=map&layer=transit&zoom=18&center="+la+","+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>";
     }
     
+function mk_streetview_URL(a, la, lo, h) {
+    return "\n <a href=\"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="+la+","+lo+"&heading="+h+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>";
+    }
+
+async function mk_gmaps_dir_URL(a, line) {
+    grt_url = url+"stops/?filter[route]="+line;
+    r = (await getFeed(grt_url))['data'];
+    orig = r[0]['attributes']['latitude']+","+r[0]['attributes']['longitude'];
+    dest = r[r.length-1]['attributes']['latitude']+","+r[r.length-1]['attributes']['longitude'];
+    return "\n <a href=\"https://www.google.com/maps/dir/?api=1&origin="+orig+"&destination="+dest+"&travelmode=transit&zoom=16\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>";
+    }
+
 function mk_line_URL(line) {
     return "<a href=\"https://mbta.com/schedules/"+line+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+set_SL_CT(line)+"</a>";
     }
@@ -418,11 +434,11 @@ function mk_line_URL(line) {
 function mk_stop_URL(a, b) {
     return "<a href=\"https://mbta.com/stops/"+a+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+b+"</a>"
     }
-    
-function draw_map(gkey, lat, long) {
+/*
+function embed_map(gkey, lat, long) {
     return "\n\n <iframe width=\"450\" height=\"250\" frameborder=\"0\" style=\"border:0\" referrerpolicy=\"no-referrer-when-downgrade\"    src=\"https://www.google.com/maps/embed/v1/view?key="+gkey+"&center="+lat+","+long+"&zoom=17\"</iframe>";
     }
-
+*/
 function undef_format(a) {
     if (a === undefined)
         { return "";}
