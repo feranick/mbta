@@ -129,7 +129,6 @@ async function getSigns(station, routes) {
                         v = vh[j];
                     }
                 }
-                
                 vtype.push(v['attributes']);
                 vstatus.push(v['attributes']['current_status']);
                 vstation.push(v['relationships']['stop']['data']['id']);
