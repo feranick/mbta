@@ -88,6 +88,7 @@ async function getSigns(station, routes) {
         label += "\n No data currently available. Try again later.\n";
         label += " Possible cause: no service available at this time\n";
         document.getElementById("results").innerHTML = "".concat(...label);
+        document.getElementById("warnLabel").innerHTML = "";
         return;
         }
     
