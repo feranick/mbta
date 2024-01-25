@@ -126,7 +126,6 @@ async function getSigns(station, routes) {
             if (p[i]['relationships']['vehicle']['data'] !== null) {
                 for (let j=0; j<vh.length; j++) {
                     if (vh[j]['id'] == p[i]['relationships']['vehicle']['data']['id']) {
-                        console.log("OK");
                         v = vh[j];
                     }
                 }
@@ -269,8 +268,10 @@ function vehicle_type(line, veh) {
     if (veh.hasOwnProperty('label') == true) {
         code = veh['label'];
     if (line == "Red") {
-        if (code < 1800) {
+        if (code < 1700) {
             tag = "O1";}
+        if (code >= 1700 && code < 1800) {
+            tag = "O1b";}
         if (code >= 1800 && code < 1900) {
             tag = "O2";}
         if (code >= 1900) {
@@ -300,19 +301,32 @@ function vehicle_type(line, veh) {
     }
 
 function vehicle_model(v, line) {
+    if (line == "Red") {
+    a = v['attributes']['label'];
+        if ((a >= 1500) && (a<=1523)) {
+            return "Pullman-Standard (1969-1970)";}
+        if ((a >= 1600) && (a<=1651)) {
+            return "Pullman-Standard (1969-1970)";}
+        if ((a >= 1700) && (a<=1757)) {
+            return "UTDC (1987-1989)";}
+        if ((a >= 1800) && (a<=1885)) {
+            return "Bombardier (1993-1994)";}
+        if ((a >= 1900) && (a<=2151)) {
+            return "Bombardier (2021-2025)";}
+    }
+
     if (line.slice(0,5) == "Green") {
         a = v['attributes']['label'];
         if(a.length > 4) {
             a = a.slice(0,4);}
-        if ((a >= 3600) || (a<=3699)) {
+        if ((a >= 3600) && (a<=3699)) {
             return "Kinki Sharyo Type 7 LRV (1986-1988)";}
-        if ((a >= 3700) || (a<=3719)) {
+        if ((a >= 3700) && (a<=3719)) {
             return "Kinki Sharyo Type 7 LRV (1997)";}
-        if ((a >= 3800)  || (a <= 3894)) {
+        if ((a >= 3800) && (a <= 3894)) {
             return "AnsaldoBreda Type 8 LRV (1998-2007)";}
         if (a >= 3900) {
             return "CAF USA Type 9 LRV (2018-2020)";}
-        
     }
     if (v[0] == "y") {
         a = v['id'].slice(1)*1;
