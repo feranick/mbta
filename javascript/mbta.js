@@ -223,17 +223,19 @@ async function get_vehicle(id) {
     
     if (v.length > 0) {
     label = "<hr>";
-    label += " Vehicle label: "+document.getElementById("vehicle").value+"\n";
+    label += " Vehicle label: "+id+"\n";
+    
     
     for (let i=0; i<v.length; i++) {
+    if (v[i]['relationships']['stop']['data'] != null) {
     stat_id = v[i]['relationships']['stop']['data']['id']
     st_url = url+"stops/?filter[id]="+stat_id;
     station = (await getFeed(st_url))['data'][0]['attributes']['name'];
     label += "<hr>";
     label += " Vehicle ID: "+v[i]['id']+"\n";
-    label += "\n Route: "+v[i]['relationships']['route']['data']['id']+" \n";
+    label += "\n Route: "+mk_line_URL(v[i]['relationships']['route']['data']['id'])+" \n";
     label += " Occupancy: "+v[i]['attributes']['occupancy_status']+" \n";
-    label += " Stop sequence:"+v[i]['attributes']['current_stop_sequence']+" \n";
+    label += " Stop sequence: "+v[i]['attributes']['current_stop_sequence']+" \n";
     label += " Status: "+v[i]['attributes']['current_status']+" "+mk_stop_URL(stat_id, station)+" (Stop ID: "+v[i]['relationships']['stop']['data']['id']+")\n";
     label += " Time: "+format_time(v[i]['attributes']['updated_at'])+" \n";
     label += "\n Latitude: "+v[i]['attributes']['latitude']+" \n";
@@ -243,6 +245,8 @@ async function get_vehicle(id) {
     label += " Vehicle type: "+get_bus_type(v[i]['id'])+" \n";
     label += mk_coord_URL("Current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude'])+"\n\n";
     //label += draw_map(gkey,v[i]['attributes']['latitude'],v[i]['attributes']['longitude']);
+    } else {
+    label += "\n No details about this vehicle are currently available.\n";}
     }
     document.getElementById("results").innerHTML = "".concat(...label);
     
@@ -255,19 +259,29 @@ function get_bus_type(v) {
     if (v[0] == "y") {
         a = v.slice(1)*1;
         if (a>=600 && a<=910) {
-            return "Bus: D40LF";}
+            return "Bus: D40LF (2006-2008)";}
         else if (a>=1200 && a<=1224) {
-            return "Bus: DE60LFR";}
-        else if ((a>=1400 && a<=1459) || (a>=1775 && a<=2118) || (a>=3000 && a<=3005) || (a>=3100 && a<=3359) || (a>=1200 && a<=1224)) {
-            return "Bus: XDE40 - Hybrid";}
+            return "Bus: DE60LFR (2010)";}
+        else if (a>=1400 && a<=1459) {
+            return "Bus: XDE40 - Hybrid (2014-1015)";}
         else if (a>=1600 && a<=1774) {
-            return "Bus: XN40 - GNG";}
-        else if ((a>=1250 && a<=1293) || (a>=1300 && a<=1344)) {
-            return "Bus: XDE60 - Hybrid";}
-         else if (a==1250) {
-            return "Bus: XDE60 - Hybrid - Extended Battery";}   
+            return "Bus: XN40 - GNG (2016-2017)";}
+        else if ((a>=1775 && a<=1924) || (a>=3000 && a<=3005)) {
+            return "Bus: XDE40 - Hybrid (2016-2017)";}
+        else if (a>=1250 && a<=1293) {
+            return "Bus: XDE60 - Hybrid (2016-2017)";}
+        else if (a==1294) {
+            return "Bus: XDE60 - Hybrid - Extended Battery (2018)";}
         else if (a>=1295 && a<=1299) {
-            return "Bus: XE60 - Battery Electric";}
+            return "Bus: XE60 - Battery Electric (2019)";}
+        else if (a>=1925 && a<=2118) {
+            return "Bus: XDE40 - Hybrid (2019-2020)";}
+        else if  (a>=3100 && a<=3159) {
+            return "Bus: XDE40 - Hybrid (2020)";}
+        else if  (a>=3200 && a<=3359) {
+            return "Bus: XDE40 - Hybrid (2023)";}
+        else if (a>=1300 && a<=1344) {
+            return "Bus: XDE60 - Hybrid (2022-2023)";}
         else {
             return "Bus: N/A";}
         }
@@ -294,13 +308,27 @@ function vehicle_type(line, veh) {
             return "N";}
         }
     if (line.slice(0,5) == "Green") {
-        if (code < 3900) {
-            return "O";}
+        if ((code >= 3600) || (code<=3719)) {
+            return "O1";}
+        if ((code >= 3800)  || (code <= 3894)) {
+            return "O2";}
         if (code >= 3900) {
             return "N";}
         }
+        
     if (line.slice(0,2) == "CR") {
-        return "CR";}
+        if (a>=1115 && a<=1139) {
+            return "GP40MC";}
+        else if ((a>=1050 && a<=1075) || (a>=1025 && a<=1036)) {
+            return "F40PH-3C";}
+        else if (a>=010 && a<=011) {
+            return "MP36PH-3C";}
+        else if (a>=2000 && a<=2039) {
+            return "GP40MC";}
+        else
+            {return code;}
+        }
+        
     if (code =="NA") {
         return "\t";}
     else {
@@ -308,7 +336,7 @@ function vehicle_type(line, veh) {
         }
     }} else {return "\t";}
     }
-    
+
 function set_SL_CT(line) {
     if (line == "741") { return "SL1";}
     if (line == "742") { return "SL2";}
