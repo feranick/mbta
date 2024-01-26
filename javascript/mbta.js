@@ -41,7 +41,9 @@ async function getNearbyStations() {
     for(var i = 0; i < nst.length; i++) {
         var opt = nst[i]['id'];
         nameSt = await get_stops(nst[i]['id'], stops);
-        select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "</option>";
+        dist = get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
+        //console.log(get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude']));
+        select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";
     }
     document.getElementById("warnLabel").innerHTML = "";
     }
@@ -476,8 +478,18 @@ function format_time(time_str) {
 }
 
 function get_radius(a) {
-    return a*0.02;
+    return a*0.02/1.609;
 }
+
+function get_distance(la1, lo1, la2, lo2, a) {
+
+    function r(a) {
+        return a*Math.PI/180;
+        }
+    
+    R = 6378.13685;
+    return (1000*(Math.acos((Math.sin(r(la1)) * Math.sin(r(la2))) + (Math.cos(r(la1)) * Math.cos(r(la2))) * (Math.cos(r(lo2) - r(lo1)))) * R)).toFixed(a);
+    }
 
 function format_null(a) {
     if (a == null) {

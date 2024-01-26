@@ -17,14 +17,14 @@
 </head>
 <body>
 <br><input name="station" id="station" size="12" type="text" placeholder="Station" value="place-knncl">
- <input type="submit" id="SearchLines" value="Search Lines" onclick=predRoutes() />
+ <input type="submit" id="SearchLines" value="Search lines" onclick=predRoutes() />
 <br><br><input name="route" id="route" size="12" type="text" placeholder="Line" value="Red">
- <input type="submit" id="SearchStation" value="Search Stations" onclick=predStops() />
+ <input type="submit" id="SearchStation" value="Search stations" onclick=predStops() />
 <br><br><input name="vehicle" id="vehicle" size="12" type="text" placeholder="Vehicle ID">
- <input type="submit" id="SearchVehicle" value="Search Vehicle" onclick=predVehicle() />
+ <input type="submit" id="SearchVehicle" value="Search vehicle" onclick=predVehicle() />
  <br><br><br><select name="nearbyStations" id="nearbyStations" onchange="setNearbyStations()"></select>
- <input type="submit" id="SearchNearby" value="Nearby Station" onclick=getNearbyStations() />
- <br> <label id="radiusLabel" for="radius">Radius in miles: </label><input name="radius" id="radius" size="12" type="text" value="0.2">
+ <br><br> <input type="submit" id="SearchNearby" value="Nearby station within:" onclick=getNearbyStations() />
+<input name="radius" id="radius" size="12" type="text" value="0.4"><label id="radiusLabel" for="radius"> km</label>
  <br><br><br><input type="submit" id="Search" value="Timetable" onclick=predSigns() />
  <label id="warnLabel" for="Search"></label>
 <br><text_area id="results" rows="50" cols="200" ></text_area>
