@@ -35,6 +35,7 @@ if ($_POST['station'] and $_POST['lines']) {
     <link rel="stylesheet" type="text/css" href="mbta.css" media="screen" />
     <!-- Choose a 57x57 image for the icon -->
     <link rel="apple-touch-icon" href="mbta_icon.png" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
 
