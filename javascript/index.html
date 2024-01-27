@@ -25,7 +25,7 @@
  <input type="submit" id="SearchVehicle" value="Search vehicle" onclick=predVehicle() />
  <br><br><br><select name="nearbyStations" id="nearbyStations" onchange="setNearbyStations()"></select>
  <br><br> <input type="submit" id="SearchNearby" value="Nearby station within:" onclick=getNearbyStations() />
-<input name="radius" id="radius" size="12" type="text" value="0.4"><label id="radiusLabel" for="radius"> km</label>
+<input name="radius" id="radius" size="12" type="numeric" value="0.3"><label id="radiusLabel" for="radius"> km</label>
  <br><br><br><input type="submit" id="Search" value="Timetable" onclick=predSigns() />
  <label id="warnLabel" for="Search"></label>
 <br><text_area id="results" rows="50" cols="200" ></text_area>
