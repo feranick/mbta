@@ -301,6 +301,7 @@ function vehicle_type(line, veh) {
     else {
         tag = code;
         }
+    document.getElementById("vehicle").innerHTML = code;
     return "<a href='javascript:get_vehicle(\""+code+"\",\""+line+"\");'>"+tag+'</a>';
     }} else {return "\t";}
     }
