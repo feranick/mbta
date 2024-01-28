@@ -216,16 +216,21 @@ async function getRoutes(stat_id) {
 
 function predVehicle() {
     id = document.getElementById("vehicle").value;
-    get_vehicle(id, "ALL");
+    get_vehicle(id, "");
+    }
+    
+function refresh_vehicle() {
+    if (document.getElementById("vehicle").value !== "") {
+    get_vehicle(document.getElementById("vehicle").value, document.getElementById("route").value);}
     }
     
 async function get_vehicle(id, line) {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
-    document.getElementById('vehicle').value=id;
+    document.getElementById('vehicle').value=code;
     v_url = url+"vehicles/?filter[label]="+id;
     v = (await getFeed(v_url))['data'];
     
-    if (line == "ALL") {
+    if (line == "") {
         art_url = url+"routes/";
         art = (await getFeed(art_url))['data'];
         routes = []
