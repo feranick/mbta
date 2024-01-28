@@ -221,6 +221,7 @@ function predVehicle() {
     
 async function get_vehicle(id, line) {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
+    document.getElementById('vehicle').value=id;
     v_url = url+"vehicles/?filter[label]="+id;
     v = (await getFeed(v_url))['data'];
     
@@ -301,7 +302,6 @@ function vehicle_type(line, veh) {
     else {
         tag = code;
         }
-    document.getElementById('vehicle').value=code;
     return "<a href='javascript:get_vehicle(\""+code+"\",\""+line+"\");'>"+tag+'</a>';
     }} else {return "\t";}
     }
