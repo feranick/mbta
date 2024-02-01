@@ -53,7 +53,8 @@ async function setNearbyStations() {
     select = document.getElementById("nearbyStations");
     stat_id = select.options[select.selectedIndex].value;
     document.getElementById("station").value = stat_id;
-    getRoutes(stat_id);
+    await getRoutes(stat_id);
+    predSigns();
     }
 
 function predSigns() {
