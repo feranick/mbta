@@ -53,8 +53,7 @@ async function setNearbyStations() {
     select = document.getElementById("nearbyStations");
     stat_id = select.options[select.selectedIndex].value;
     document.getElementById("station").value = stat_id;
-    await getRoutes(stat_id);
-    predSigns();
+    getRoutes(stat_id);
     }
 
 function predSigns() {
@@ -227,7 +226,7 @@ function refresh_vehicle() {
     
 async function get_vehicle(id, line) {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
-    document.getElementById('vehicle').value=code;
+    document.getElementById('vehicle').value=id;
     v_url = url+"vehicles/?filter[label]="+id;
     v = (await getFeed(v_url))['data'];
     
