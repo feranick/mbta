@@ -19,11 +19,11 @@
 <body>
 <br><input name="station" id="station" size="12" type="text" placeholder="Station" value="place-knncl">
  <input type="submit" id="SearchLines" value="Search lines" onclick=predRoutes() />
-<br><br><input name="route" id="route" size="12" type="text" placeholder="Line" value="Red">
+<br><br><select name="route" id="route" onchange=predSigns()></select>
  <input type="submit" id="SearchStation" value="Search stations" onclick=predStops() />
 <br><br><input name="vehicle" id="vehicle" size="12" type="text" placeholder="Vehicle ID">
  <input type="submit" id="SearchVehicle" value="Search vehicle" onclick=predVehicle() />
- <br><br><br><select name="nearbyStations" id="nearbyStations" onchange="setNearbyStations()"></select>
+ <br><br><br><select name="nearbyStations" id="nearbyStations" onchange=setNearbyStations()></select>
  <br><br> <input type="submit" id="SearchNearby" value="Nearby station within:" onclick=getNearbyStations() />
 <input name="radius" id="radius" size="12" type="numeric" value="0.3"><label id="radiusLabel" for="radius"> km</label>
  <br><br><br><input type="submit" id="Search" value="Timetable" onclick=predSigns() />

@@ -119,7 +119,6 @@ async function getSigns(station, routes) {
     
     for (let i=0; i<p.length; i++) {
         id_line = p[i]['relationships']['route']['data']['id'];
-
         if (line.includes(id_line) == true && dummy < maxPredEntries && p[i]['attributes']['schedule_relationship'] != "CANCELLED") {
             if (p[i]['attributes']['arrival_time'] !== null) {
                 arr_time = p[i]['attributes']['arrival_time'].slice(11).slice(0,-6);
@@ -221,7 +220,6 @@ function predRoutes() {
 }
 
 async function getRoutes(stat_id) {
-    label = []
     st_url = url+"stops/?filter[id]="+stat_id;
     station = (await getFeed(st_url))['data'][0]['attributes']['name'];
     
@@ -229,10 +227,11 @@ async function getRoutes(stat_id) {
     r = (await getFeed(rt_url))['data'];
     
     if (r.length > 0) {
+        clearList("route");
         for (let i=0; i<r.length; i++) {
-            label += r[i]['id']+" ";
+            document.getElementById("route").innerHTML +="<option value=\"" + r[i]['id'] + "\">" + r[i]['id'] + "</option>";
             }
-    document.getElementById("route").value = "".concat(...label);
+    predSigns();
     }  else {
         document.getElementById("results").innerHTML = "\n No Routes currently in operation through this station\n";}
     }
@@ -541,6 +540,11 @@ function format_null(a) {
         return a;}
     }
     
+function clearList(elementID) {
+    for (i=document.getElementById(elementID).options.length*1; i>=0; i--) {
+            document.getElementById(elementID).remove(i);}
+    }
+    
 ///////////////////////
 // Sleep //
 ///////////////////////
@@ -604,14 +608,15 @@ function initCookies() {
 function setHome() {
     initCookies();
     document.getElementById("station").value = getCookie('homeStation');
-    document.getElementById("route").value = getCookie('homeRoute');
+    document.getElementById("route").innerHTML = "<option value=\"" + getCookie('homeRoute') + "\">" + getCookie('homeRoute') + "</option>";
     document.getElementById("vehicle").value = "";
     }
 
 function init() {
     initCookies();
     document.getElementById("station").value = getCookie('currStation');
-    document.getElementById("route").value = getCookie('currRoute');
+    clearList("route");
+    document.getElementById("route").innerHTML = "<option value=\"" + getCookie('currRoute') + "\">" + getCookie('currRoute') + "</option>";
     document.getElementById("vehicle").value = getCookie('currVehicle');
 }
 
