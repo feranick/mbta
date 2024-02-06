@@ -40,12 +40,13 @@ async function getNearbyStations() {
     stops = (await getFeed(stops_url))['data'];
     
     for(var i = 0; i < nst.length; i++) {
-        var opt = nst[i]['id'];
-        nameSt = await get_stops(nst[i]['id'], stops);
-        dist = get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
-        //console.log(get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude']));
-        select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";
-    }
+        if (['node', 'door'].indexOf(nst[i]['id'].slice(0,4))<0) {
+            nameSt = await get_stops(nst[i]['id'], stops);
+            if(!isNaN(nst[i]['id'].slice(0,4))) {
+                nameSt+=" - Bus";}
+            dist = get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
+            select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";
+            }}
     document.getElementById("warnLabel").innerHTML = "";
     }
     
