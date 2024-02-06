@@ -4,17 +4,18 @@ gkey = "YOUR_GOOGLE_MAPPING_KEY";
 headers = {'Accept': 'application/json', 'x-api-key': key};
 maxPredEntries = 20;
 
+////////////////////////////////////
+// Get feed from DB - generic     //
+////////////////////////////////////
 async function getFeed(url) {
     const res = await fetch(url);
     const obj = await res.json();
     return obj;
     }
-
-function getCoords() {
-    return new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject));
-    }
-
+    
+//////////////////////////////
+// Nearby functionality     //
+//////////////////////////////
 async function getNearbyStations() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
     radius = get_radius(document.getElementById("radius").value);
@@ -56,10 +57,15 @@ async function setNearbyStations() {
     getRoutes(stat_id);
     }
 
+//////////////////////////////
+// Signs prediction view    //
+//////////////////////////////
 function predSigns() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
     station = document.getElementById("station").value;
     routes = document.getElementById("route").value;
+    setCookie('currStation',station,100);
+    setCookie('currRoute',routes,100);
     getSigns(station, routes);
 }
 
@@ -167,6 +173,17 @@ async function getSigns(station, routes) {
     document.getElementById("warnLabel").innerHTML = "";
     }
     
+function get_sign(a) {
+    if (a > 0 && a < 0.5) {return " ARR\t";}
+    if (a >= 0.5 && a < 1) {return " APPR\t";}
+    if (a >= 1) {return Math.round(a)+" min\t";}
+    if (a > -10 && a <= 0) {return "BOARD \t";}
+    if (a <= -10) {return "--- \t";}
+    }
+
+//////////////////////////////
+// Stops view               //
+//////////////////////////////
 async function predStops() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
     rt_url = url+"stops/?filter[route]="+document.getElementById("route").value;
@@ -192,8 +209,13 @@ function setStops(stop) {
     getRoutes(stop);
 }
 
+//////////////////////////////
+// Routes view              //
+//////////////////////////////
 function predRoutes() {
     stat_id = document.getElementById("station").value;
+    setHomeCookie('currStation',document.getElementById("station").value);
+    setHomeCookie('currRoute', document.getElementById("route").value);
     getRoutes(stat_id);
 }
 
@@ -213,7 +235,10 @@ async function getRoutes(stat_id) {
     }  else {
         document.getElementById("results").innerHTML = "\n No Routes currently in operation through this station\n";}
     }
-
+    
+//////////////////////////////
+// Vehicle view             //
+//////////////////////////////
 function predVehicle() {
     id = document.getElementById("vehicle").value;
     get_vehicle(id, "");
@@ -226,6 +251,7 @@ function refresh_vehicle() {
     
 async function get_vehicle(id, line) {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
+    setCookie('currVehicle',id,100);
     document.getElementById('vehicle').value=id;
     v_url = url+"vehicles/?filter[label]="+id;
     v = (await getFeed(v_url))['data'];
@@ -273,6 +299,9 @@ async function get_vehicle(id, line) {
     document.getElementById("warnLabel").innerHTML = "";
     }
 
+//////////////////////////////
+// Vehicle types and models //
+//////////////////////////////
 function vehicle_type(line, veh) {
     tag = "N/A";
     if (typeof veh == 'object') {
@@ -394,14 +423,9 @@ function set_SL_CT(line) {
     else {return line;}
 }
 
-function get_sign(a) {
-    if (a > 0 && a < 0.5) {return " ARR\t";}
-    if (a >= 0.5 && a < 1) {return " APPR\t";}
-    if (a >= 1) {return Math.round(a)+" min\t";}
-    if (a > -10 && a <= 0) {return "BOARD \t";}
-    if (a <= -10) {return "--- \t";}
-    }
-    
+////////////////////////
+// Query DB for stops //
+////////////////////////
 async function get_stop(stop) {
     st_url = url+"stops/?filter[id]="+stop;
     s = (await getFeed(st_url))['data'];
@@ -419,6 +443,9 @@ async function get_stops(stop, stops) {
     return name;
     }
 
+///////////////
+// make URLs //
+///////////////
 function mk_map_URL(a, la, lo) {
     return "\n <a href=\"https://www.google.com/maps/@?api=1&map_action=map&layer=transit&zoom=18&center="+la+","+lo+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>";
     }
@@ -447,6 +474,15 @@ function embed_map(gkey, lat, long) {
     return "\n\n <iframe width=\"450\" height=\"250\" frameborder=\"0\" style=\"border:0\" referrerpolicy=\"no-referrer-when-downgrade\"    src=\"https://www.google.com/maps/embed/v1/view?key="+gkey+"&center="+lat+","+long+"&zoom=17\"</iframe>";
     }
 */
+
+///////////////////////////////////////
+// Date/Time/length/coord formatting //
+///////////////////////////////////////
+function getCoords() {
+    return new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject));
+    }
+
 function undef_format(a) {
     if (a === undefined)
         { return "";}
@@ -503,7 +539,80 @@ function format_null(a) {
     else {
         return a;}
     }
-
+    
+///////////////////////
+// Sleep //
+///////////////////////
 function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
    }
+
+///////////////////////
+// Cookie management //
+///////////////////////
+function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  let expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);}
+    }
+  return "";
+}
+
+function eraseCookie(name) {
+    document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+function initCookie(name, value) {
+    var x = getCookie(name);
+        if (x=="") {setCookie(name,value,100);}
+    }
+    
+function eraseAllCookies() {
+    eraseCookie('homeStation');
+    eraseCookie('homeRoute');
+    eraseCookie('currStation');
+    eraseCookie('currRoute');
+    eraseCookie('currVehicle');
+    }
+
+function initCookies() {
+    initCookie('homeStation','place-knncl');
+    initCookie('homeRoute', 'Red');
+    initCookie('currStation','place-knncl');
+    initCookie('currRoute', 'Red');
+    initCookie('currVehicle', '');
+    }
+
+///////////////////////
+// Initialization    //
+///////////////////////
+function setHome() {
+    initCookies();
+    document.getElementById("station").value = getCookie('homeStation');
+    document.getElementById("route").value = getCookie('homeRoute');
+    document.getElementById("vehicle").value = "";
+    }
+
+function init() {
+    initCookies();
+    document.getElementById("station").value = getCookie('currStation');
+    document.getElementById("route").value = getCookie('currRoute');
+    document.getElementById("vehicle").value = getCookie('currVehicle');
+}
+
+window.onload = init;
+
