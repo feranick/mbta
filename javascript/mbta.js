@@ -48,10 +48,10 @@ async function getNearbyStations() {
             select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";
             }}
     document.getElementById("warnLabel").innerHTML = "";
+    setNearbyStations();
     }
     
 async function setNearbyStations() {
-    label = [];
     select = document.getElementById("nearbyStations");
     stat_id = select.options[select.selectedIndex].value;
     document.getElementById("station").value = stat_id;
