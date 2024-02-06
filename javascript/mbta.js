@@ -215,8 +215,8 @@ function setStops(stop) {
 //////////////////////////////
 function predRoutes() {
     stat_id = document.getElementById("station").value;
-    setHomeCookie('currStation',document.getElementById("station").value);
-    setHomeCookie('currRoute', document.getElementById("route").value);
+    initCookie('currStation',document.getElementById("station").value);
+    initCookie('currRoute', document.getElementById("route").value);
     getRoutes(stat_id);
 }
 
