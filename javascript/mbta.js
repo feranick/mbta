@@ -352,7 +352,7 @@ function vehicle_model(v, line) {
         if ((a >= 1800) && (a<=1885)) {
             return "Bombardier (1993-1994)";}
         if ((a >= 1900) && (a<=2151)) {
-            return "Bombardier (2021-2025)";}
+            return "CRRC (2021-2025)";}
     }
     
     if (line == "Orange") {
