@@ -1,0 +1,7 @@
+{
+  "name": "MBTA",
+  "short_name": "MBTA",
+  "description": "Check arrival times for any station/bus stop with MBTA",
+  "start_url": ".",
+  "display": "standalone"
+}
