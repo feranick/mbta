@@ -1,3 +1,4 @@
+version = "2025.12.15.1"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
@@ -325,12 +326,12 @@ function vehicle_type(line, veh) {
         }
     else if (line.slice(0,5) == "Green") {
         if(code.length > 4) {
-            code = code.slice(0,4);}
-        if ((code >= 3600) || (code<=3719)) {
+            code_first = code.slice(0,4);}
+        if ((code_first >= 3600) || (code_first<=3719)) {
             tag = "O1";}
-        if ((code >= 3800)  || (code <= 3894)) {
+        if ((code_first >= 3800)  || (code_first <= 3894)) {
             tag ="O2";}
-        if (code >= 3900) {
+        if (code_first >= 3900) {
             tag = "N";}
         }
     else {
