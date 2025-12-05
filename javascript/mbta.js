@@ -264,7 +264,15 @@ async function get_vehicle(id, line) {
         for (f=0; f<art.length; f++) {
             routes.push(art[f]['id']);}
         line = routes;}
-                    
+    /*
+    else if (line.slice(0,2) == "CR") {
+        pattern = /^[RGBy]/;
+        cr = v.filter(item => pattern.test(item.id));
+        console.log(cr);
+        if (cr) {v = cr;}
+        }
+    */
+      
     if (v.length > 0) {
     label = "<hr>";
     label += " Vehicle label: "+id+"\n";
