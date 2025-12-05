@@ -360,7 +360,7 @@ function vehicle_model(v, line) {
     
     if (id == "O") {
         if ((a >= 1400) && (a<=1551)) {
-            return "CRRC (2018-2023)";}
+            return "CRRC (2018-2025)";}
     }
     
     if (id == "B") {
@@ -400,10 +400,14 @@ function vehicle_model(v, line) {
             return "Bus: XDE40 - Hybrid (2019-2020)";}
         else if  (a>=3100 && a<=3159) {
             return "Bus: XDE40 - Hybrid (2020)";}
-        else if  (a>=3200 && a<=3359) {
-            return "Bus: XDE40 - Hybrid (2023)";}
         else if (a>=1300 && a<=1344) {
             return "Bus: XDE60 - Hybrid (2022-2023)";}
+        else if  (a>=3200 && a<=3359) {
+            return "Bus: XDE40 - Hybrid (2023)";}
+        else if  (a>=4200 && a<=4231) {
+            return "Bus: XE40 - Electric - Left side doors (2024-2025)";}
+        else if  (a>=4300 && a<=4347) {
+            return "Bus: XE40 - Electric (2024-2026)";}
         else {
             return "Bus: N/A";}
         }
