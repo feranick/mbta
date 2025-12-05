@@ -270,7 +270,7 @@ async function get_vehicle(id, line) {
     label += " Vehicle label: "+id+"\n";
     
     for (let i=0; i<v.length; i++) {
-    if (v[i]['relationships']['stop']['data'] != null && (line.includes(v[i]['relationships']['route']['data']['id']) || line.slice[0,2] == "CR")) {   
+    if (v[i]['relationships']['stop']['data'] != null && (line.includes(v[i]['relationships']['route']['data']['id']) || line.slice(0,2) == "CR")) {   
     stat_id = v[i]['relationships']['stop']['data']['id']
     st_url = url+"stops/?filter[id]="+stat_id;
     station = (await getFeed(st_url))['data'][0]['attributes']['name'];
