@@ -341,8 +341,10 @@ function vehicle_type(line, veh) {
     }
 
 function vehicle_model(v, line) {
-    if (line == "Red") {
+    id = v['id'][0];
     a = v['attributes']['label'];
+    
+    if (id == "R") {
         if ((a >= 1500) && (a<=1523)) {
             return "Pullman-Standard (1969-1970)";}
         if ((a >= 1600) && (a<=1651)) {
@@ -355,18 +357,16 @@ function vehicle_model(v, line) {
             return "CRRC (2021-2025)";}
     }
     
-    if (line == "Orange") {
-    a = v['attributes']['label'];
+    if (id == "O") {
         if ((a >= 1400) && (a<=1551)) {
             return "CRRC (2018-2023)";}
     }
     
-    if (line == "Blue") {
+    if (id == "B") {
         return "Siemens 700-series (2007-2009)";
     }
 
-    if (line.slice(0,5) == "Green") {
-        a = v['attributes']['label'];
+    if (id == "G") {
         if(a.length > 4) {
             a = a.slice(0,4);}
         if ((a >= 3600) && (a<=3699)) {
@@ -378,8 +378,7 @@ function vehicle_model(v, line) {
         if (a >= 3900) {
             return "CAF USA Type 9 LRV (2018-2020)";}
     }
-    if (v[0] == "y") {
-        a = v['id'].slice(1)*1;
+    if (id == "y") {
         if (a>=600 && a<=910) {
             return "Bus: D40LF (2006-2008)";}
         else if (a>=1200 && a<=1224) {
