@@ -303,6 +303,7 @@ async function get_vehicle(id, line) {
     label += " Longitude: "+v[i]['attributes']['longitude']+" \n";
     label += " Bearing: "+v[i]['attributes']['bearing']+" \n";
     label += " Speed: "+format_null(v[i]['attributes']['speed'])+" mph\n";
+    label += " Number of carriages: " + v[i]['attributes']['carriages'].length +"\n";
     label += " Vehicle type: "+vehicle_model(v[i], v[i]['relationships']['route']['data']['id'])+" \n";
     label += mk_map_URL("Map current location", v[i]['attributes']['latitude'], v[i]['attributes']['longitude'])+"\n";
     label += mk_streetview_URL("StreetView", v[i]['attributes']['latitude'], v[i]['attributes']['longitude'],v[i]['attributes']['bearing'])+"\n";
