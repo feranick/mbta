@@ -1,4 +1,4 @@
-version = "2025.12.15.1"
+version = "2025.12.06.1"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
@@ -9,9 +9,19 @@ maxPredEntries = 20;
 // Get feed from DB - generic     //
 ////////////////////////////////////
 async function getFeed(url) {
-    const res = await fetch(url);
-    const obj = await res.json();
-    return obj;
+    try {
+        const res = await fetch(url);
+        if (!res.ok) {
+           const errorData = await res.json(); // Attempt to parse error response
+           throw new Error(`HTTP error! status: ${res.status}, code: ${errorData.errorCode}`);
+        }
+        const obj = await res.json();
+        return obj;
+        }
+     catch (error) { 
+        console.error("Error: ", error); 
+        document.getElementById("warnLabel").innerHTML = "Too many requests.";
+        }
     }
     
 //////////////////////////////
