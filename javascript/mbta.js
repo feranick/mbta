@@ -430,6 +430,23 @@ function vehicle_model(v, line) {
         else {
             return "Bus: N/A";}
         }
+        
+    if (line.slice(0,2) == "CR") {
+        if (a>1700 && a<1725) {
+           return "Kawasaki CTC-4 Control Trailer Coaches (1990-1991)";}
+        else if (a>1800 && a<1828) {
+           return "Rotem CTC-5 Control Trailer Coaches (2012-2014)";}
+        else if (a>=1828 && a<1870) {
+           return "Rotem CTC-5 Control Trailer Coaches (2022-2024)";}
+        else if (a>=1025 && a<1037) {
+           return "Morrison-Knudsen F40PH-3C (1991-1993, Reb: 2003-2004 / 2019-2024)";}
+        else if (a>=1050 && a<1076) {
+           return "EMD F40PH-3C (1987-1988, Reb: 2001-2003 / 2019-2024)";}
+        else if (a>=1115 && a<1140) {
+           return "GMD GP40MC (1973-1975-1993, Reb: 1997)";}
+        else if (a>=2000 && a<2040) {
+           return "MPI HSP-46 (2014-2014)";}
+       }
     else {
         return "N/A";}
     }
