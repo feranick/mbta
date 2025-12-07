@@ -23,6 +23,15 @@ async function getFeed(url) {
         document.getElementById("warnLabel").innerHTML = "Too many requests.";
         }
     }
+
+////////////////////////////////////
+// Get Alerts                   //
+////////////////////////////////////
+async function getAlerts() {
+    alerts_url = url+"alerts/";
+    alerts = (await getFeed(alerts_url))['data'];
+    console.log(alerts);
+    }
     
 //////////////////////////////
 // Nearby functionality     //
@@ -82,6 +91,7 @@ function predSigns() {
 }
 
 async function getSigns(station, routes) {
+    getAlerts()
     label = []
     line = routes.split(" ");
     
