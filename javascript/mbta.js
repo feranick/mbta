@@ -91,8 +91,7 @@ function predSigns() {
 }
 
 async function getSigns(station, routes) {
-    getAlerts()
-    label = []
+    label = [];
     line = routes.split(" ");
     
     //############################
