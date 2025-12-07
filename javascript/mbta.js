@@ -23,15 +23,6 @@ async function getFeed(url) {
         document.getElementById("warnLabel").innerHTML = "Too many requests.";
         }
     }
-
-////////////////////////////////////
-// Get Alerts                   //
-////////////////////////////////////
-async function getAlerts() {
-    alerts_url = url+"alerts/";
-    alerts = (await getFeed(alerts_url))['data'];
-    console.log(alerts);
-    }
     
 //////////////////////////////
 // Nearby functionality     //
@@ -189,6 +180,15 @@ async function getSigns(station, routes) {
         label += mk_map_URL(dest[direction[j]],vla[j],vlo[j])+"\t"+pred_arr_times[j]+"\t"+vehicle_type(lines[j],vtype[j])+"\t"+mk_line_URL(lines[j])+"\t\t"+undef_format(vstatus[j])+"\t"+undef_format(vstatName[j]);
         }}}
     label += "<hr>";
+
+    alerts = await getAlerts(station, routes);
+    if (alerts.length>0) {
+        for (let i=0; i<alerts.length; i++) {
+            label += alerts[i].attributes.short_header;
+            }
+        label += "<hr>";
+        }
+    
     document.getElementById("results").innerHTML = "".concat(...label);
     document.getElementById("warnLabel").innerHTML = "";
     }
@@ -199,6 +199,15 @@ function get_sign(a) {
     if (a >= 1) {return Math.round(a)+" min\t";}
     if (a > -10 && a <= 0) {return "BOARD \t";}
     if (a <= -10) {return "--- \t";}
+    }
+    
+////////////////////////////////////
+// Get Alerts                   //
+////////////////////////////////////
+async function getAlerts(station, route) {
+    alerts_url = url+"alerts/?filter[stop]="+station+"&filter[route]="+route;
+    alerts = (await getFeed(alerts_url))['data'];
+    return alerts;
     }
 
 //////////////////////////////
