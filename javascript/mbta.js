@@ -1,8 +1,8 @@
-version = "2025.12.06.1"
+version = "2025.12.07.1"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
-headers = {'Accept': 'application/json', 'x-api-key': key};
+headers = {'Accept': 'application/json', "Accept-Encoding": "gzip", 'x-api-key': key};
 maxPredEntries = 20;
 
 ////////////////////////////////////
