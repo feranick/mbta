@@ -91,7 +91,7 @@ function predSigns() {
 }
 
 async function getSigns(station, routes) {
-    let label = [];
+    let label = "";
     let line = routes.split(" ");
     
     //############################
@@ -123,7 +123,7 @@ async function getSigns(station, routes) {
     
     let dummy = 0;
     let pred_arr_times = [];
-    let direction = [];
+    let direction = "";
     let status = [];
     let vstation = [];
     let vstatName =[];
