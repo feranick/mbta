@@ -29,38 +29,47 @@ async function getFeed(url) {
 //////////////////////////////
 async function getNearbyStations() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
-    const radius = get_radius(document.getElementById("radius").value);
-    const position = await getCoords(),
-            { coords } = position;
-    const lat = position['coords']['latitude'];
-    const long = position['coords']['longitude'];
+        try {
+        const radius = get_radius(document.getElementById("radius").value);
+        const position = await getCoords();
+        
+        // Destructuring is cleaner when you know position is valid
+        const { latitude: lat, longitude: long } = position.coords;
 
-    const nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]="+radius;
-    const nst = (await getFeed(nst_url))['data'];
-             
-    if (nst.length == 0) {
-        console.log(" No data currently available. Try again later.");
-        console.log(" Possible cause: no service available at this time\n");
-        return;
+        const nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]="+radius;
+        const nst = (await getFeed(nst_url))['data'];
+                 
+        if (nst.length == 0) {
+            console.log(" No data currently available. Try again later.");
+            console.log(" Possible cause: no service available at this time\n");
+            document.getElementById("warnLabel").innerHTML = "No stations found in the specified radius.";
+            return;
         }
-    
-    let select = document.getElementById("nearbyStations");
-    select.innerHTML = "";
+        
+        let select = document.getElementById("nearbyStations");
+        select.innerHTML = "";
 
-    const stops_url = url+"stops/";
-    const stops = (await getFeed(stops_url))['data'];
-    
-    for(var i = 0; i < nst.length; i++) {
-        if (['node', 'door'].indexOf(nst[i]['id'].slice(0,4))<0) {
-            let nameSt = await get_stops(nst[i]['id'], stops);
-            if(!isNaN(nst[i]['id'].slice(0,4))) {
-                nameSt+=" - Bus";}
-            let dist = get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
-            select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";
-            }}
-    document.getElementById("warnLabel").innerHTML = "";
-    setNearbyStations();
+        const stops_url = url+"stops/";
+        const stops = (await getFeed(stops_url))['data'];
+        
+        for(var i = 0; i < nst.length; i++) {
+            if (['node', 'door'].indexOf(nst[i]['id'].slice(0,4))<0) {
+                let nameSt = await get_stops(nst[i]['id'], stops);
+                if(!isNaN(nst[i]['id'].slice(0,4))) {
+                    nameSt+=" - Bus";}
+                let dist = get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
+                select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";
+                }}
+        document.getElementById("warnLabel").innerHTML = "";
+        setNearbyStations();
+
+    } catch (error) {
+        console.error("Error in getNearbyStations:", error);
+        if (!document.getElementById("warnLabel").innerHTML) {
+             document.getElementById('warnLabel').textContent = "An error occurred while fetching nearby stations.";
+        }
     }
+}
     
 async function setNearbyStations() {
     let select = document.getElementById("nearbyStations");
@@ -539,35 +548,36 @@ function embed_map(gkey, lat, long) {
 ///////////////////////////////////////
 function getCoords() {
     return new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, handleError, geolocationOptions));
-    }
+        navigator.geolocation.getCurrentPosition(
+            resolve, 
+            (error) => {
+                let errorMessage = '';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = "Geolocation permission denied. Cannot find nearby stations.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = "Location information is unavailable.";
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = "Location request timed out.";
+                        break;
+                    default:
+                        errorMessage = "An unknown location error occurred.";
+                }
+                document.getElementById('warnLabel').textContent = errorMessage;
+                reject(error);
+            },
+            geolocationOptions
+        )
+    );
+}
     
 const geolocationOptions = {
     enableHighAccuracy: true,
     timeout: 10000, // Wait max 5 seconds
     maximumAge: 0   // Don't use cached location
 };
-    
-function handleError(error) {
-    let errorMessage = '';
-    switch (error.code) {
-        case error.PERMISSION_DENIED:
-            errorMessage = "User denied the request for Geolocation.";
-            break;
-        case error.POSITION_UNAVAILABLE:
-            errorMessage = "Location information is unavailable.";
-            break;
-        case error.TIMEOUT:
-            errorMessage = "The request to get user location timed out.";
-            break;
-        case error.UNKNOWN_ERROR:
-            errorMessage = "An unknown error occurred.";
-            break;
-    }
-    console.error(errorMessage);
-    console.error(`Error Code: ${error.code}, Message: ${error.message}`);
-    document.getElementById('warnLabel').textContent = errorMessage;
-}
 
 function undef_format(a) {
     if (a === undefined)
