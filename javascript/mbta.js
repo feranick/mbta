@@ -538,8 +538,35 @@ function embed_map(gkey, lat, long) {
 ///////////////////////////////////////
 function getCoords() {
     return new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject));
+        navigator.geolocation.getCurrentPosition(resolve, handleError, geolocationOptions));
     }
+    
+const geolocationOptions = {
+    enableHighAccuracy: true,
+    timeout: 10000, // Wait max 5 seconds
+    maximumAge: 0   // Don't use cached location
+};
+    
+function handleError(error) {
+    let errorMessage = '';
+    switch (error.code) {
+        case error.PERMISSION_DENIED:
+            errorMessage = "User denied the request for Geolocation.";
+            break;
+        case error.POSITION_UNAVAILABLE:
+            errorMessage = "Location information is unavailable.";
+            break;
+        case error.TIMEOUT:
+            errorMessage = "The request to get user location timed out.";
+            break;
+        case error.UNKNOWN_ERROR:
+            errorMessage = "An unknown error occurred.";
+            break;
+    }
+    console.error(errorMessage);
+    console.error(`Error Code: ${error.code}, Message: ${error.message}`);
+    document.getElementById('warnLabel').textContent = errorMessage;
+}
 
 function undef_format(a) {
     if (a === undefined)
