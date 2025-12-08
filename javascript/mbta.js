@@ -350,11 +350,10 @@ async function get_vehicle(id, line) {
 // Vehicle types and models //
 //////////////////////////////
 function vehicle_type(line, veh) {
-    let tag = "N/A";
-    let code = 0;
     if (typeof veh == 'object') {
     if (veh.hasOwnProperty('label') == true) {
-        code = veh['label'];
+        let tag = "N/A";
+        let code = parseInt(veh['label']);
     if (line == "Red") {
         if (code < 1700) {
             tag = "O1";}
@@ -390,7 +389,7 @@ function vehicle_type(line, veh) {
 
 function vehicle_model(v, line) {
     const id = v['id'][0];
-    const a = v['attributes']['label'];
+    const a = parseInt(v['attributes']['label']);
     
     if (id == "R") {
         if ((a >= 1500) && (a<=1523)) {
@@ -618,7 +617,7 @@ function format_time(time_str) {
 }
 
 function get_radius(a) {
-    return a*0.02/1.609;
+    return parseFloat(a)*0.02/1.609;
 }
 
 function get_distance(la1, lo1, la2, lo2, a) {
