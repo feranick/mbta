@@ -1,4 +1,4 @@
-version = "2025.12.07.1"
+version = "2025.12.08.1"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
@@ -29,14 +29,14 @@ async function getFeed(url) {
 //////////////////////////////
 async function getNearbyStations() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
-    radius = get_radius(document.getElementById("radius").value);
-    let position = await getCoords(),
+    const radius = get_radius(document.getElementById("radius").value);
+    const position = await getCoords(),
             { coords } = position;
-        lat = position['coords']['latitude'];
-        long = position['coords']['longitude'];
+    const lat = position['coords']['latitude'];
+    const long = position['coords']['longitude'];
 
-    nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]="+radius;
-    nst = (await getFeed(nst_url))['data'];
+    const nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]="+radius;
+    const nst = (await getFeed(nst_url))['data'];
              
     if (nst.length == 0) {
         console.log(" No data currently available. Try again later.");
@@ -44,18 +44,18 @@ async function getNearbyStations() {
         return;
         }
     
-    var select = document.getElementById("nearbyStations");
+    let select = document.getElementById("nearbyStations");
     select.innerHTML = "";
 
-    stops_url = url+"stops/";
-    stops = (await getFeed(stops_url))['data'];
+    const stops_url = url+"stops/";
+    const stops = (await getFeed(stops_url))['data'];
     
     for(var i = 0; i < nst.length; i++) {
         if (['node', 'door'].indexOf(nst[i]['id'].slice(0,4))<0) {
-            nameSt = await get_stops(nst[i]['id'], stops);
+            let nameSt = await get_stops(nst[i]['id'], stops);
             if(!isNaN(nst[i]['id'].slice(0,4))) {
                 nameSt+=" - Bus";}
-            dist = get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
+            let dist = get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
             select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";
             }}
     document.getElementById("warnLabel").innerHTML = "";
@@ -63,8 +63,8 @@ async function getNearbyStations() {
     }
     
 async function setNearbyStations() {
-    select = document.getElementById("nearbyStations");
-    stat_id = select.options[select.selectedIndex].value;
+    let select = document.getElementById("nearbyStations");
+    let stat_id = select.options[select.selectedIndex].value;
     document.getElementById("station").value = stat_id;
     getRoutes(stat_id);
     }
@@ -74,35 +74,35 @@ async function setNearbyStations() {
 //////////////////////////////
 function predSigns() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
-    station = document.getElementById("station").value;
-    routes = document.getElementById("route").value;
+    const station = document.getElementById("station").value;
+    const routes = document.getElementById("route").value;
     setCookie('currStation',station,100);
     setCookie('currRoute',routes,100);
     getSigns(station, routes);
 }
 
 async function getSigns(station, routes) {
-    label = [];
-    line = routes.split(" ");
+    let label = [];
+    let line = routes.split(" ");
     
     //############################
     //# get all stops/vehicles
     //############################
-    stops_url = url+"stops/";
-    stops = (await getFeed(stops_url))['data'];
+    const stops_url = url+"stops/";
+    const stops = (await getFeed(stops_url))['data'];
     
-    vh_url = url+"vehicles/";
-    vh = (await getFeed(vh_url))['data'];
+    const vh_url = url+"vehicles/";
+    const vh = (await getFeed(vh_url))['data'];
     
-    st_url = url+"stops/?filter[id]="+station;
-    s = (await getFeed(st_url))['data'];
-    statNameCurr = s[0]['attributes']['name'];
+    const st_url = url+"stops/?filter[id]="+station;
+    const s = (await getFeed(st_url))['data'];
+    const statNameCurr = s[0]['attributes']['name'];
     
-    rt_url = url+"routes/?filter[id]="+line;
-    dest = (await getFeed(rt_url))['data'][0]['attributes']['direction_destinations'];
+    const rt_url = url+"routes/?filter[id]="+line;
+    const dest = (await getFeed(rt_url))['data'][0]['attributes']['direction_destinations'];
     
-    pr_url = url+"predictions/?filter[stop]="+station;
-    p = (await getFeed(pr_url))['data'];
+    const pr_url = url+"predictions/?filter[stop]="+station;
+    const p = (await getFeed(pr_url))['data'];
     
     if (p.length ==0) {
         label += "\n No data currently available. Try again later.\n";
@@ -112,24 +112,24 @@ async function getSigns(station, routes) {
         return;
         }
     
-    dummy = 0;
-    pred_arr_times = [];
-    direction = [];
-    status = [];
-    vstation = [];
-    vstatName =[];
-    vstatus = [];
-    vtype = [];
-    locat = [];
-    lines = [];
-    vla = [];
-    vlo = [];
+    let dummy = 0;
+    let pred_arr_times = [];
+    let direction = [];
+    let status = [];
+    let vstation = [];
+    let vstatName =[];
+    let vstatus = [];
+    let vtype = [];
+    let locat = [];
+    let lines = [];
+    let vla = [];
+    let vlo = [];
     
-    current_time = get_current_time();
+    let current_time = get_current_time();
     document.getElementById("results").innerHTML = "Something is wrong. Please reload page.";
     
     for (let i=0; i<p.length; i++) {
-        id_line = p[i]['relationships']['route']['data']['id'];
+        let id_line = p[i]['relationships']['route']['data']['id'];
         if (line.includes(id_line) == true && dummy < maxPredEntries && p[i]['attributes']['schedule_relationship'] != "CANCELLED") {
             if (p[i]['attributes']['arrival_time'] !== null) {
                 arr_time = p[i]['attributes']['arrival_time'].slice(11).slice(0,-6);
@@ -205,8 +205,8 @@ function get_sign(a) {
 // Get Alerts                   //
 ////////////////////////////////////
 async function getAlerts(station, route) {
-    alerts_url = url+"alerts/?filter[stop]="+station+"&filter[route]="+route;
-    alerts = (await getFeed(alerts_url))['data'];
+    const alerts_url = url+"alerts/?filter[stop]="+station+"&filter[route]="+route;
+    const alerts = (await getFeed(alerts_url))['data'];
     return alerts;
     }
 
@@ -215,11 +215,11 @@ async function getAlerts(station, route) {
 //////////////////////////////
 async function predStops() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
-    rt_url = url+"stops/?filter[route]="+document.getElementById("route").value;
-    r = (await getFeed(rt_url))['data'];
+    const rt_url = url+"stops/?filter[route]="+document.getElementById("route").value;
+    const r = (await getFeed(rt_url))['data'];
         
     if (r.length > 0) {
-    label = "\n Route: <a href=\"https://mbta.com/schedules/"+document.getElementById("route").value+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+document.getElementById("route").value+"</a>\n";
+    let label = "\n Route: <a href=\"https://mbta.com/schedules/"+document.getElementById("route").value+"/line\" target=\"_blank\" rel=\"noopener noreferrer\">"+document.getElementById("route").value+"</a>\n";
     label += "\n Station ID\tName\n";
     
     for (let i=0; i<r.length; i++) {
@@ -242,18 +242,18 @@ function setStops(stop) {
 // Routes view              //
 //////////////////////////////
 function predRoutes() {
-    stat_id = document.getElementById("station").value;
+    const stat_id = document.getElementById("station").value;
     initCookie('currStation',document.getElementById("station").value);
     initCookie('currRoute', document.getElementById("route").value);
     getRoutes(stat_id);
 }
 
 async function getRoutes(stat_id) {
-    st_url = url+"stops/?filter[id]="+stat_id;
-    station = (await getFeed(st_url))['data'][0]['attributes']['name'];
+    const st_url = url+"stops/?filter[id]="+stat_id;
+    const station = (await getFeed(st_url))['data'][0]['attributes']['name'];
     
-    rt_url = url+"routes/?filter[stop]="+stat_id;
-    r = (await getFeed(rt_url))['data'];
+    const rt_url = url+"routes/?filter[stop]="+stat_id;
+    const r = (await getFeed(rt_url))['data'];
     
     if (r.length > 0) {
         clearList("route");
@@ -269,7 +269,7 @@ async function getRoutes(stat_id) {
 // Vehicle view             //
 //////////////////////////////
 function predVehicle() {
-    id = document.getElementById("vehicle").value;
+    const id = document.getElementById("vehicle").value;
     get_vehicle(id, "");
     }
     
@@ -282,8 +282,8 @@ async function get_vehicle(id, line) {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
     setCookie('currVehicle',id,100);
     document.getElementById('vehicle').value=id;
-    v_url = url+"vehicles/?filter[label]="+id;
-    v = (await getFeed(v_url))['data'];
+    const v_url = url+"vehicles/?filter[label]="+id;
+    const v = (await getFeed(v_url))['data'];
     
     if (line == "") {
         art_url = url+"routes/";
@@ -307,9 +307,9 @@ async function get_vehicle(id, line) {
     
     for (let i=0; i<v.length; i++) {
     if (v[i]['relationships']['stop']['data'] != null && (line.includes(v[i]['relationships']['route']['data']['id']) || line.slice(0,2) == "CR")) {   
-    stat_id = v[i]['relationships']['stop']['data']['id']
-    st_url = url+"stops/?filter[id]="+stat_id;
-    station = (await getFeed(st_url))['data'][0]['attributes']['name'];
+    let stat_id = v[i]['relationships']['stop']['data']['id']
+    let st_url = url+"stops/?filter[id]="+stat_id;
+    let station = (await getFeed(st_url))['data'][0]['attributes']['name'];
     label += "<hr>";
     label += " Vehicle ID: "+v[i]['id']+"\n";
     label += "\n Route: "+mk_line_URL(v[i]['relationships']['route']['data']['id'])+" \n";
@@ -341,7 +341,8 @@ async function get_vehicle(id, line) {
 // Vehicle types and models //
 //////////////////////////////
 function vehicle_type(line, veh) {
-    tag = "N/A";
+    let tag = "N/A";
+    let code = 0;
     if (typeof veh == 'object') {
     if (veh.hasOwnProperty('label') == true) {
         code = veh['label'];
@@ -379,8 +380,8 @@ function vehicle_type(line, veh) {
     }
 
 function vehicle_model(v, line) {
-    id = v['id'][0];
-    a = v['attributes']['label'];
+    const id = v['id'][0];
+    const a = v['attributes']['label'];
     
     if (id == "R") {
         if ((a >= 1500) && (a<=1523)) {
@@ -485,8 +486,8 @@ function set_SL_CT(line) {
 // Query DB for stops //
 ////////////////////////
 async function get_stop(stop) {
-    st_url = url+"stops/?filter[id]="+stop;
-    s = (await getFeed(st_url))['data'];
+    const st_url = url+"stops/?filter[id]="+stop;
+    const s = (await getFeed(st_url))['data'];
     sleep(100);
     if (s.length == 0) {return '';}
     else {return s[0]['attributes']['name'];}
@@ -513,10 +514,10 @@ function mk_streetview_URL(a, la, lo, h) {
     }
 
 async function mk_gmaps_dir_URL(a, line) {
-    grt_url = url+"stops/?filter[route]="+line;
-    r = (await getFeed(grt_url))['data'];
-    orig = r[0]['attributes']['latitude']+","+r[0]['attributes']['longitude'];
-    dest = r[r.length-1]['attributes']['latitude']+","+r[r.length-1]['attributes']['longitude'];
+    const grt_url = url+"stops/?filter[route]="+line;
+    const r = (await getFeed(grt_url))['data'];
+    const orig = r[0]['attributes']['latitude']+","+r[0]['attributes']['longitude'];
+    const dest = r[r.length-1]['attributes']['latitude']+","+r[r.length-1]['attributes']['longitude'];
     return "\n <a href=\"https://www.google.com/maps/dir/?api=1&origin="+orig+"&destination="+dest+"&travelmode=transit&zoom=16\" target=\"_blank\" rel=\"noopener noreferrer\">"+a+"</a>";
     }
 
@@ -583,6 +584,7 @@ function get_sec(time_str) {
 function get_current_time() {
 
     function get_dig(a) {
+        let secs = "";
         if (a<10) {
         secs = "0"+a;}
         else {
@@ -590,6 +592,7 @@ function get_current_time() {
         return secs;}
         
     let now = new Date(Date.now());
+    let secs = "";
     if (now.getSeconds()<10) {
         secs = "0"+now.getSeconds();}
     else {
@@ -599,7 +602,7 @@ function get_current_time() {
 
 function format_time(time_str) {
     //2024-01-24T18:40:02-05:00
-    t = time_str.split(/-|T|:/);
+    const t = time_str.split(/-|T|:/);
     //return t[1]+"/"+t[2]+"/"+t[0]+"  "+t[3]+":"+t[4]+":"+t[5]
     return t[3]+":"+t[4]+":"+t[5];
 }
@@ -641,7 +644,7 @@ function sleep(ms) {
 // Cookie management //
 ///////////////////////
 function setCookie(cname, cvalue, exdays) {
-  const d = new Date();
+  let d = new Date();
   d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
   let expires = "expires="+d.toUTCString();
   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
@@ -667,7 +670,7 @@ function eraseCookie(name) {
 }
 
 function initCookie(name, value) {
-    var x = getCookie(name);
+    let x = getCookie(name);
         if (x=="") {setCookie(name,value,100);}
     }
     
