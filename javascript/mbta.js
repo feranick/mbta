@@ -4,6 +4,7 @@ key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
 headers = {'Accept': 'application/json', "Accept-Encoding": "gzip", 'x-api-key': key};
 maxPredEntries = 20;
+console.log("Version: "+version);
 
 ////////////////////////////////////
 // Get feed from DB - generic     //
