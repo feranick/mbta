@@ -39,6 +39,7 @@ async function getNearbyStations() {
 
         const nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]="+radius;
         const nst = (await getFeed(nst_url))['data'];
+        console.log(nst)
                  
         if (nst.length == 0) {
             console.log(" No data currently available. Try again later.");
@@ -50,12 +51,13 @@ async function getNearbyStations() {
         let select = document.getElementById("nearbyStations");
         select.innerHTML = "";
 
-        const stops_url = url+"stops/";
-        const stops = (await getFeed(stops_url))['data'];
+        //const stops_url = url+"stops/";
+        //const stops = (await getFeed(stops_url))['data'];
         
         for(var i = 0; i < nst.length; i++) {
             if (['node', 'door'].indexOf(nst[i]['id'].slice(0,4))<0) {
-                let nameSt = await get_stops(nst[i]['id'], stops);
+                //let nameSt = await get_stops(nst[i]['id'], stops);
+                let nameSt = await get_stops(nst[i]['id'], nst);
                 if(!isNaN(nst[i]['id'].slice(0,4))) {
                     nameSt+=" - Bus";}
                 let dist = get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
