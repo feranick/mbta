@@ -1,4 +1,4 @@
-version = "2025.12.20.1"
+version = "2025.12.20.2"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
@@ -49,13 +49,25 @@ async function getNearbyStations() {
         
         let select = document.getElementById("nearbyStations");
         select.innerHTML = "";
+        list_stops_bus = "";
+        list_stops_subway = "";
         
         for(var i = 0; i < nst.length; i++) {
             if (['node', 'door'].indexOf(nst[i]['id'].slice(0,4))<0) {
                 let nameSt = await get_stops(nst[i]['id'], nst);
                 let dist = get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
-                select.innerHTML += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";
+                
+                if (nameSt.slice(0,3) == "Bus") {
+                    list_stops_bus += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";}
+                if (nameSt.slice(0,3) == "Sub") {
+                    list_stops_subway += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";}
+                
                 }}
+                
+        select.innerHTML += list_stops_subway;
+        if (list_stops_subway.length !== 0) {
+            select.innerHTML += "<option> -------------- </option>";}
+        select.innerHTML += list_stops_bus;
         document.getElementById("warnLabel").innerHTML = "";
         setNearbyStations();
 
