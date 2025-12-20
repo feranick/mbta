@@ -1,4 +1,4 @@
-version = "2025.12.08.1"
+version = "2025.12.20.1"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
