@@ -1,4 +1,4 @@
-version = "2025.12.20.2"
+version = "2025.12.25.1"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
@@ -554,42 +554,78 @@ function embed_map(gkey, lat, long) {
     }
 */
 
-///////////////////////////////////////
-// Date/Time/length/coord formatting //
-///////////////////////////////////////
-function getCoords() {
-    return new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(
-            resolve, 
-            (error) => {
-                let errorMessage = '';
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                        errorMessage = "Geolocation permission denied. Cannot find nearby stations.";
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        errorMessage = "Location information is unavailable.";
-                        break;
-                    case error.TIMEOUT:
-                        errorMessage = "Location request timed out.";
-                        break;
-                    default:
-                        errorMessage = "An unknown location error occurred.";
-                }
-                document.getElementById('warnLabel').textContent = errorMessage;
-                reject(error);
-            },
-            geolocationOptions
-        )
-    );
-}
-    
-const geolocationOptions = {
-    enableHighAccuracy: true,
-    timeout: 10000, // Wait max 5 seconds
-    maximumAge: 0   // Don't use cached location
-};
+//////////////////////////////////////////////////////////////////////////////
+// Get coordinates from device with High Accuracy -> Low Accuracy Fallback
+//////////////////////////////////////////////////////////////////////////////
+async function getCoords() {
+    // Wrapper to make geolocation async/await compatible
+    const getPositionPromise = (options) => {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                return reject(new Error("Geolocation is not supported by this browser."));
+            }
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    // Return the full position object so getNearbyStations can find .coords
+                    resolve(position); 
+                },
+                (error) => {
+                    reject(error);
+                },
+                options
+            );
+        });
+    };
 
+    // Error Handler: Formats the message AND updates the UI
+    const handleFailure = (error) => {
+        let errorMessage = '';
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                errorMessage = "Geolocation permission denied. Cannot find nearby stations.";
+                break;
+            case error.POSITION_UNAVAILABLE:
+                errorMessage = "Location information is unavailable.";
+                break;
+            case error.TIMEOUT:
+                errorMessage = "Location request timed out.";
+                break;
+            default:
+                errorMessage = "An unknown location error occurred.";
+        }
+        
+        // Update the UI label as requested
+        const label = document.getElementById('warnLabel');
+        if (label) label.textContent = errorMessage;
+        
+        return errorMessage;
+    };
+
+    // Execution Logic with Fallback
+    try {
+        // ATTEMPT 1: High Accuracy
+        return await getPositionPromise({ enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
+
+    } catch (error) {
+        console.warn("High accuracy attempt failed. Checking if we can retry...");
+
+        if (error.code === error.PERMISSION_DENIED) {
+            throw new Error(handleFailure(error));
+        }
+
+        // ATTEMPT 2: Low Accuracy Fallback
+        try {
+            console.log("Falling back to low accuracy...");
+            return await getPositionPromise({ enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
+        } catch (fallbackError) {
+            throw new Error(handleFailure(fallbackError));
+        }
+    }
+}
+
+///////////////////////////////////////
+// Date/Time/length formatting //
+///////////////////////////////////////
 function undef_format(a) {
     if (a === undefined)
         { return "";}
