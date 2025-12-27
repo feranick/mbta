@@ -1,4 +1,4 @@
-version = "2025.12.25.1"
+version = "2025.12.26.2"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
@@ -32,12 +32,14 @@ async function getNearbyStations() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
         try {
         const radius = get_radius(document.getElementById("radius").value);
-        const position = await getCoords();
+        //const position = await getCoords();
+        const coords = await getCoords();
         
         // Destructuring is cleaner when you know position is valid
-        const { latitude: lat, longitude: long } = position.coords;
+        //const { latitude: lat, longitude: long } = position.coords;
 
-        const nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]="+radius;
+        //const nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]="+radius;
+        const nst_url = url+"stops/?filter[latitude]="+coords[0]+"&filter[longitude]="+coords[1]+"&filter[radius]="+radius;
         const nst = (await getFeed(nst_url))['data'];
         
         if (nst.length == 0) {
@@ -567,7 +569,8 @@ async function getCoords() {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     // Return the full position object so getNearbyStations can find .coords
-                    resolve(position); 
+                    //resolve(position); // old method
+                    resolve([position.coords.latitude, position.coords.longitude]); 
                 },
                 (error) => {
                     reject(error);
@@ -604,8 +607,10 @@ async function getCoords() {
     // Execution Logic with Fallback
     try {
         // ATTEMPT 1: High Accuracy
-        return await getPositionPromise({ enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
-
+        coords = await getPositionPromise({ enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
+        console.log("High accuracy coordinates: "+coords);
+        return coords;
+        
     } catch (error) {
         console.warn("High accuracy attempt failed. Checking if we can retry...");
 
@@ -616,7 +621,9 @@ async function getCoords() {
         // ATTEMPT 2: Low Accuracy Fallback
         try {
             console.log("Falling back to low accuracy...");
-            return await getPositionPromise({ enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
+            coords = await getPositionPromise({ enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
+            console.log("Low accuracy coordinates: "+coords);
+            return coords;
         } catch (fallbackError) {
             throw new Error(handleFailure(fallbackError));
         }
