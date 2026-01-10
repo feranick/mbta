@@ -1,4 +1,4 @@
-version = "2025.12.26.2"
+version = "2026.01.10.1"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
@@ -32,13 +32,8 @@ async function getNearbyStations() {
     document.getElementById("warnLabel").innerHTML = "Please wait...";
         try {
         const radius = get_radius(document.getElementById("radius").value);
-        //const position = await getCoords();
         const coords = await getCoords();
         
-        // Destructuring is cleaner when you know position is valid
-        //const { latitude: lat, longitude: long } = position.coords;
-
-        //const nst_url = url+"stops/?filter[longitude]="+long+"&filter[latitude]="+lat+"&filter[radius]="+radius;
         const nst_url = url+"stops/?filter[latitude]="+coords[0]+"&filter[longitude]="+coords[1]+"&filter[radius]="+radius;
         const nst = (await getFeed(nst_url))['data'];
         
@@ -57,7 +52,7 @@ async function getNearbyStations() {
         for(var i = 0; i < nst.length; i++) {
             if (['node', 'door'].indexOf(nst[i]['id'].slice(0,4))<0) {
                 let nameSt = await get_stops(nst[i]['id'], nst);
-                let dist = get_distance(lat, long, nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
+                let dist = get_distance(coords[0], coords[1], nst[i]['attributes']['latitude'], nst[i]['attributes']['longitude'],0);
                 
                 if (nameSt.slice(0,3) == "Bus") {
                     list_stops_bus += "<option value=\"" + nst[i]['id'] + "\">" + nameSt + "\t("+ dist+" m)</option>";}
