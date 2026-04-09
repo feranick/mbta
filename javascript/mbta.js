@@ -1,4 +1,4 @@
-version = "2026.01.10.1"
+version = "2026.04.8.1"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
@@ -427,8 +427,10 @@ function vehicle_model(v, line) {
             return "Kinki Sharyo Type 7 LRV (1997)";}
         if ((a >= 3800) && (a <= 3894)) {
             return "AnsaldoBreda Type 8 LRV (1998-2007)";}
-        if (a >= 3900) {
+        if ((a >= 3900) && {a <= 3923)) {
             return "CAF USA Type 9 LRV (2018-2020)";}
+        if ((a >= 4901) && {a <= 4102))
+            return "CAF USA Type 10 LRV (2027-2031)";}
     }
     if (id == "y") {
         if (a>=600 && a<=910) {
