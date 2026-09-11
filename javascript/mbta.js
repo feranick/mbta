@@ -1,4 +1,4 @@
-version = "2026.9.2.1"
+version = "2026.9.11.1"
 url = "https://api-v3.mbta.com/";
 key = "91944a70800a4bcabe1b9c2023d12fc8";
 gkey = "YOUR_GOOGLE_MAPPING_KEY";
@@ -458,9 +458,9 @@ function vehicle_model(v, line) {
         else if  (a>=3200 && a<=3359) {
             return "Bus: XDE40 - Hybrid (2023)";}
         else if  (a>=4200 && a<=4231) {
-            return "Bus: XE40 - Electric - Left side doors (2024-2025)";}
+            return "Bus: XE40 - Electric - Left side doors (2024-2026)";}
         else if  (a>=4300 && a<=4347) {
-            return "Bus: XE40 - Electric (2024-2026)";}
+            return "Bus: XE40 - Electric (2025-2027)";}
         else {
             return "Bus: N/A";}
         }
